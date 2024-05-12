@@ -26,6 +26,8 @@ public class SongsContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        optionsBuilder.EnableDetailedErrors();
+        optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.UseNpgsql(_configuration.GetConnectionString("songs"));
     }
 
@@ -98,6 +100,5 @@ public class SongsContext : DbContext
         modelBuilder.Entity<SongComposer>()
             .HasOne(ss => ss.Contributor)
             .WithMany().HasForeignKey(ss => ss.ContributorId);
-
     }
 }
