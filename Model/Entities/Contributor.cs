@@ -5,6 +5,7 @@ public class Contributor
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Column("id")]
     public long Id { get; set; }
 
     [Column("first_name")]
@@ -13,6 +14,6 @@ public class Contributor
     [Column("last_name")]
     public string LastName { get; set; }
 
-    [NotMapped] // Exclude from mapping as it's computed by the database
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)][Column("full_name")]
     public string FullName { get; set; }
 }

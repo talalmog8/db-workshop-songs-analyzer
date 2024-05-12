@@ -20,9 +20,6 @@ public class SongComposer
     [ForeignKey("ContributorId")]
     public virtual Contributor Contributor { get; set; }
 
-    [ForeignKey("ContributorTypeId")]
-    public virtual ContributorType ContributorType { get; set; }
-
     [ForeignKey("SongId")]
     public virtual Song Song { get; set; }
 }

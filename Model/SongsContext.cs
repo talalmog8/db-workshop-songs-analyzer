@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Model;
 using Model.Entities;
 
 public class SongsContext : DbContext
@@ -19,8 +18,7 @@ public class SongsContext : DbContext
     public DbSet<WordLocation> WordLocations { get; set; }
     public DbSet<Phrase> Phrases { get; set; }
     public DbSet<PhraseWord> PhraseWords { get; set; }
-
-
+    
     public SongsContext(IConfiguration configuration)
     {
         _configuration = configuration;
@@ -44,13 +42,13 @@ public class SongsContext : DbContext
         modelBuilder.Entity<SongComposer>().HasIndex(w => new
         {
             w.ContributorId,
-            w.ContributorType,
+            w.ContributorTypeId,
             w.SongId
         }).IsUnique();
         modelBuilder.Entity<ContributorContributorType>().HasIndex(w => new
         {
             w.ContributorId,
-            w.ContributorType
+            w.ContributorTypeId
         }).IsUnique();
         modelBuilder.Entity<SongLine>().HasIndex(w => new
         {
@@ -86,6 +84,7 @@ public class SongsContext : DbContext
 
         // Configure foreign key relationships
 
+         
         modelBuilder.Entity<SongLine>().HasOne(x => x.Song).WithMany().HasForeignKey(x => x.SongId);
         modelBuilder.Entity<WordGroup>().HasOne(x => x.Group).WithMany().HasForeignKey(x => x.GroupId);
         modelBuilder.Entity<WordGroup>().HasOne(x => x.Word).WithMany().HasForeignKey(x => x.WordId);
@@ -93,15 +92,12 @@ public class SongsContext : DbContext
         modelBuilder.Entity<SongWord>().HasOne(x => x.Word).WithMany().HasForeignKey(x => x.WordId);
         modelBuilder.Entity<SongWord>().HasOne(x => x.Song).WithMany().HasForeignKey(x => x.SongId);
         modelBuilder.Entity<WordLocation>().HasOne(wl => wl.SongWord).WithMany().HasForeignKey(wl => wl.SongWordId);
-        modelBuilder.Entity<ContributorContributorType>().HasOne(cct => cct.ContributorType).WithMany().HasForeignKey(cct => cct.ContributorTypeId);
         modelBuilder.Entity<ContributorContributorType>().HasOne(cct => cct.Contributor).WithMany().HasForeignKey(cct => cct.ContributorId);
         modelBuilder.Entity<SongStanza>().HasOne(ss => ss.Song).WithMany().HasForeignKey(ss => ss.SongId);
         modelBuilder.Entity<SongComposer>().HasOne(ss => ss.Song).WithMany().HasForeignKey(ss => ss.SongId);
         modelBuilder.Entity<SongComposer>()
             .HasOne(ss => ss.Contributor)
             .WithMany().HasForeignKey(ss => ss.ContributorId);
-        modelBuilder.Entity<SongComposer>()
-            .HasOne(ss => ss.ContributorType)
-            .WithMany().HasForeignKey(ss => ss.ContributorTypeId);
+
     }
 }

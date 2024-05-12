@@ -14,9 +14,6 @@ public class ContributorContributorType
     [Column("contributor_id")]
     public long ContributorId { get; set; }
 
-    [ForeignKey("ContributorTypeId")]
-    public virtual ContributorType ContributorType { get; set; }
-
     [ForeignKey("ContributorId")]
     public virtual Contributor Contributor { get; set; }
 }
