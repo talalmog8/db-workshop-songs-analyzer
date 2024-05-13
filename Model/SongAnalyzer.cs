@@ -1,58 +1,36 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Model.Entities;
-using Npgsql;
 namespace Model;
 
-public enum ContributorType
+public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 {
-    Writer = 1,
-    MusicComposer,
-    Performer
-}
+    public Contributor? Writer { get; set; }
+    public Contributor? Performer { get; set; }
+    public Contributor? MusicComposer { get; set; }
+    public string? Path { get; set; }
+    public string? SongName { get; set; }
 
-public class SongAnalyzer
-{
-    private readonly ILoggerFactory _loggerFactory;
-    private readonly IConfiguration _configuration;
-
-    public SongAnalyzer(ILoggerFactory loggerFactory, IConfiguration configuration)
+    public async Task ProcessSong()
     {
-        _loggerFactory = loggerFactory;
-        _configuration = configuration;
+        string text = await File.ReadAllTextAsync(Path);
 
-    }
-
-    public async Task ProcessSong(
-        string songName,
-        string path,
-        Contributor writer,
-        Contributor performer,
-        Contributor musicComposer)
-    {
-        string text = await File.ReadAllTextAsync(path);
-        string[] lines = text.Split(Environment.NewLine);
-
-        var createDate = File.GetCreationTime(path);
-
-        await using var ctx = new SongsContext(_loggerFactory, _configuration);
+        var createDate = File.GetCreationTime(Path);
+        await using var ctx = ctxFactory();
         await using var tran = await ctx.Database.BeginTransactionAsync();
 
-        var song = await InsertSong(songName, path, createDate, text, ctx);
+        var song = await InsertSong(SongName, Path, createDate, text, ctx);
         var songStanzas = await InsertSongStanzas(text, song, ctx);
         var songLines = await InsertSongLines(text, song, ctx);
         var (wordIndex, words) = await InsertWordsIfMissing(ctx, text);
         var songWords = await InsertSongWords(words, song, wordIndex, ctx);
 
-
-
-        var writerContributorContributorType = await InsertContributorIfMissing(writer, ctx, ContributorType.Writer, song);
-        var musicComposerContributorContributorType = await InsertContributorIfMissing(performer, ctx, ContributorType.MusicComposer, song);
-        var performerContributorContributorType = await InsertContributorIfMissing(musicComposer, ctx, ContributorType.Performer, song);
+        var writerContributorContributorType = await InsertContributorIfMissing(Writer, ctx, ContributorType.Writer, song);
+        var musicComposerContributorContributorType = await InsertContributorIfMissing(Performer, ctx, ContributorType.MusicComposer, song);
+        var performerContributorContributorType = await InsertContributorIfMissing(MusicComposer, ctx, ContributorType.Performer, song);
 
         await tran.CommitAsync();
     }
+
     private static async Task<IEnumerable<SongWord>> InsertSongWords(Word[] words, Song song, Dictionary<string, int> wordIndex, SongsContext ctx)
     {
         var songWords = words.Select(x => new SongWord
@@ -72,7 +50,8 @@ public class SongAnalyzer
 
     private async Task<(Dictionary<string, int> wordIndex, Word[])> InsertWordsIfMissing(SongsContext ctx, string text)
     {
-        string[] words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        string[] words = text.Split([" ", Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
+        
         string[] wordsDistinct = words.Distinct().ToArray();
 
         var wordIndex = words.GroupBy(x => x)
@@ -92,13 +71,13 @@ public class SongAnalyzer
         return (wordIndex, existingWords.Union(missingWords).ToArray());
     }
 
-    private async Task<Song> InsertSong(string songName, string path, DateTime createDate, string text, SongsContext ctx)
+    private async Task<Song> InsertSong(string? songName, string? path, DateTime createDate, string text, SongsContext ctx)
     {
         var song = new Song
         {
             Name = songName,
             Path = path,
-            DocDate = createDate,
+            DocDate = createDate.ToUniversalTime(),
             WordLength = text.Length
         };
 
@@ -117,7 +96,7 @@ public class SongAnalyzer
         return song;
     }
 
-    private async Task<ContributorContributorType> InsertContributorIfMissing(Contributor contributor, SongsContext ctx, ContributorType contributorTypeId, Song song)
+    private async Task<ContributorContributorType> InsertContributorIfMissing(Contributor? contributor, SongsContext ctx, ContributorType contributorTypeId, Song song)
     {
         var existingContributor = await ctx.Contributors.AsQueryable()
             .Where(x => x.FullName == contributor.FullName)
@@ -125,7 +104,7 @@ public class SongAnalyzer
 
         if (existingContributor is null)
         {
-            ctx.Add(contributor);
+            ctx.Contributors.Add(contributor);
             await ctx.SaveChangesAsync();
         }
         else
@@ -144,7 +123,7 @@ public class SongAnalyzer
 
         if (existingContributorContributorType is null)
         {
-            ctx.Add(contributorContributorType);
+            ctx.ContributorContributorTypes.Add(contributorContributorType);
             await ctx.SaveChangesAsync();
         }
         else
@@ -165,7 +144,7 @@ public class SongAnalyzer
 
         if (existingSongComposer is null)
         {
-            ctx.Add(songComposer);
+            ctx.SongComposers.Add(songComposer);
             await ctx.SaveChangesAsync();
         }
         else
@@ -192,10 +171,9 @@ public class SongAnalyzer
                 WordLength = stanza.Length,
             };
 
-            offset += stanza.Length;
+            offset += stanza.Length + 4; // ad cr and newline twice 
 
             songStanzas.Add(songStanza);
-
         }
 
         ctx.SongStanzas.AddRange(songStanzas);
@@ -206,7 +184,7 @@ public class SongAnalyzer
 
     private async Task<SongLine[]> InsertSongLines(string input, Song song, SongsContext ctx)
     {
-        string[] lines = input.Split($"{Environment.NewLine}", StringSplitOptions.RemoveEmptyEntries);
+        string[] lines = input.Split($"{Environment.NewLine}");
 
         var songLines = new List<SongLine>();
 
@@ -214,16 +192,23 @@ public class SongAnalyzer
 
         foreach (string line in lines)
         {
-            var songLine = new SongLine
+            if (line == string.Empty)
+                offset += 2;
+            else
             {
-                SongId = song.Id,
-                Song = song,
-                Offset = offset,
-                WordLength = line.Length,
-            };
 
-            offset += line.Length;
-            songLines.Add(songLine);
+
+                var songLine = new SongLine
+                {
+                    SongId = song.Id,
+                    Song = song,
+                    Offset = offset,
+                    WordLength = line.Length,
+                };
+
+                offset += line.Length + 2; // ad cr and newline 
+                songLines.Add(songLine);
+            }
         }
 
         ctx.SongLines.AddRange(songLines);
@@ -235,7 +220,7 @@ public class SongAnalyzer
     private async Task<WordLocation[]> InsertWordLocations(string input, SongWord[] songWords, SongsContext ctx)
     {
         var wordToSongWord = songWords.ToDictionary(x => x.Word.WordText, y => y);
-        
+
         string[] words = input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
 
         var wordLocations = new List<WordLocation>();

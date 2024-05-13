@@ -3,6 +3,18 @@
 [Table("contributor")]
 public class Contributor
 {
+    public Contributor(string firstName, string lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        FullName = $"{FirstName} {LastName}";
+    }
+
+    public Contributor()
+    {
+        
+    }
+    
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("id")]

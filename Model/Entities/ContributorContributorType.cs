@@ -15,5 +15,5 @@ public class ContributorContributorType
     public long ContributorId { get; set; }
 
     [ForeignKey("ContributorId")]
-    public virtual Contributor Contributor { get; set; }
+    public virtual Contributor? Contributor { get; set; }
 }

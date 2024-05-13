@@ -18,7 +18,7 @@ public class SongComposer
     public long SongId { get; set; }
 
     [ForeignKey("ContributorId")]
-    public virtual Contributor Contributor { get; set; }
+    public virtual Contributor? Contributor { get; set; }
 
     [ForeignKey("SongId")]
     public virtual Song Song { get; set; }
