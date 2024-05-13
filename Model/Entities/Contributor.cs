@@ -14,6 +14,6 @@ public class Contributor
     [Column("last_name")]
     public string LastName { get; set; }
 
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)][Column("full_name")]
+    [Column("full_name")]
     public string FullName { get; set; }
 }
