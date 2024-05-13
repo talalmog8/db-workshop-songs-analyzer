@@ -1,13 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Model.Entities;
+
+namespace Model;
 
 public class SongsContext : DbContext
 {
+    private readonly ILoggerFactory _loggerFactory;
     private readonly IConfiguration _configuration;
 
     public DbSet<Contributor> Contributors { get; set; }
-    public DbSet<ContributorType> ContributorTypes { get; set; }
     public DbSet<ContributorContributorType> ContributorContributorTypes { get; set; }
     public DbSet<Song> Songs { get; set; }
     public DbSet<SongComposer> SongComposers { get; set; }
@@ -18,9 +21,10 @@ public class SongsContext : DbContext
     public DbSet<WordLocation> WordLocations { get; set; }
     public DbSet<Phrase> Phrases { get; set; }
     public DbSet<PhraseWord> PhraseWords { get; set; }
-    
-    public SongsContext(IConfiguration configuration)
+
+    public SongsContext(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
+        _loggerFactory = loggerFactory;
         _configuration = configuration;
     }
 
@@ -29,6 +33,8 @@ public class SongsContext : DbContext
         optionsBuilder.EnableDetailedErrors();
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.UseNpgsql(_configuration.GetConnectionString("songs"));
+        optionsBuilder.UseLoggerFactory(_loggerFactory);
+
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,7 +45,6 @@ public class SongsContext : DbContext
         modelBuilder.Entity<Phrase>().HasIndex(p => p.PhraseText).IsUnique();
         modelBuilder.Entity<Word>().HasIndex(w => w.WordText).IsUnique();
         modelBuilder.Entity<Contributor>().HasIndex(w => w.FullName).IsUnique();
-        modelBuilder.Entity<ContributorType>().HasIndex(w => w.ContributorTypeDescription).IsUnique();
         modelBuilder.Entity<Song>().HasIndex(w => w.Name).IsUnique();
         modelBuilder.Entity<SongComposer>().HasIndex(w => new
         {
@@ -86,7 +91,7 @@ public class SongsContext : DbContext
 
         // Configure foreign key relationships
 
-         
+
         modelBuilder.Entity<SongLine>().HasOne(x => x.Song).WithMany().HasForeignKey(x => x.SongId);
         modelBuilder.Entity<WordGroup>().HasOne(x => x.Group).WithMany().HasForeignKey(x => x.GroupId);
         modelBuilder.Entity<WordGroup>().HasOne(x => x.Word).WithMany().HasForeignKey(x => x.WordId);
@@ -97,8 +102,6 @@ public class SongsContext : DbContext
         modelBuilder.Entity<ContributorContributorType>().HasOne(cct => cct.Contributor).WithMany().HasForeignKey(cct => cct.ContributorId);
         modelBuilder.Entity<SongStanza>().HasOne(ss => ss.Song).WithMany().HasForeignKey(ss => ss.SongId);
         modelBuilder.Entity<SongComposer>().HasOne(ss => ss.Song).WithMany().HasForeignKey(ss => ss.SongId);
-        modelBuilder.Entity<SongComposer>()
-            .HasOne(ss => ss.Contributor)
-            .WithMany().HasForeignKey(ss => ss.ContributorId);
+        modelBuilder.Entity<SongComposer>().HasOne(ss => ss.Contributor).WithMany().HasForeignKey(ss => ss.ContributorId);
     }
 }
