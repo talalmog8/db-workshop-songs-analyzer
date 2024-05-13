@@ -13,10 +13,7 @@ public class SongWord
 
     [Column("song_id")]
     public long SongId { get; set; }
-
-    [Column("length")]
-    public int Length { get; set; }
-
+    
     [Column("num_of_occurrences")]
     public int NumberOfOccurrences { get; set; }
 

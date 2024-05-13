@@ -42,32 +42,54 @@ public class SongAnalyzer
         var song = await InsertSong(songName, path, createDate, text, ctx);
         var songStanzas = await InsertSongStanzas(text, song, ctx);
         var songLines = await InsertSongLines(text, song, ctx);
-        var words = await InsertWordsIfMissing(ctx, text);
+        var (wordIndex, words) = await InsertWordsIfMissing(ctx, text);
+        var songWords = await InsertSongWords(words, song, wordIndex, ctx);
 
-        
+
+
         var writerContributorContributorType = await InsertContributorIfMissing(writer, ctx, ContributorType.Writer, song);
         var musicComposerContributorContributorType = await InsertContributorIfMissing(performer, ctx, ContributorType.MusicComposer, song);
         var performerContributorContributorType = await InsertContributorIfMissing(musicComposer, ctx, ContributorType.Performer, song);
 
         await tran.CommitAsync();
     }
-    
-    private  async Task<Word[]> InsertWordsIfMissing(SongsContext ctx, string text)
+    private static async Task<IEnumerable<SongWord>> InsertSongWords(Word[] words, Song song, Dictionary<string, int> wordIndex, SongsContext ctx)
+    {
+        var songWords = words.Select(x => new SongWord
+        {
+            WordId = x.Id,
+            SongId = song.Id,
+            NumberOfOccurrences = wordIndex[x.WordText],
+            Word = x,
+            Song = song
+        }).ToArray();
+
+        ctx.SongWords.AddRange(songWords);
+        await ctx.SaveChangesAsync();
+
+        return songWords;
+    }
+
+    private async Task<(Dictionary<string, int> wordIndex, Word[])> InsertWordsIfMissing(SongsContext ctx, string text)
     {
         string[] words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         string[] wordsDistinct = words.Distinct().ToArray();
 
-        var existingWords = await ctx.Words.Where(x => wordsDistinct.Contains(x.WordText)).ToListAsync();        
-        var existingWordsHashSet = existingWords.Select(x=> x.WordText).ToHashSet();
+        var wordIndex = words.GroupBy(x => x)
+            .Select(group => new WordIndex(group.Key, group.Count()))
+            .ToDictionary(x => x.Word, y => y.Count);
+
+        var existingWords = await ctx.Words.Where(x => wordsDistinct.Contains(x.WordText)).ToListAsync();
+        var existingWordsHashSet = existingWords.Select(x => x.WordText).ToHashSet();
         var missingWords = wordsDistinct.Where(x => !existingWordsHashSet.Contains(x)).Select(y => new Word
         {
             WordText = y,
             Length = y.Length
         }).ToArray();
-        
+
         ctx.Words.AddRange(missingWords);
         await ctx.SaveChangesAsync();
-        return existingWords.Union(missingWords).ToArray();
+        return (wordIndex, existingWords.Union(missingWords).ToArray());
     }
 
     private async Task<Song> InsertSong(string songName, string path, DateTime createDate, string text, SongsContext ctx)
@@ -94,7 +116,7 @@ public class SongAnalyzer
 
         return song;
     }
-    
+
     private async Task<ContributorContributorType> InsertContributorIfMissing(Contributor contributor, SongsContext ctx, ContributorType contributorTypeId, Song song)
     {
         var existingContributor = await ctx.Contributors.AsQueryable()
@@ -180,8 +202,8 @@ public class SongAnalyzer
         await ctx.SaveChangesAsync();
 
         return songStanzas.ToArray();
-    } 
-    
+    }
+
     private async Task<SongLine[]> InsertSongLines(string input, Song song, SongsContext ctx)
     {
         string[] lines = input.Split($"{Environment.NewLine}", StringSplitOptions.RemoveEmptyEntries);
@@ -209,9 +231,33 @@ public class SongAnalyzer
 
         return songLines.ToArray();
     }
-    
-    public static async Task InsertNonExistingWords(string[] stringsToInsert)
+
+    private async Task<WordLocation[]> InsertWordLocations(string input, SongWord[] songWords, SongsContext ctx)
     {
-   
+        var wordToSongWord = songWords.ToDictionary(x => x.Word.WordText, y => y);
+        
+        string[] words = input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+
+        var wordLocations = new List<WordLocation>();
+
+        var offset = 0;
+
+        foreach (string word in words)
+        {
+            var wordLocation = new WordLocation
+            {
+                Offset = offset,
+                SongWordId = wordToSongWord[word].Id,
+                SongWord = wordToSongWord[word]
+            };
+
+            offset += word.Length;
+            wordLocations.Add(wordLocation);
+        }
+
+        ctx.WordLocations.AddRange(wordLocations);
+        await ctx.SaveChangesAsync();
+
+        return wordLocations.ToArray();
     }
 }
