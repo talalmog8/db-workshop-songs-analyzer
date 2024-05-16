@@ -23,7 +23,8 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         var songLines = await InsertSongLines(text, song, ctx);
         var (wordIndex, words) = await InsertWordsIfMissing(ctx, text);
         var songWords = await InsertSongWords(words, song, wordIndex, ctx);
-
+        var wordLocations = await InsertWordLocations(text, songWords, ctx);
+        
         var writerContributorContributorType = await InsertContributorIfMissing(Writer, ctx, ContributorType.Writer, song);
         var musicComposerContributorContributorType = await InsertContributorIfMissing(Performer, ctx, ContributorType.MusicComposer, song);
         var performerContributorContributorType = await InsertContributorIfMissing(MusicComposer, ctx, ContributorType.Performer, song);
@@ -31,7 +32,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         await tran.CommitAsync();
     }
 
-    private static async Task<IEnumerable<SongWord>> InsertSongWords(Word[] words, Song song, Dictionary<string, int> wordIndex, SongsContext ctx)
+    private static async Task<SongWord[]> InsertSongWords(Word[] words, Song song, Dictionary<string, int> wordIndex, SongsContext ctx)
     {
         var songWords = words.Select(x => new SongWord
         {
@@ -51,7 +52,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     private async Task<(Dictionary<string, int> wordIndex, Word[])> InsertWordsIfMissing(SongsContext ctx, string text)
     {
         string[] words = text.Split([" ", Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
-        
+
         string[] wordsDistinct = words.Distinct().ToArray();
 
         var wordIndex = words.GroupBy(x => x)
