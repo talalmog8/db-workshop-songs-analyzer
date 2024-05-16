@@ -35,6 +35,14 @@ namespace SongTextAnalyzer
             }
         }
 
+        private void QueryButton_Click(object sender, RoutedEventArgs e)
+        {
+            var performer = Interaction.InputBox("Enter performer name:", "Add Performer", "");
+            if (!string.IsNullOrEmpty(performer))
+            {
+                PerformersListBox.Items.Add(performer);
+            }
+        }
         private void AddPerformerButton_Click(object sender, RoutedEventArgs e)
         {
             var performer = Interaction.InputBox("Enter performer name:", "Add Performer", "");
