@@ -115,6 +115,33 @@ Click="AddComposerButton_Click"/>
                             <TextBlock Width="40" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
                         </StackPanel>
                     </StackPanel>
+                    <StackPanel>
+                        <!-- Add Song Label -->
+                        <TextBlock    Margin="0,0,0,0" VerticalAlignment="Center" FontSize="15" Height="20">Define A Group:</TextBlock>
+
+                        <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
+                            <!-- Song Name -->
+                            <TextBlock  Width="70"  Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Name:</TextBlock>
+                            <TextBox   
+Width="150" 
+Height="20" 
+Margin="5" 
+VerticalAlignment="Top" HorizontalAlignment="Left" Name="GroupNameTextBox"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock  Width="70"  Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Values:</TextBlock>
+                            <ListBox Width="150"  Margin="5" Name="GroupValuesListBox"/>
+                            <Button x:Name="AddGroupValueButton" 
+Width="60" 
+Height="20" 
+Margin="5" 
+VerticalAlignment="Top"
+Content="Add"
+Click="AddPerformerButton_Click"/>
+                        </StackPanel>
+                        <!-- Save Button -->
+                        <Button   VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" Width="50" Height="25" Name="SaveGroupButton" Click="SaveButton_Click">Save</Button>
+                    </StackPanel>
                 </StackPanel>
                 <StackPanel  Width="380">
                     <!-- Query Songs Label -->
