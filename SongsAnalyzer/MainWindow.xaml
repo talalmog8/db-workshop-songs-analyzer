@@ -1,7 +1,7 @@
 ﻿<Window x:Class="SongTextAnalyzer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Song Text Analyzer" Height="850" Width="850">
+        Title="Song Text Analyzer" Height="900" Width="850">
     <StackPanel Margin="10">
             <StackPanel Orientation="Horizontal">
                 <StackPanel Width="380">
@@ -36,7 +36,7 @@
                     <!-- TextBox for Full Song Text -->
                     <TextBox Height="250" Width="350" HorizontalAlignment="Left"  Margin="0,0,0,0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" x:Name="FullSongTextBox"/>
 
-                    <StackPanel>
+                    <StackPanel Margin="0,5,0,5">
                         <!-- Add Song Label -->
                         <TextBlock    Margin="0,0,0,0" VerticalAlignment="Center" FontSize="15" Height="20">Add Song:</TextBlock>
 
@@ -95,7 +95,7 @@ Click="AddComposerButton_Click"/>
 
                     </StackPanel>
 
-                    <StackPanel>
+                    <StackPanel Margin="0,0,0,5">
                         <TextBlock FontSize="15" Width="70" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Stats:</TextBlock>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Width="170" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per word:</TextBlock>
@@ -109,7 +109,7 @@ Click="AddComposerButton_Click"/>
                             <TextBlock Width="170" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per stanza:</TextBlock>
                             <TextBlock Width="40" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                             <TextBlock Width="170" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per song:</TextBlock>
                             <TextBlock Width="40" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
                         </StackPanel>
@@ -141,9 +141,9 @@ Click="AddPerformerButton_Click"/>
                         <!-- Save Button -->
                         <Button   VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" Width="50" Height="25" Name="SaveGroupButton" Click="SaveButton_Click">Save</Button>
                     </StackPanel>
-                <StackPanel>
+                <StackPanel Margin="0,5,0,5">
                     <!-- Add Song Label -->
-                    <TextBlock    Margin="0,0,0,0" VerticalAlignment="Center" FontSize="15" Height="20">Define A Phrase:</TextBlock>
+                    <TextBlock    Margin="0,0,0,5" VerticalAlignment="Center" FontSize="15" Height="20">Define A Phrase:</TextBlock>
 
                     <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
                         <!-- Song Name -->
@@ -200,23 +200,27 @@ VerticalAlignment="Top" HorizontalAlignment="Left" Name="PhraseNameTextBox"/>
                     <Button   VerticalAlignment="Center"
               Margin="0,0,0,5" HorizontalAlignment="Left" Width="70" Height="25" Name="QueryButton" Click="QueryButton_Click">Query</Button>
 
-                    <!-- DataGrid for Query Results with Border -->
+                <TextBlock   Margin="0,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" FontSize="15" >Songs Results:</TextBlock>
+
+                <!-- DataGrid for Query Results with Border -->
                     <Border    Margin="0,0,0,0" BorderBrush="Black" BorderThickness="1">
                         <DataGrid Height="150" x:Name="QueryResultsDataGrid" AutoGenerateColumns="True" Margin="0"/>
                     </Border>
 
-                    <StackPanel Orientation="Vertical">
-                        <Label Content="Words" />
-                        <Border    Margin="0,0,0,0" BorderBrush="Black" BorderThickness="1">
+                    <StackPanel Margin="0,5,0,5" Orientation="Vertical">
+                    <TextBlock FontSize="15" HorizontalAlignment="Left">Words:</TextBlock>
+                    <Border    Margin="0,0,0,0" BorderBrush="Black" BorderThickness="1">
                             <DataGrid Height="150" x:Name="WordsDataGrid" AutoGenerateColumns="True" Margin="0"/>
                         </Border>
                     </StackPanel>
 
-                    <StackPanel Orientation="Vertical">
-                        <Label Content="Words Index" />
-                        <Border    Margin="0,0,0,0" BorderBrush="Black" BorderThickness="1">
+                    <StackPanel Margin="0,0,0,5" Orientation="Vertical">
+                    <TextBlock FontSize="15" Margin="0,0,0,5" HorizontalAlignment="Left">Words Index:</TextBlock>
+                    <TextBlock HorizontalAlignment="Left">Filter By Group:</TextBlock>
+                    <ListBox SelectionMode="Multiple" Height="100" Margin="0,5,0,5" Width="200" HorizontalAlignment="Left"/>
+                    <Border    Margin="0,0,0,5" BorderBrush="Black" BorderThickness="1">
                             <DataGrid Height="150" x:Name="WordsIndexDataGrid" AutoGenerateColumns="True" Margin="0"/>
-                        </Border>
+                     </Border>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
