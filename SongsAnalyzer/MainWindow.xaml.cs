@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
 
@@ -33,7 +34,11 @@ namespace SongsAnalyzer
                 var filename = dialog.FileName;
                 var content = await _songAnalyzer.LoadSong(filename);
                 await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
-                await _songAnalyzer.ProcessSong();
+                var processingResult = await _songAnalyzer.ProcessSong();
+                await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Text = Path.GetFileNameWithoutExtension(filename));
+
+                if(processingResult.ProcessingResult == ProcessingResult.Failed)
+                    MessageBox.Show("Failed To Process Song", "Error", MessageBoxButton.OK, MessageBoxImage.Error);                
             }
         }
 

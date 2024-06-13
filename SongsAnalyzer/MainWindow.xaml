@@ -8,7 +8,64 @@
 
                     <!-- Load File Btn -->
                     <Button Click="BrowseSong_Click" Margin="0,0,0,0" Padding="5,5,5,5" VerticalAlignment="Center" FontSize="15">Browse File:</Button>
-                    
+                <StackPanel MinWidth="30"   Margin="0,5,0,5">
+                    <!-- Add Song Label -->
+
+                    <StackPanel   Orientation="Horizontal" Margin="0">
+                        <!-- Song Name -->
+                        
+                        <TextBlock   MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center"  HorizontalAlignment="Left">Song Name:</TextBlock>
+                        <Border Background="White" BorderBrush="Black" BorderThickness="1,1,1,1" >
+                            <TextBlock   
+ MinWidth="210" 
+ Height="20" 
+ Margin="5" 
+ VerticalAlignment="Top" HorizontalAlignment="Left" Name="SongNameTextBox"/>
+                        </Border>
+                        
+                    </StackPanel>
+
+                    <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
+                        <!-- Composers' Names -->
+                        <TextBlock MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center">Composers:</TextBlock>
+                        <ListBox Width="210" Margin="5" Height="100" ScrollViewer.CanContentScroll="True" Name="ComposersListBox"/>
+                        <Button x:Name="AddComposerButton" 
+Padding="3"
+Margin="5" 
+VerticalAlignment="Top"
+Content="Add"
+Click="AddComposerButton_Click"/>
+                    </StackPanel>
+
+                    <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
+                        <!-- Writers' Names -->
+                        <TextBlock MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center">Writers:</TextBlock>
+                        <ListBox Width="210" Margin="5" Name="WritersListBox" Height="98" />
+                        <Button x:Name="AddWriterButton" 
+Padding="3"
+Margin="5" 
+    VerticalAlignment="Top"
+    Content="Add"
+    Click="AddWriterButton_Click"/>
+                    </StackPanel>
+
+                    <StackPanel     Orientation="Horizontal" Margin="0,0,0,0">
+                        <!-- Performers' Names -->
+                        <TextBlock MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center">Performers:</TextBlock>
+                        <ListBox Width="210"  Margin="5" Height="100" Name="PerformersListBox"/>
+                        <Button x:Name="AddPerformerButton" 
+Padding="3"
+Margin="5" 
+    VerticalAlignment="Top"
+    Content="Add"
+    Click="AddPerformerButton_Click"/>
+                    </StackPanel>
+
+
+                    <!-- Save Button -->
+                    <Button   VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" Padding="5"  Name="AddSongButton" Click="AddSongButton_Click">Save Song Details</Button>
+
+                </StackPanel>
 
                 <TextBlock HorizontalAlignment="Left">Filter By Phrase:</TextBlock>
                 <ListBox SelectionMode="Multiple" Height="100" Margin="0,5,0,5" Width="200" HorizontalAlignment="Left"/>
@@ -99,61 +156,6 @@
                     <Border    Margin="0,0,0,5" BorderBrush="Black" BorderThickness="1">
                         <DataGrid Height="150" x:Name="WordsIndexDataGrid" AutoGenerateColumns="True" Margin="0"/>
                     </Border>
-                </StackPanel>
-                <StackPanel MinWidth="30"   Margin="0,5,0,5">
-                    <!-- Add Song Label -->
-                    <TextBlock    Margin="0,3,0,3" VerticalAlignment="Center" FontSize="15">Add Song:</TextBlock>
-
-                    <StackPanel   Orientation="Horizontal" Margin="0">
-                        <!-- Song Name -->
-                        <TextBlock   MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center"  HorizontalAlignment="Left">Song Name:</TextBlock>
-                        <TextBox   
- Width="210" 
- Height="20" 
- Margin="5" 
- VerticalAlignment="Top" HorizontalAlignment="Left" Name="SongNameTextBox"/>
-                    </StackPanel>
-
-                    <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
-                        <!-- Composers' Names -->
-                        <TextBlock MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center">Composers:</TextBlock>
-                        <ListBox Width="210" Margin="5" Height="100" ScrollViewer.CanContentScroll="True" Name="ComposersListBox"/>
-                        <Button x:Name="AddComposerButton" 
-Padding="3"
-Margin="5" 
-VerticalAlignment="Top"
-Content="Add"
-Click="AddComposerButton_Click"/>
-                    </StackPanel>
-
-                    <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
-                        <!-- Writers' Names -->
-                        <TextBlock MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center">Writers:</TextBlock>
-                        <ListBox Width="210" Margin="5" Name="WritersListBox" Height="98" />
-                        <Button x:Name="AddWriterButton" 
-Padding="3"
-Margin="5" 
-    VerticalAlignment="Top"
-    Content="Add"
-    Click="AddWriterButton_Click"/>
-                    </StackPanel>
-
-                    <StackPanel     Orientation="Horizontal" Margin="0,0,0,0">
-                        <!-- Performers' Names -->
-                        <TextBlock MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center">Performers:</TextBlock>
-                        <ListBox Width="210"  Margin="5" Height="100" Name="PerformersListBox"/>
-                        <Button x:Name="AddPerformerButton" 
-Padding="3"
-Margin="5" 
-    VerticalAlignment="Top"
-    Content="Add"
-    Click="AddPerformerButton_Click"/>
-                    </StackPanel>
-
-
-                    <!-- Save Button -->
-                    <Button   VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" Padding="5"  Name="AddSongButton" Click="AddSongButton_Click">Save Song Details</Button>
-
                 </StackPanel>
                 <StackPanel>
                     <!-- Add Song Label -->

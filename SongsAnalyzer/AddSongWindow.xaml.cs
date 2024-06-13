@@ -78,7 +78,7 @@ namespace SongsAnalyzer
         {
             foreach (var item in collection)
             {
-                if(item != null && string.IsNullOrEmpty(item?.ToString()))
+                if(item is not null && !string.IsNullOrEmpty(item?.ToString()))
                 {
                     var fullName = item!.ToString();
                     var sep = fullName!.IndexOf(SPACE, StringComparison.Ordinal);
