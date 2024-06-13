@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualBasic;
+using Model;
+using SongsAnalyzer;
 
 namespace SongTextAnalyzer
 {
     public partial class MainWindow : Window
     {
+        private readonly ISongAnalyzer _songAnalyzer;
+        
         public MainWindow()
         {
             InitializeComponent();
+            _songAnalyzer = App.Provider.GetRequiredService<ISongAnalyzer>();
         }
-
-        private void LoadButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Implement your loading logic here
-            MessageBox.Show("Load button clicked. Implement your logic here.");
-        }
-
+        
         private void AddComposerButton_Click(object sender, RoutedEventArgs e)
         {
             var composer = Interaction.InputBox("Enter composer name:", "Add Composer", "");
@@ -70,6 +70,28 @@ namespace SongTextAnalyzer
 
             // Implement your saving logic here
             MessageBox.Show($"Song Name: {songName}\nComposers: {string.Join(", ", composers)}\nWriters: {string.Join(", ", writers)}\nPerformers: {string.Join(", ", performers)}", "Song Details Saved");
+        }
+
+        private async void BrowseSong_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                FileName = "Document", // Default file name
+                DefaultExt = ".txt", // Default file extension
+                Filter = "Text documents (.txt)|*.txt" // Filter files by extension
+            };
+
+            // Show open file dialog box
+            bool? result = dialog.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true)
+            {
+                // Open document
+                var filename = dialog.FileName;
+                var content = await _songAnalyzer.LoadSong(filename);
+                await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
+            }
         }
     }
 }

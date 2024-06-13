@@ -11,7 +11,7 @@ namespace SongsAnalyzer;
 
 public partial class App : Application
 {
-    private static ServiceProvider _serviceProvider;
+    public static ServiceProvider Provider { get; private set; }
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -40,9 +40,9 @@ public partial class App : Application
         services.AddSingleton<Func<SongsContext>>(_ => () => new SongsContext(loggerFactory, configuration));
         services.AddSingleton<ISongAnalyzer, SongAnalyzer>();
         
-        _serviceProvider = services.BuildServiceProvider();
-
-        var analyzer = _serviceProvider.GetRequiredService<ISongAnalyzer>();
+        Provider = services.BuildServiceProvider();
+        
+        /*
         analyzer.Path = "C:\\Users\\talal\\OneDrive\\Documents\\University\\Current\\databases workshop\\songs\\All Along the Watchtower.txt";
         analyzer.SongName = "All Along the Watchtower.txt";
         analyzer.Performer = new Contributor(firstName: "aal", lastName: "almog");
@@ -57,5 +57,6 @@ public partial class App : Application
         {
             Log.Logger.Error(exception, "Failed ProcessSong");
         }
+        */
     }
 }

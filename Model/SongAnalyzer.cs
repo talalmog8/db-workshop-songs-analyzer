@@ -9,11 +9,19 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     public Contributor? MusicComposer { get; set; }
     public string? Path { get; set; }
     public string? SongName { get; set; }
+    public string SongContent { get; set; }
 
+    public async Task<string> LoadSong(string path)
+    {
+        Path = path;
+        SongContent = await File.ReadAllTextAsync(Path);
+        
+        return SongContent;
+    }
+    
     public async Task ProcessSong()
     {
-        string text = await File.ReadAllTextAsync(Path);
-
+        var text = SongContent;
         var createDate = File.GetCreationTime(Path);
         await using var ctx = ctxFactory();
         await using var tran = await ctx.Database.BeginTransactionAsync();

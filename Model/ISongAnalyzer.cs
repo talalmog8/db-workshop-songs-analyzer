@@ -23,5 +23,6 @@ public interface ISongAnalyzer
         get;
         set;
     }
+    Task<string> LoadSong(string path);
     Task ProcessSong();
 }
