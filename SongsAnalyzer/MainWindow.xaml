@@ -1,7 +1,7 @@
-﻿<Window x:Class="SongTextAnalyzer.MainWindow"
+﻿<Window x:Class="SongsAnalyzer.AddSongWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Song Text Analyzer" Height="800" Width="1250">
+        Title="Song Text Analyzer" Height="1007" Width="1250">
     <StackPanel Margin="10">
             <StackPanel Orientation="Horizontal">
                 <StackPanel Width="380">
@@ -17,21 +17,21 @@
                 <TextBox Height="400" Width="380" HorizontalAlignment="Left"  Margin="0,0,0,0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" x:Name="FullSongTextBox"/>
                 
                     <StackPanel Margin="0,0,0,5">
-                    <TextBlock FontSize="15" Width="70" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Stats:</TextBlock>
+                    <TextBlock FontSize="15" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Stats:</TextBlock>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="170" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per word:</TextBlock>
+                        <TextBlock Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per word:</TextBlock>
                         <TextBlock Width="40" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="170" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per line:</TextBlock>
+                        <TextBlock Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per line:</TextBlock>
                         <TextBlock Width="40" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="170" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per stanza:</TextBlock>
+                        <TextBlock  Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per stanza:</TextBlock>
                         <TextBlock Width="40" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                        <TextBlock Width="170" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per song:</TextBlock>
+                        <TextBlock Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per song:</TextBlock>
                         <TextBlock Width="40" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
                     </StackPanel>
                 </StackPanel>
@@ -43,7 +43,7 @@
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <!-- Query Song Name -->
-                        <TextBlock    VerticalAlignment="Center" Width="70" Height="16">Song Name:</TextBlock>
+                        <TextBlock  VerticalAlignment="Center" >Song Name:</TextBlock>
                         <TextBox    Width="150"  Name="QuerySongNameTextBox"/>
                     </StackPanel>
 
@@ -74,7 +74,7 @@
                     
                     <!-- Query Button -->
                     <Button   VerticalAlignment="Center"
-              Margin="0,0,0,5" HorizontalAlignment="Left" Width="70" Height="25" Name="QueryButton" Click="QueryButton_Click">Query</Button>
+              Margin="0,0,0,5" HorizontalAlignment="Left" Width="70" Height="25" Name="QueryButton" >Query</Button>
 
                 <TextBlock   Margin="0,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" FontSize="15" >Songs Results:</TextBlock>
 
@@ -100,15 +100,15 @@
                         <DataGrid Height="150" x:Name="WordsIndexDataGrid" AutoGenerateColumns="True" Margin="0"/>
                     </Border>
                 </StackPanel>
-                <StackPanel Margin="0,5,0,5">
+                <StackPanel MinWidth="30"   Margin="0,5,0,5">
                     <!-- Add Song Label -->
-                    <TextBlock    Margin="0,0,0,0" VerticalAlignment="Center" FontSize="15" Height="20">Add Song:</TextBlock>
+                    <TextBlock    Margin="0,3,0,3" VerticalAlignment="Center" FontSize="15">Add Song:</TextBlock>
 
-                    <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
+                    <StackPanel   Orientation="Horizontal" Margin="0">
                         <!-- Song Name -->
-                        <TextBlock  Width="70"  Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Song Name:</TextBlock>
+                        <TextBlock   MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center"  HorizontalAlignment="Left">Song Name:</TextBlock>
                         <TextBox   
- Width="150" 
+ Width="210" 
  Height="20" 
  Margin="5" 
  VerticalAlignment="Top" HorizontalAlignment="Left" Name="SongNameTextBox"/>
@@ -116,11 +116,10 @@
 
                     <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
                         <!-- Composers' Names -->
-                        <TextBlock Width="70"  Margin="5" VerticalAlignment="Center">Composers:</TextBlock>
-                        <ListBox Width="150" Margin="5" Name="ComposersListBox"/>
+                        <TextBlock MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center">Composers:</TextBlock>
+                        <ListBox Width="210" Margin="5" Height="100" ScrollViewer.CanContentScroll="True" Name="ComposersListBox"/>
                         <Button x:Name="AddComposerButton" 
-Width="60" 
-Height="20" 
+Padding="3"
 Margin="5" 
 VerticalAlignment="Top"
 Content="Add"
@@ -129,12 +128,11 @@ Click="AddComposerButton_Click"/>
 
                     <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
                         <!-- Writers' Names -->
-                        <TextBlock Width="70" Margin="5" VerticalAlignment="Center">Writers:</TextBlock>
-                        <ListBox Width="150" Margin="5" Name="WritersListBox"/>
+                        <TextBlock MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center">Writers:</TextBlock>
+                        <ListBox Width="210" Margin="5" Name="WritersListBox" Height="98" />
                         <Button x:Name="AddWriterButton" 
-    Width="60" 
-    Height="20" 
-    Margin="5" 
+Padding="3"
+Margin="5" 
     VerticalAlignment="Top"
     Content="Add"
     Click="AddWriterButton_Click"/>
@@ -142,12 +140,11 @@ Click="AddComposerButton_Click"/>
 
                     <StackPanel     Orientation="Horizontal" Margin="0,0,0,0">
                         <!-- Performers' Names -->
-                        <TextBlock Width="70" Margin="5" VerticalAlignment="Center">Performers:</TextBlock>
-                        <ListBox Width="150"  Margin="5" Name="PerformersListBox"/>
+                        <TextBlock MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center">Performers:</TextBlock>
+                        <ListBox Width="210"  Margin="5" Height="100" Name="PerformersListBox"/>
                         <Button x:Name="AddPerformerButton" 
-    Width="60" 
-    Height="20" 
-    Margin="5" 
+Padding="3"
+Margin="5" 
     VerticalAlignment="Top"
     Content="Add"
     Click="AddPerformerButton_Click"/>
@@ -155,7 +152,7 @@ Click="AddComposerButton_Click"/>
 
 
                     <!-- Save Button -->
-                    <Button   VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" Width="50" Height="25" Name="SaveButton" Click="SaveButton_Click">Save</Button>
+                    <Button   VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" Padding="5"  Name="AddSongButton" Click="AddSongButton_Click">Save Song Details</Button>
 
                 </StackPanel>
                 <StackPanel>
@@ -183,7 +180,7 @@ Content="Add"
 Click="AddPerformerButton_Click"/>
                     </StackPanel>
                     <!-- Save Button -->
-                    <Button   VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" Width="50" Height="25" Name="SaveGroupButton" Click="SaveButton_Click">Save</Button>
+                    <Button   VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" Width="50" Height="25" Name="SaveGroupButton" Click="AddSongButton_Click">Save</Button>
                 </StackPanel>
                 <StackPanel Margin="0,5,0,5">
                     <!-- Add Song Label -->
@@ -201,7 +198,7 @@ VerticalAlignment="Top" HorizontalAlignment="Left" Name="PhraseNameTextBox"/>
 
 
                     <!-- Save Button -->
-                    <Button   VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" Width="50" Height="25" Name="SavePhraseButton" Click="SaveButton_Click">Save</Button>
+                    <Button   VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" Width="50" Height="25" Name="SavePhraseButton" Click="AddSongButton_Click">Save</Button>
                 </StackPanel>
             </StackPanel>
             </StackPanel>

@@ -4,12 +4,11 @@ namespace Model;
 
 public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 {
-    public Contributor? Writer { get; set; }
-    public Contributor? Performer { get; set; }
-    public Contributor? MusicComposer { get; set; }
     public string? Path { get; set; }
     public string? SongName { get; set; }
     public string SongContent { get; set; }
+    public Song Song { get; set; }
+    public bool Processed { get; set; }
 
     public async Task<string> LoadSong(string path)
     {
@@ -21,23 +20,47 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     
     public async Task ProcessSong()
     {
-        var text = SongContent;
-        var createDate = File.GetCreationTime(Path);
+        try
+        {
+            var text = SongContent;
+            var createDate = File.GetCreationTime(Path);
+            await using var ctx = ctxFactory();
+            await using var tran = await ctx.Database.BeginTransactionAsync();
+
+            var song = await InsertSong(SongName, Path, createDate, text, ctx);
+            var songStanzas = await InsertSongStanzas(text, song, ctx);
+            var songLines = await InsertSongLines(text, song, ctx);
+            var (wordIndex, words) = await InsertWordsIfMissing(ctx, text);
+            var songWords = await InsertSongWords(words, song, wordIndex, ctx);
+            var wordLocations = await InsertWordLocations(text, songWords, ctx);
+
+            await tran.CommitAsync();
+            Song = song;
+            Processed = true;
+        }
+        catch (Exception e)
+        {
+            Processed = false;
+            // TODO message box saying so could not be processed
+        }
+    }
+
+    public async Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers)
+    {
         await using var ctx = ctxFactory();
         await using var tran = await ctx.Database.BeginTransactionAsync();
 
-        var song = await InsertSong(SongName, Path, createDate, text, ctx);
-        var songStanzas = await InsertSongStanzas(text, song, ctx);
-        var songLines = await InsertSongLines(text, song, ctx);
-        var (wordIndex, words) = await InsertWordsIfMissing(ctx, text);
-        var songWords = await InsertSongWords(words, song, wordIndex, ctx);
-        var wordLocations = await InsertWordLocations(text, songWords, ctx);
+        await InsertContributorsIfMissing(composers, ctx, ContributorType.MusicComposer, Song);
+        await InsertContributorsIfMissing(writers, ctx, ContributorType.Writer, Song);
+        await InsertContributorsIfMissing(performers, ctx, ContributorType.Performer, Song);
         
-        var writerContributorContributorType = await InsertContributorIfMissing(Writer, ctx, ContributorType.Writer, song);
-        var musicComposerContributorContributorType = await InsertContributorIfMissing(Performer, ctx, ContributorType.MusicComposer, song);
-        var performerContributorContributorType = await InsertContributorIfMissing(MusicComposer, ctx, ContributorType.Performer, song);
-
         await tran.CommitAsync();
+    }
+
+    private async Task InsertContributorsIfMissing(HashSet<Name> composers, SongsContext ctx, ContributorType contributorType, Song song)
+    {
+        foreach (var composer in composers)
+            await InsertContributorIfMissing(new Contributor(composer), ctx, contributorType, song);
     }
 
     private static async Task<SongWord[]> InsertSongWords(Word[] words, Song song, Dictionary<string, int> wordIndex, SongsContext ctx)
@@ -105,7 +128,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return song;
     }
 
-    private async Task<ContributorContributorType> InsertContributorIfMissing(Contributor? contributor, SongsContext ctx, ContributorType contributorTypeId, Song song)
+    private async Task<ContributorContributorType> InsertContributorIfMissing(Contributor contributor, SongsContext ctx, ContributorType contributorTypeId, Song song)
     {
         var existingContributor = await ctx.Contributors.AsQueryable()
             .Where(x => x.FullName == contributor.FullName)

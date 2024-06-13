@@ -1,20 +1,7 @@
-﻿using Model.Entities;
-namespace Model;
+﻿namespace Model;
 
 public interface ISongAnalyzer
 {
-    Contributor? Writer {
-        get;
-        set;
-    }
-    Contributor? Performer {
-        get;
-        set;
-    }
-    Contributor? MusicComposer {
-        get;
-        set;
-    }
     string? Path {
         get;
         set;
@@ -23,6 +10,8 @@ public interface ISongAnalyzer
         get;
         set;
     }
+    bool Processed { get; set; }
     Task<string> LoadSong(string path);
     Task ProcessSong();
+    Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers);
 }

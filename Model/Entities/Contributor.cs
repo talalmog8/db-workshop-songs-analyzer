@@ -3,10 +3,10 @@
 [Table("contributor")]
 public class Contributor
 {
-    public Contributor(string firstName, string lastName)
+    public Contributor(Name name)
     {
-        FirstName = firstName;
-        LastName = lastName;
+        FirstName = name.FirstName;
+        LastName = name.LastName;
         FullName = $"{FirstName} {LastName}";
     }
 

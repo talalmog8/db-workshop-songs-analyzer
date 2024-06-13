@@ -1,17 +1,21 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\talal\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\",
+  "WorkspaceRootPath": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|c:\\users\\talal\\onedrive\\documents\\university\\current\\databases workshop\\songsanalyzer\\songsanalyzer\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|c:\\users\\user\\documents\\drive_laptop\\onedrive\\documents\\university\\current\\databases workshop\\songsanalyzer\\songsanalyzer\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|solutionrelative:songsanalyzer\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|c:\\users\\talal\\onedrive\\documents\\university\\current\\databases workshop\\songsanalyzer\\songsanalyzer\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|c:\\users\\user\\documents\\drive_laptop\\onedrive\\documents\\university\\current\\databases workshop\\songsanalyzer\\songsanalyzer\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|solutionrelative:songsanalyzer\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|c:\\users\\user\\documents\\drive_laptop\\onedrive\\documents\\university\\current\\databases workshop\\songsanalyzer\\songsanalyzer\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|solutionrelative:songsanalyzer\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|c:\\users\\talal\\onedrive\\documents\\university\\current\\databases workshop\\songsanalyzer\\songsanalyzer\\songsanalyzer.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "AbsoluteMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|c:\\users\\user\\documents\\drive_laptop\\onedrive\\documents\\university\\current\\databases workshop\\songsanalyzer\\songsanalyzer\\songsanalyzer.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|solutionrelative:songsanalyzer\\songsanalyzer.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     }
   ],
@@ -22,15 +26,28 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "SongsAnalyzer\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\MainWindow.xaml.cs",
+              "RelativeToolTip": "SongsAnalyzer\\MainWindow.xaml.cs",
+              "ViewState": "AQIAAE0AAAAAAAAAAADgv2AAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-13T13:24:10.628Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "MainWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\talal\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\MainWindow.xaml",
               "RelativeDocumentMoniker": "SongsAnalyzer\\MainWindow.xaml",
-              "ToolTip": "C:\\Users\\talal\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\MainWindow.xaml",
               "RelativeToolTip": "SongsAnalyzer\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2024-05-17T14:23:14.365Z",
@@ -38,11 +55,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "App.xaml",
-              "DocumentMoniker": "C:\\Users\\talal\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\App.xaml",
+              "DocumentMoniker": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\App.xaml",
               "RelativeDocumentMoniker": "SongsAnalyzer\\App.xaml",
-              "ToolTip": "C:\\Users\\talal\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\App.xaml",
+              "ToolTip": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\App.xaml",
               "RelativeToolTip": "SongsAnalyzer\\App.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2024-05-17T14:22:46.275Z",
@@ -50,16 +67,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "SongsAnalyzer",
-              "DocumentMoniker": "C:\\Users\\talal\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\SongsAnalyzer.csproj",
+              "DocumentIndex": 3,
+              "Title": "SongsAnalyzer.csproj",
+              "DocumentMoniker": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\SongsAnalyzer.csproj",
               "RelativeDocumentMoniker": "SongsAnalyzer\\SongsAnalyzer.csproj",
-              "ToolTip": "C:\\Users\\talal\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\SongsAnalyzer.csproj",
+              "ToolTip": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\SongsAnalyzer.csproj",
               "RelativeToolTip": "SongsAnalyzer\\SongsAnalyzer.csproj",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-05-17T14:22:43.078Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-05-17T14:22:43.078Z"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
             }
           ]
         }

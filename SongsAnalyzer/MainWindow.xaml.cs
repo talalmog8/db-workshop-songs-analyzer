@@ -1,77 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualBasic;
 using Model;
-using SongsAnalyzer;
 
-namespace SongTextAnalyzer
+namespace SongsAnalyzer
 {
-    public partial class MainWindow : Window
+    public partial class AddSongWindow : Window
     {
         private readonly ISongAnalyzer _songAnalyzer;
         
-        public MainWindow()
+        public AddSongWindow()
         {
             InitializeComponent();
             _songAnalyzer = App.Provider.GetRequiredService<ISongAnalyzer>();
         }
         
-        private void AddComposerButton_Click(object sender, RoutedEventArgs e)
-        {
-            var composer = Interaction.InputBox("Enter composer name:", "Add Composer", "");
-            if (!string.IsNullOrEmpty(composer))
-            {
-                ComposersListBox.Items.Add(composer);
-            }
-        }
-
-        private void AddWriterButton_Click(object sender, RoutedEventArgs e)
-        {
-            var writer = Interaction.InputBox("Enter writer name:", "Add Writer", "");
-            if (!string.IsNullOrEmpty(writer))
-            {
-                WritersListBox.Items.Add(writer);
-            }
-        }
-
-        private void QueryButton_Click(object sender, RoutedEventArgs e)
-        {
-            var performer = Interaction.InputBox("Enter performer name:", "Add Performer", "");
-            if (!string.IsNullOrEmpty(performer))
-            {
-                PerformersListBox.Items.Add(performer);
-            }
-        }
-        private void AddPerformerButton_Click(object sender, RoutedEventArgs e)
-        {
-            var performer = Interaction.InputBox("Enter performer name:", "Add Performer", "");
-            if (!string.IsNullOrEmpty(performer))
-            {
-                PerformersListBox.Items.Add(performer);
-            }
-        }
-
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
-        {
-            string songName = SongNameTextBox.Text;
-            List<string> composers = new List<string>();
-            List<string> writers = new List<string>();
-            List<string> performers = new List<string>();
-
-            foreach (var item in ComposersListBox.Items)
-                composers.Add(item.ToString());
-
-            foreach (var item in WritersListBox.Items)
-                writers.Add(item.ToString());
-
-            foreach (var item in PerformersListBox.Items)
-                performers.Add(item.ToString());
-
-            // Implement your saving logic here
-            MessageBox.Show($"Song Name: {songName}\nComposers: {string.Join(", ", composers)}\nWriters: {string.Join(", ", writers)}\nPerformers: {string.Join(", ", performers)}", "Song Details Saved");
-        }
-
         private async void BrowseSong_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Microsoft.Win32.OpenFileDialog
@@ -91,7 +33,13 @@ namespace SongTextAnalyzer
                 var filename = dialog.FileName;
                 var content = await _songAnalyzer.LoadSong(filename);
                 await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
+                await _songAnalyzer.ProcessSong();
             }
+        }
+
+        private void SongIsNotProcessed()
+        {
+            MessageBox.Show("Please load a song first", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }
