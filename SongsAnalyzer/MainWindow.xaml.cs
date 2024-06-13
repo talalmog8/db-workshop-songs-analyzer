@@ -1,18 +1,23 @@
-﻿using System.IO;
+﻿using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
+using Model.Entities;
 
 namespace SongsAnalyzer
 {
     public partial class AddSongWindow : Window
     {
         private readonly ISongAnalyzer _songAnalyzer;
-        
+        private ObservableCollection<Word> _words;
+
         public AddSongWindow()
         {
             InitializeComponent();
             _songAnalyzer = App.Provider.GetRequiredService<ISongAnalyzer>();
+            _words = new ObservableCollection<Word>();
+            WordsDataGrid.ItemsSource = _words;
         }
         
         private async void BrowseSong_Click(object sender, RoutedEventArgs e)

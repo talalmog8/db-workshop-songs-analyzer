@@ -1,14 +1,16 @@
-﻿using System.Windows;
+﻿using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Controls;
 using Microsoft.VisualBasic;
 using Model;
+using Model.Entities;
 
 namespace SongsAnalyzer
 {
     public partial class AddSongWindow : Window
     {
         private const string SPACE = " ";
-        
+
         private void AddComposerButton_Click(object sender, RoutedEventArgs e)
         {
             if (!_songAnalyzer.Processed)
@@ -92,6 +94,15 @@ namespace SongsAnalyzer
         private static void FullNameError()
         {
             MessageBox.Show("Please use a full name, use a space as a separator", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            var words = await _songAnalyzer.GetWords();
+           
+            foreach (var word in words)
+                _words.Add(word);
         }
     }
 }

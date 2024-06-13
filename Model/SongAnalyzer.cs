@@ -29,7 +29,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
             if (await IsSongExists(ctx))
                 return await LoadSongInformation(ctx);
-            
+
             await using var tran = await ctx.Database.BeginTransactionAsync();
 
             var song = await InsertSong(Path, createDate, text, ctx);
@@ -68,12 +68,12 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     private async Task<SongInformation> LoadSongInformation(SongsContext ctx)
     {
         var si = new SongInformation();
-        
+
         si.Song = await ctx.Songs.Where(x => x.Name == SongName).FirstAsync();
         si.SongWords = await ctx.SongWords.Where(x => x.SongId == si.Song.Id).ToListAsync();
 
         // TODO - finish this
-        
+
         return si;
     }
 
@@ -161,7 +161,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return song;
     }
 
-    public async Task<bool> IsSongExists(SongsContext ctx)
+    private async Task<bool> IsSongExists(SongsContext ctx)
     {
         var isSongExists = await ctx.Songs.AsQueryable()
             .Where(x => x.Name == SongName)
@@ -170,7 +170,15 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return isSongExists;
     }
 
-    private async Task<(ContributorContributorType, SongComposer)> InsertContributorIfMissing(Contributor contributor, SongsContext ctx, ContributorType contributorTypeId, Song song)
+    public async Task<List<Word>> GetWords()
+    {
+        await using var ctx = ctxFactory();
+        var words = await ctx.Words.ToListAsync();
+        return words;
+    }
+
+    private async Task<(ContributorContributorType, SongComposer)> InsertContributorIfMissing(Contributor contributor,
+        SongsContext ctx, ContributorType contributorTypeId, Song song)
     {
         var existingContributor = await ctx.Contributors.AsQueryable()
             .Where(x => x.FullName == contributor.FullName)
@@ -225,7 +233,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         songComposer.Contributor = contributor;
         songComposer.Song = song;
-        
+
         return (contributorContributorType, songComposer);
     }
 

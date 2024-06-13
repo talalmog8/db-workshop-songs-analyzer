@@ -1,4 +1,6 @@
-﻿namespace Model;
+﻿using Model.Entities;
+
+namespace Model;
 
 public interface ISongAnalyzer
 {
@@ -11,4 +13,5 @@ public interface ISongAnalyzer
     Task<string> LoadSong(string path);
     Task<SongInformation> ProcessSong();
     Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers);
+    Task<List<Word>> GetWords();
 }

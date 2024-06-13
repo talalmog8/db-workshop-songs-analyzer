@@ -1,13 +1,13 @@
-﻿<Window x:Class="SongsAnalyzer.AddSongWindow"
+﻿<Window x:Class="SongsAnalyzer.AddSongWindow" 
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Song Text Analyzer" Height="1007" Width="1250">
+        Title="Song Text Analyzer" Height="1050" Width="1250" Loaded="Window_Loaded">
     <StackPanel Margin="10">
             <StackPanel Orientation="Horizontal">
                 <StackPanel Width="380">
 
                     <!-- Load File Btn -->
-                    <Button Click="BrowseSong_Click" Margin="0,0,0,0" Padding="5,5,5,5" VerticalAlignment="Center" FontSize="15">Browse File:</Button>
+                    <Button Click="BrowseSong_Click" Margin="0,10,200,10" Padding="5,5,5,5" VerticalAlignment="Center" FontSize="15">Browse File:</Button>
                 <StackPanel MinWidth="30"   Margin="0,5,0,5">
                     <!-- Add Song Label -->
 
@@ -15,9 +15,9 @@
                         <!-- Song Name -->
                         
                         <TextBlock   MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center"  HorizontalAlignment="Left">Song Name:</TextBlock>
-                        <Border Background="White" BorderBrush="Black" BorderThickness="1,1,1,1" >
+                        <Border Background="White" BorderBrush="Black" BorderThickness="1,1,1,1" Margin="5">
                             <TextBlock   
- MinWidth="210" 
+ MinWidth="250" 
  Height="20" 
  Margin="5" 
  VerticalAlignment="Top" HorizontalAlignment="Left" Name="SongNameTextBox"/>
@@ -67,11 +67,9 @@ Margin="5"
 
                 </StackPanel>
 
-                <TextBlock HorizontalAlignment="Left">Filter By Phrase:</TextBlock>
-                <ListBox SelectionMode="Multiple" Height="100" Margin="0,5,0,5" Width="200" HorizontalAlignment="Left"/>
                     
                 <!-- TextBox for Full Song Text -->
-                <TextBox Height="400" Width="380" HorizontalAlignment="Left"  Margin="0,0,0,0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" x:Name="FullSongTextBox"/>
+                <TextBox Height="370" Width="380" HorizontalAlignment="Left"  Margin="0,0,0,0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" x:Name="FullSongTextBox"/>
                 
                     <StackPanel Margin="0,0,0,5">
                     <TextBlock FontSize="15" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Stats:</TextBlock>
@@ -100,38 +98,37 @@ Margin="5"
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <!-- Query Song Name -->
-                        <TextBlock  VerticalAlignment="Center" >Song Name:</TextBlock>
-                        <TextBox    Width="150"  Name="QuerySongNameTextBox"/>
+                    <TextBlock  VerticalAlignment="Center" MinWidth="100" MinHeight="20" >Song Name:</TextBlock>
+                        <TextBox    MinWidth="250"  Name="QuerySongNameTextBox"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <!-- Query Composer -->
-                        <TextBlock   Margin="0,0,0,0" VerticalAlignment="Center" Width="70" Height="16">Composer:</TextBlock>
-                        <TextBox   Margin="0,0,0,0"  Width="150"  Name="QueryComposerTextBox"/>
+                    <TextBlock   Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="100" MinHeight="20" >Composer:</TextBlock>
+                    <TextBox   Margin="0,0,0,0"  MinWidth="250"  Name="QueryComposerTextBox"/>
                     </StackPanel>
 
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <!-- Query Writer -->
-                        <TextBlock   Margin="0,0,0,0" VerticalAlignment="Center" Width="70" Height="16">Writer:</TextBlock>
-                        <TextBox   Margin="0,0,0,0"  Width="150"  Name="QueryWriterTextBox"/>
+                    <TextBlock   Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="100" MinHeight="20">Writer:</TextBlock>
+                    <TextBox   Margin="0,0,0,0"  MinWidth="250"  Name="QueryWriterTextBox"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <!-- Query Performer -->
-                        <TextBlock   Margin="0,0,0,0" VerticalAlignment="Center" Width="70" Height="16">Performer:</TextBlock>
-                        <TextBox   Margin="0,0,0,0"  Width="150"  Name="QueryPerformerTextBox"/>
+                    <TextBlock   Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="100" MinHeight="20">Performer:</TextBlock>
+                    <TextBox   Margin="0,0,0,0"  MinWidth="250"  Name="QueryPerformerTextBox"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <!-- Query Performer -->
-                        <TextBlock   Margin="0,0,0,0" VerticalAlignment="Center" Width="70" Height="16">Free Text:</TextBlock>
-                        <TextBox   Margin="0,0,0,0"  Width="150"  Name="QueryWordsTextBox"/>
+                    <TextBlock   Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="100" MinHeight="20">Free Text:</TextBlock>
+                    <TextBox   Margin="0,0,0,0"  MinWidth="250"  Name="QueryWordsTextBox"/>
                     </StackPanel>
                     
                     <!-- Query Button -->
-                    <Button   VerticalAlignment="Center"
-              Margin="0,0,0,5" HorizontalAlignment="Left" Width="70" Height="25" Name="QueryButton" >Query</Button>
+                    <Button   VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="QueryButton" >Query</Button>
 
                 <TextBlock   Margin="0,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Center" Width="100" FontSize="15" >Songs Results:</TextBlock>
 
@@ -201,6 +198,10 @@ VerticalAlignment="Top" HorizontalAlignment="Left" Name="PhraseNameTextBox"/>
 
                     <!-- Save Button -->
                     <Button   VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" Width="50" Height="25" Name="SavePhraseButton" Click="AddSongButton_Click">Save</Button>
+
+                    <TextBlock HorizontalAlignment="Left">Filter By Phrase:</TextBlock>
+                    <ListBox SelectionMode="Multiple" Height="100" Margin="0,5,0,5" Width="200" HorizontalAlignment="Left"/>
+
                 </StackPanel>
             </StackPanel>
             </StackPanel>
