@@ -83,7 +83,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         await tran.CommitAsync();
     }
 
-    public async Task<List<WordTable>> GetWords(bool filterCurrentSong)
+    public async Task<List<WordTable>> GetWords(string? songName = null, bool filterCurrentSong = false)
     {
         await using var ctx = ctxFactory();
 
@@ -91,6 +91,8 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         if (filterCurrentSong)
             query = query.Where(x => x.Id == Song.Id);
+        if (!string.IsNullOrEmpty(songName))
+            query = query.Where(x => x.Name.Contains(songName));
 
         var words = await query.Include(x => x.SongWords)
             .ThenInclude(y => y.Word)

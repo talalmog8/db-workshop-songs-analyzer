@@ -17,6 +17,9 @@ namespace SongsAnalyzer
             WordsDataGrid.ItemsSource = _words;
             QuerySongResultsDataGrid.ItemsSource = _songComposers;
         }
+
+        #region Load Song Tab 1
+
         
         private async void BrowseSong_Click(object sender, RoutedEventArgs e)
         {
@@ -48,7 +51,9 @@ namespace SongsAnalyzer
                 await RefreshUI();
             }
         }
-
+        
+        #endregion
+        
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await RefreshUI();
@@ -61,8 +66,8 @@ namespace SongsAnalyzer
             await UpdateSongsResultsTable();
         }
 
-    
-        
+        #region Stats Tab 5
+
         private async Task UpdateStats()
         {
             var stats = await _songAnalyzer.GetStats();
@@ -71,13 +76,9 @@ namespace SongsAnalyzer
             await Stats_PerStanza.Dispatcher.InvokeAsync(() =>  Stats_PerStanza.Text = stats.AverageSongStanzaWordLength.ToString(CultureInfo.InvariantCulture));
             await Stats_PerSong.Dispatcher.InvokeAsync(() =>  Stats_PerSong.Text = stats.AverageSongWordLength.ToString(CultureInfo.InvariantCulture));
         }
-
-        private void SongIsNotProcessed()
-        {
-            MessageBox.Show("Please load a song first", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-
-
+        
+        #endregion
+        
         #region Tab 2 - Words + QuerySong
 
         private async Task UpdateSongsResultsTable()
@@ -110,6 +111,10 @@ namespace SongsAnalyzer
         {
             await UpdateSongsResultsTable();
         }
+        
+        #endregion
+
+        #region Words Tab 3
 
         private async void FilterSongWordIndexButton_Click(object sender, RoutedEventArgs e)
         {
@@ -119,27 +124,36 @@ namespace SongsAnalyzer
                 return;
             }
             
-            await UpdateWordTable(true);
+            await UpdateWordTable(filterCurrentSong: true);
         }
         
-        private async Task UpdateWordTable(bool filterCurrentSong = false)
+        private async Task UpdateWordTable(string? songName = null, bool filterCurrentSong = false)
         {
             // populate  word data grid
             
             _words.Clear();
             
-            var words = await _songAnalyzer.GetWords(filterCurrentSong);
+            var words = await _songAnalyzer.GetWords(songName, filterCurrentSong);
            
             foreach (var word in words)
                 _words.Add(word);
         }
         
-        
         private async void UnFilterSongWordIndexButton_Click(object sender, RoutedEventArgs e)
         {
             await UpdateWordTable();
         }
-        
+
+        private async void QuerySongButton_WordView_Click(object sender, RoutedEventArgs e)
+        {
+            await UpdateWordTable(QuerySong_SongName_WordViewTextBox.Text);
+        }
+
+        private async void ClearQuerySongButton_WordView_Click(object sender, RoutedEventArgs e)
+        {
+            await UpdateWordTable();
+        }
+
         #endregion
         
         #region Add Song
@@ -241,5 +255,15 @@ namespace SongsAnalyzer
         }
         
         #endregion
+        
+        #region Messages
+
+        private void SongIsNotProcessed()
+        {
+            MessageBox.Show("Please load a song first", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        #endregion
+
     }
 }
