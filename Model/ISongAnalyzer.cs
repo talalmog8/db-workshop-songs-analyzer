@@ -1,4 +1,5 @@
-﻿using Model.Entities;
+﻿using Model.Contract;
+using Model.Entities;
 
 namespace Model;
 
@@ -14,4 +15,5 @@ public interface ISongAnalyzer
     Task<SongInformation> ProcessSong();
     Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers);
     Task<List<Word>> GetWords();
+    Task<Stats> GetStats();
 }

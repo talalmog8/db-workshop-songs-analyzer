@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.VisualBasic;
 using Model;
+using Model.Contract;
 using Model.Entities;
 
 namespace SongsAnalyzer
@@ -97,12 +98,6 @@ namespace SongsAnalyzer
         }
 
 
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            var words = await _songAnalyzer.GetWords();
-           
-            foreach (var word in words)
-                _words.Add(word);
-        }
+
     }
 }

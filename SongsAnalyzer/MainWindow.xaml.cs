@@ -1,8 +1,11 @@
 ﻿using System.Collections.ObjectModel;
+using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
+using Model.Contract;
 using Model.Entities;
 
 namespace SongsAnalyzer
@@ -33,18 +36,45 @@ namespace SongsAnalyzer
             bool? result = dialog.ShowDialog();
 
             // Process open file dialog box results
-            if (result == true)
+            if (result != true) 
+                return;
+            
+            var filename = dialog.FileName;
+            var content = await _songAnalyzer.LoadSong(filename);
+                
+            var processingResult = await _songAnalyzer.ProcessSong();
+                
+            if(processingResult.ProcessingResult == ProcessingResult.Failed)
+                MessageBox.Show("Failed To Process Song", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            else
             {
-                // Open document
-                var filename = dialog.FileName;
-                var content = await _songAnalyzer.LoadSong(filename);
                 await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
-                var processingResult = await _songAnalyzer.ProcessSong();
                 await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Text = Path.GetFileNameWithoutExtension(filename));
-
-                if(processingResult.ProcessingResult == ProcessingResult.Failed)
-                    MessageBox.Show("Failed To Process Song", "Error", MessageBoxButton.OK, MessageBoxImage.Error);                
+                await UpdateStats();
             }
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // populate  word data grid
+            
+            var words = await _songAnalyzer.GetWords();
+           
+            foreach (var word in words)
+                _words.Add(word);
+            
+            
+            // Populate Stats
+            await UpdateStats();
+        }
+
+        private async Task UpdateStats()
+        {
+            var stats = await _songAnalyzer.GetStats();
+            await Stats_PerWord.Dispatcher.InvokeAsync(() =>  Stats_PerWord.Text = stats.AverageWordLength.ToString(CultureInfo.InvariantCulture));
+            await Stats_PerLine.Dispatcher.InvokeAsync(() =>  Stats_PerLine.Text = stats.AverageSongLineWordLength.ToString(CultureInfo.InvariantCulture));
+            await Stats_PerStanza.Dispatcher.InvokeAsync(() =>  Stats_PerStanza.Text = stats.AverageSongStanzaWordLength.ToString(CultureInfo.InvariantCulture));
+            await Stats_PerSong.Dispatcher.InvokeAsync(() =>  Stats_PerSong.Text = stats.AverageSongWordLength.ToString(CultureInfo.InvariantCulture));
         }
 
         private void SongIsNotProcessed()

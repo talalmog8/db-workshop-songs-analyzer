@@ -1,4 +1,4 @@
-﻿namespace Model;
+﻿namespace Model.Contract;
 
 public record WordIndex(string Word, int Count)
 {

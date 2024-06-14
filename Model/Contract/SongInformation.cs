@@ -1,6 +1,6 @@
 ﻿using Model.Entities;
 
-namespace Model;
+namespace Model.Contract;
 
 public class SongInformation
 {

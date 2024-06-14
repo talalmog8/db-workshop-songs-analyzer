@@ -1,4 +1,4 @@
-﻿namespace Model;
+﻿namespace Model.Contract;
 
 public class Name(string firstName, string lastName)
 {

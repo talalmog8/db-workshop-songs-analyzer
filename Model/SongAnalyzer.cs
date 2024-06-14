@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Model.Contract;
 using Model.Entities;
 
 namespace Model;
@@ -123,7 +124,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     private async Task<(Dictionary<string, int> wordIndex, Word[])> InsertWordsIfMissing(SongsContext ctx, string text)
     {
-        var words = text.Split([" ", Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
+        var words = text.Split([" ", Environment.NewLine, ","], StringSplitOptions.RemoveEmptyEntries);
 
         string[] wordsDistinct = words.Distinct().ToArray();
 
@@ -175,6 +176,17 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         await using var ctx = ctxFactory();
         var words = await ctx.Words.ToListAsync();
         return words;
+    }
+    
+    public async Task<Stats> GetStats()
+    {
+        await using var ctx = ctxFactory();
+        var averageWordLength = await ctx.Words.AverageAsync(x=> x.Length);
+        var averageSongLineWordLength = await ctx.SongLines.AverageAsync(x=> x.WordLength);
+        var averageSongStanzaWordLength = await ctx.SongStanzas.AverageAsync(x=> x.WordLength);
+        var averageSongWordLength = await ctx.Songs.AverageAsync(x=> x.WordLength);
+        
+        return new Stats(averageWordLength, averageSongLineWordLength, averageSongStanzaWordLength, averageSongWordLength);
     }
 
     private async Task<(ContributorContributorType, SongComposer)> InsertContributorIfMissing(Contributor contributor,
