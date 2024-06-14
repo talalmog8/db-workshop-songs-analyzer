@@ -131,7 +131,7 @@ Margin="5"
                     </StackPanel>
                     <StackPanel>
                         <!-- Query Songs Label -->
-                        <TextBlock   Margin="0,0,0,5" VerticalAlignment="Center">Query Songs:</TextBlock>
+                        <TextBlock   Margin="0,0,0,5" VerticalAlignment="Center">Filters:</TextBlock>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
                             <!-- Query Song Name -->
                             <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20" >Song Name:</TextBlock>
