@@ -111,7 +111,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             query = ctx.SongComposers
                 .Include(x => x.Song)
                 .Include(x => x.Contributor)
-                .Where(x => x.Song.Name == songName.ToLower());
+                .Where(x => x.Song.Name.Contains(songName.ToLower()));
         }
         if (!string.IsNullOrEmpty(composerFirstName))
         {
