@@ -7,7 +7,7 @@ namespace SongsAnalyzer
     public partial class WindowHandlers : Window
     {
         private readonly ISongAnalyzer _songAnalyzer;
-        private readonly ObservableCollection<Word> _words = [];
+        private readonly ObservableCollection<WordTable> _words = [];
         private readonly ObservableCollection<SongQueryResult> _songComposers = [];
 
         public WindowHandlers()
@@ -132,6 +132,12 @@ namespace SongsAnalyzer
            
             foreach (var word in words)
                 _words.Add(word);
+        }
+        
+        
+        private async void UnFilterSongWordIndexButton_Click(object sender, RoutedEventArgs e)
+        {
+            await UpdateWordTable();
         }
         
         #endregion
