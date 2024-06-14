@@ -22,4 +22,9 @@ public class Song
 
     [Column("word_length")]
     public int WordLength { get; set; }
+    
+    public virtual ICollection<SongLine> SongLines { get; set; }
+    public virtual ICollection<SongStanza> SongStanzas { get; set; }
+    public virtual ICollection<SongComposer> SongComposers { get; set; }
+    public virtual ICollection<SongWord> SongWords { get; set; }
 }

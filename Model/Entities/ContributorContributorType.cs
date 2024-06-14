@@ -16,4 +16,6 @@ public class ContributorContributorType
 
     [ForeignKey("ContributorId")]
     public virtual Contributor? Contributor { get; set; }
+
+    public virtual ContributorTypeLookup ContributorType { get; set; }
 }

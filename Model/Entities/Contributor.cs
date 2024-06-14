@@ -30,4 +30,6 @@ public class Contributor
 
     [Column("full_name")]
     public string FullName { get; set; }
+
+    public virtual ICollection<ContributorContributorType> ContributorContributorTypes { get; set; }
 }

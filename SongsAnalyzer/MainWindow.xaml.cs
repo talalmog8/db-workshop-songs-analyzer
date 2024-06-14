@@ -7,14 +7,13 @@ namespace SongsAnalyzer
     public partial class WindowHandlers : Window
     {
         private readonly ISongAnalyzer _songAnalyzer;
-        private ObservableCollection<Word> _words;
+        private readonly ObservableCollection<Word> _words = [];
         private readonly ObservableCollection<SongQueryResult> _songComposers = [];
 
         public WindowHandlers()
         {
             InitializeComponent();
             _songAnalyzer = App.Provider.GetRequiredService<ISongAnalyzer>();
-            _words = new ObservableCollection<Word>();
             WordsDataGrid.ItemsSource = _words;
             QuerySongResultsDataGrid.ItemsSource = _songComposers;
         }
@@ -46,31 +45,23 @@ namespace SongsAnalyzer
             {
                 await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
                 await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Content = Path.GetFileNameWithoutExtension(filename));
-                await UpdateStats();
-                await UpdateWordTable();
+                await RefreshUI();
             }
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // Populate Words
+            await RefreshUI();
+        }
+        
+        private async Task RefreshUI()
+        {
             await UpdateWordTable();
-            
-            // Populate Stats
             await UpdateStats();
+            await UpdateSongsResultsTable();
         }
 
-        private async Task UpdateWordTable()
-        {
-            // populate  word data grid
-            
-            _words.Clear();
-            
-            var words = await _songAnalyzer.GetWords();
-           
-            foreach (var word in words)
-                _words.Add(word);
-        }
+    
         
         private async Task UpdateStats()
         {
@@ -87,7 +78,7 @@ namespace SongsAnalyzer
         }
 
 
-        #region QuerySong
+        #region Tab 2 - Words + QuerySong
 
         private async Task UpdateSongsResultsTable()
         {
@@ -104,15 +95,43 @@ namespace SongsAnalyzer
             foreach (var song in songs)
                 _songComposers.Add(song);
 
-            QuerySongNameTextBox.Dispatcher.InvokeAsync(() => QuerySongNameTextBox.Clear());
-            QueryComposerFirstNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerFirstNameTextBox.Clear());
-            QueryComposerLastNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerLastNameTextBox.Clear());
-            QueryWordsTextBox.Dispatcher.InvokeAsync(() => QueryWordsTextBox.Clear());
+            await QuerySongNameTextBox.Dispatcher.InvokeAsync(() => QuerySongNameTextBox.Clear());
+            await QueryComposerFirstNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerFirstNameTextBox.Clear());
+            await QueryComposerLastNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerLastNameTextBox.Clear());
+            await QueryWordsTextBox.Dispatcher.InvokeAsync(() => QueryWordsTextBox.Clear());
         }
 
         private async void QuerySongButton_Click(object sender, RoutedEventArgs e)
         {
             await UpdateSongsResultsTable();
+        }
+        
+        private async void ClearQuerySongButton_Click(object sender, RoutedEventArgs e)
+        {
+            await UpdateSongsResultsTable();
+        }
+
+        private async void FilterSongWordIndexButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_songAnalyzer.Processed)
+            {
+                SongIsNotProcessed();
+                return;
+            }
+            
+            await UpdateWordTable(true);
+        }
+        
+        private async Task UpdateWordTable(bool filterCurrentSong = false)
+        {
+            // populate  word data grid
+            
+            _words.Clear();
+            
+            var words = await _songAnalyzer.GetWords(filterCurrentSong);
+           
+            foreach (var word in words)
+                _words.Add(word);
         }
         
         #endregion

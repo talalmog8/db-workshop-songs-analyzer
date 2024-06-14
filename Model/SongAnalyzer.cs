@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Model.Contract;
-using Model.Entities;
+using Model.Entities;   
 
 namespace Model;
 
@@ -12,6 +12,8 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     public string? Path { get; set; }
     public string? SongName => System.IO.Path.GetFileNameWithoutExtension(Path);
     public string SongContent { get; set; }
+    
+    
     public Song Song { get; set; }
     public bool Processed { get; set; }
 
@@ -81,10 +83,25 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         await tran.CommitAsync();
     }
 
-    public async Task<List<Word>> GetWords()
+    public async Task<List<Word>> GetWords(bool filterCurrentSong)
     {
+        List<Word> words;
+        
         await using var ctx = ctxFactory();
-        var words = await ctx.Words.ToListAsync();
+
+        if (filterCurrentSong)
+        {
+            words = await ctx.Songs
+                .Where(x=> x.Id == Song.Id)
+                .Include(x => x.SongWords)
+                .ThenInclude(y => y.Word)
+                .SelectMany(x=> x.SongWords)
+                .Select(x=> x.Word)
+                .ToListAsync();
+        }
+        else
+            words = await ctx.Words.ToListAsync();
+        
         return words;
     }
 
@@ -104,7 +121,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     public async Task<List<SongQueryResult>> GetSongs(string songName, string composerFirstName, string composerLastName, string freeText)
     {
-        List<SongQueryResult> result = null!;
+        List<SongQueryResult> result = null;
         
         await using var ctx = ctxFactory();
         
@@ -170,6 +187,18 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             .Select(g => g.First())
             .ToList();
         }
+
+        if (result is null)
+        {
+            var songs = await ctx.Songs.ToListAsync();
+            result = songs.Select(x => new SongQueryResult
+            {
+                SongId = x.Id,
+                Name = x.Name,
+                DocDate = x.DocDate,
+                WordLength = x.WordLength
+            }).ToList();
+        }
         
         return result;
     }
@@ -187,8 +216,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return si;
     }
 
-    private async Task InsertContributorsIfMissing(HashSet<Name> composers, SongsContext ctx,
-        ContributorType contributorType, Song song)
+    private async Task InsertContributorsIfMissing(HashSet<Name> composers, SongsContext ctx, ContributorType contributorType, Song song)
     {
         try
         {
@@ -221,7 +249,10 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     private async Task<(Dictionary<string, int> wordIndex, Word[])> InsertWordsIfMissing(SongsContext ctx, string text)
     {
-        var words = text.Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries);
+        var words = text
+            .Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries)
+            .Select(x=> x.ToLower())
+            .ToArray();
 
         string[] wordsDistinct = words.Distinct().ToArray();
 
@@ -268,8 +299,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return isSongExists;
     }
 
-    private async Task<(ContributorContributorType, SongComposer)> InsertContributorIfMissing(Contributor contributor,
-        SongsContext ctx, ContributorType contributorTypeId, Song song)
+    private async Task<(ContributorContributorType, SongComposer)> InsertContributorIfMissing(Contributor contributor, SongsContext ctx, ContributorType contributorTypeId, Song song)
     {
         var existingContributor = await ctx.Contributors.AsQueryable()
             .Where(x => x.FullName == contributor.FullName)
@@ -394,7 +424,9 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     {
         var wordToSongWord = songWords.ToDictionary(x => x.Word.WordText, y => y);
 
-        var words = input.Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries);
+        var words = input.Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries)
+            .Select(x=> x.ToLower())
+            .ToArray();
 
         var wordLocations = new List<WordLocation>();
 
