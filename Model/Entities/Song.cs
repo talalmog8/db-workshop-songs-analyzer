@@ -11,11 +11,11 @@ public class Song
     [Column("name")]
     [MaxLength(50)]
     
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
     [Column("path")]
     [MaxLength(400)]
-    public string? Path { get; set; }
+    public string Path { get; set; }
 
     [Column("doc_date")]
     public DateTime DocDate { get; set; }

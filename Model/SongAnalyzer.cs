@@ -87,46 +87,47 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         var words = await ctx.Words.ToListAsync();
         return words;
     }
-    
+
     public async Task<Stats> GetStats()
     {
         await using var ctx = ctxFactory();
-        var averageWordLength = await ctx.Words.AnyAsync() ?  await ctx.Words.AverageAsync(x=> x.Length) : 0;
-        var averageSongLineWordLength = await ctx.SongLines.AnyAsync() ? await ctx.SongLines.AverageAsync(x=> x.WordLength) : 0;
-        var averageSongStanzaWordLength = await ctx.SongStanzas.AnyAsync() ? await ctx.SongStanzas.AverageAsync(x=> x.WordLength) : 0;
-        var averageSongWordLength = await ctx.Songs.AnyAsync() ? await ctx.Songs.AverageAsync(x=> x.WordLength) : 0;
-        
-        return new Stats(averageWordLength, averageSongLineWordLength, averageSongStanzaWordLength, averageSongWordLength);
+        var averageWordLength = await ctx.Words.AnyAsync() ? await ctx.Words.AverageAsync(x => x.Length) : 0;
+        var averageSongLineWordLength =
+            await ctx.SongLines.AnyAsync() ? await ctx.SongLines.AverageAsync(x => x.WordLength) : 0;
+        var averageSongStanzaWordLength =
+            await ctx.SongStanzas.AnyAsync() ? await ctx.SongStanzas.AverageAsync(x => x.WordLength) : 0;
+        var averageSongWordLength = await ctx.Songs.AnyAsync() ? await ctx.Songs.AverageAsync(x => x.WordLength) : 0;
+
+        return new Stats(averageWordLength, averageSongLineWordLength, averageSongStanzaWordLength,
+            averageSongWordLength);
     }
 
-    public async Task<List<SongComposer>> GetSongs(string songName, string composerFirstName,string composerLastName, string freeText)
+    public async Task<List<SongComposer>> GetSongs(string songName, string composerFirstName, string composerLastName, string freeText)
     {
-        IQueryable<SongComposer>? query = null;
-        
         await using var ctx = ctxFactory();
 
+        IQueryable<SongComposer>? query = query = ctx.SongComposers
+            .Include(x => x.Song)
+            .Include(x => x.Contributor);
+
         if (!string.IsNullOrEmpty(songName))
-        {
-            
-            query = ctx.SongComposers
-                .Include(x => x.Song)
-                .Include(x => x.Contributor)
-                .Where(x => x.Song.Name.Contains(songName.ToLower()));
-        }
+            query = query.Where(x => x.Song.Name.Contains(songName.ToLower()));
+        
         if (!string.IsNullOrEmpty(composerFirstName))
+            query = query.Where(x => x.Contributor.FirstName == composerFirstName);
+        
+        if (!string.IsNullOrEmpty(composerLastName))
+            query = query.Where(x => x.Contributor.LastName == composerLastName);
+        
+        if (!string.IsNullOrEmpty(freeText))
         {
-            query = ctx.SongComposers
-                .Include(x=> x.Contributor)
-                .Include(x=> x.Song)
-                .Where(x=> x.Contributor != null)
-                .Where(x =>  x.Contributor.FirstName == composerFirstName)
-                .Where(x => x.Contributor.LastName == composerLastName);
+            query = query.Include(x=> x.Song);
         }
         
         return await query?.ToListAsync()!;
     }
-        
-    
+
+
     private async Task<SongInformation> LoadSongInformation(SongsContext ctx)
     {
         var si = new SongInformation();
