@@ -1,26 +1,22 @@
 ﻿using System.Collections.ObjectModel;
-using System.Data;
 using System.Globalization;
 using System.IO;
-using System.Windows;
-using Microsoft.Extensions.DependencyInjection;
-using Model;
-using Model.Contract;
-using Model.Entities;
 
 namespace SongsAnalyzer
 {
-    public partial class AddSongWindow : Window
+    public partial class WindowHandlers : Window
     {
         private readonly ISongAnalyzer _songAnalyzer;
         private ObservableCollection<Word> _words;
 
-        public AddSongWindow()
+        public WindowHandlers()
         {
             InitializeComponent();
             _songAnalyzer = App.Provider.GetRequiredService<ISongAnalyzer>();
             _words = new ObservableCollection<Word>();
+            _songComposers = new ObservableCollection<SongComposer>();
             WordsDataGrid.ItemsSource = _words;
+            QuerySongResultsDataGrid.ItemsSource = _songComposers;
         }
         
         private async void BrowseSong_Click(object sender, RoutedEventArgs e)
@@ -89,5 +85,7 @@ namespace SongsAnalyzer
         {
             MessageBox.Show("Please load a song first", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        
+        
     }
 }

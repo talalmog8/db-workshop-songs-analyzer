@@ -99,7 +99,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return new Stats(averageWordLength, averageSongLineWordLength, averageSongStanzaWordLength, averageSongWordLength);
     }
 
-    private async Task<List<SongComposer>> GetSongs(string songName, string composerFirstName,string composerLastName, string freeText)
+    public async Task<List<SongComposer>> GetSongs(string songName, string composerFirstName,string composerLastName, string freeText)
     {
         IQueryable<SongComposer>? query = null;
         

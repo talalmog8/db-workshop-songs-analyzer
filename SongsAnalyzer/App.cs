@@ -1,10 +1,6 @@
-﻿using System.Windows;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Model;
-using Model.Entities;
 using Serilog;
 using Serilog.Events;
 namespace SongsAnalyzer;

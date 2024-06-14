@@ -16,4 +16,6 @@ public interface ISongAnalyzer
     Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers);
     Task<List<Word>> GetWords();
     Task<Stats> GetStats();
+
+    Task<List<SongComposer>> GetSongs(string songName, string composerFirstName, string composerLastName, string freeText);
 }
