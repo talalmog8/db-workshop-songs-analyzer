@@ -8,7 +8,7 @@ namespace SongsAnalyzer
     {
         private readonly ISongAnalyzer _songAnalyzer;
         private ObservableCollection<Word> _words;
-        private readonly ObservableCollection<SongComposer> _songComposers = [];
+        private readonly ObservableCollection<SongQueryResult> _songComposers = [];
 
         public WindowHandlers()
         {

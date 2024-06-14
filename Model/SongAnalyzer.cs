@@ -102,29 +102,76 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             averageSongWordLength);
     }
 
-    public async Task<List<SongComposer>> GetSongs(string songName, string composerFirstName, string composerLastName, string freeText)
+    public async Task<List<SongQueryResult>> GetSongs(string songName, string composerFirstName, string composerLastName, string freeText)
     {
+        List<SongQueryResult> result = null!;
+        
         await using var ctx = ctxFactory();
-
-        IQueryable<SongComposer>? query = query = ctx.SongComposers
-            .Include(x => x.Song)
-            .Include(x => x.Contributor);
-
+        
         if (!string.IsNullOrEmpty(songName))
-            query = query.Where(x => x.Song.Name.Contains(songName.ToLower()));
-        
-        if (!string.IsNullOrEmpty(composerFirstName))
-            query = query.Where(x => x.Contributor.FirstName == composerFirstName);
-        
-        if (!string.IsNullOrEmpty(composerLastName))
-            query = query.Where(x => x.Contributor.LastName == composerLastName);
-        
-        if (!string.IsNullOrEmpty(freeText))
         {
-            query = query.Include(x=> x.Song);
+             var songs = await ctx.Songs.Where(x => x.Name.Contains(songName.ToLower())).ToListAsync();
+             
+             result = songs.Select(x => new SongQueryResult
+             {
+                 SongId = x.Id,
+                 Name = x.Name,
+                 DocDate = x.DocDate,
+                 WordLength = x.WordLength
+             }).ToList();
         }
         
-        return await query?.ToListAsync()!;
+        if (!(string.IsNullOrEmpty(composerFirstName) && string.IsNullOrEmpty(composerLastName)))
+        {
+            var pool = ctx.SongComposers
+                .Include(x=> x.Contributor)
+                .Include(x=> x.Song);
+
+            IQueryable<SongComposer> query;
+            
+            if (!string.IsNullOrEmpty(composerFirstName))
+                query = pool.Where(x => x.Contributor.FirstName == composerFirstName.ToLower());
+            else
+                query = pool.Where(x => x.Contributor.LastName == composerLastName.ToLower());
+
+            var songComposers = await query.ToListAsync();
+            
+            result = songComposers.Select(x => new SongQueryResult
+            {
+                SongId = x.Song.Id,
+                Name = x.Song.Name,
+                DocDate = x.Song.DocDate,
+                WordLength = x.Song.WordLength
+            })
+            .GroupBy(x => x.SongId)
+            .Select(g => g.First())
+            .ToList();
+        }
+        
+        if (!string.IsNullOrEmpty(freeText)) // TODO now it is any we need all
+        {
+            var words = freeText.Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries);
+            
+            var pool = ctx.SongWords
+                .Include(x=> x.Word)
+                .Include(x=> x.Song);
+            
+            var query = pool.Where(x => words.Contains(x.Word.WordText));
+            var songWords = await query.ToListAsync();
+            
+            result = songWords.Select(x => new SongQueryResult
+            {
+                SongId = x.Song.Id,
+                Name = x.Song.Name,
+                DocDate = x.Song.DocDate,
+                WordLength = x.Song.WordLength
+            })
+            .GroupBy(x => x.SongId)
+            .Select(g => g.First())
+            .ToList();
+        }
+        
+        return result;
     }
 
 

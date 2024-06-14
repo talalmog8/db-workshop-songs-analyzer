@@ -17,5 +17,5 @@ public interface ISongAnalyzer
     Task<List<Word>> GetWords();
     Task<Stats> GetStats();
 
-    Task<List<SongComposer>> GetSongs(string songName, string composerFirstName, string composerLastName, string freeText);
+    Task<List<SongQueryResult>> GetSongs(string songName, string composerFirstName, string composerLastName, string freeText);
 }
