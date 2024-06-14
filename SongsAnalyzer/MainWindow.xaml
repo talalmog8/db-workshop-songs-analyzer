@@ -160,8 +160,7 @@ MinWidth="60"
 MinHeight="20" 
 Margin="5" 
 VerticalAlignment="Top"
-Content="Add"
-Click="AddPerformerButton_Click"/>
+Content="Add"/>
                             </StackPanel>
                             <!-- Save Button -->
                             <Button Padding="5"  VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25" Name="SaveGroupButton" Click="AddSongButton_Click">Save</Button>
