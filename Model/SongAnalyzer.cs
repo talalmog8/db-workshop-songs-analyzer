@@ -6,6 +6,9 @@ namespace Model;
 
 public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 {
+    private readonly string[] _wordSplit = new[] { " ", "\r\n", "\n", "," };
+    private readonly string[] _stanzaSplit = new[] { $"{Environment.NewLine}{Environment.NewLine}" };
+    private readonly string[] _lineSplit = new[] { $"{Environment.NewLine}" };
     public string? Path { get; set; }
     public string? SongName => System.IO.Path.GetFileNameWithoutExtension(Path);
     public string SongContent { get; set; }
@@ -66,18 +69,6 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         }
     }
 
-    private async Task<SongInformation> LoadSongInformation(SongsContext ctx)
-    {
-        var si = new SongInformation();
-
-        si.Song = await ctx.Songs.Where(x => x.Name == SongName).FirstAsync();
-        si.SongWords = await ctx.SongWords.Where(x => x.SongId == si.Song.Id).ToListAsync();
-
-        // TODO - finish this
-
-        return si;
-    }
-
     public async Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers)
     {
         await using var ctx = ctxFactory();
@@ -88,6 +79,64 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         await InsertContributorsIfMissing(performers, ctx, ContributorType.Performer, Song);
 
         await tran.CommitAsync();
+    }
+
+    public async Task<List<Word>> GetWords()
+    {
+        await using var ctx = ctxFactory();
+        var words = await ctx.Words.ToListAsync();
+        return words;
+    }
+    
+    public async Task<Stats> GetStats()
+    {
+        await using var ctx = ctxFactory();
+        var averageWordLength = await ctx.Words.AnyAsync() ?  await ctx.Words.AverageAsync(x=> x.Length) : 0;
+        var averageSongLineWordLength = await ctx.SongLines.AnyAsync() ? await ctx.SongLines.AverageAsync(x=> x.WordLength) : 0;
+        var averageSongStanzaWordLength = await ctx.SongStanzas.AnyAsync() ? await ctx.SongStanzas.AverageAsync(x=> x.WordLength) : 0;
+        var averageSongWordLength = await ctx.Songs.AnyAsync() ? await ctx.Songs.AverageAsync(x=> x.WordLength) : 0;
+        
+        return new Stats(averageWordLength, averageSongLineWordLength, averageSongStanzaWordLength, averageSongWordLength);
+    }
+
+    private async Task<List<SongComposer>> GetSongs(string songName, string composerFirstName,string composerLastName, string freeText)
+    {
+        IQueryable<SongComposer>? query = null;
+        
+        await using var ctx = ctxFactory();
+
+        if (!string.IsNullOrEmpty(songName))
+        {
+            
+            query = ctx.SongComposers
+                .Include(x => x.Song)
+                .Include(x => x.Contributor)
+                .Where(x => x.Song.Name == songName.ToLower());
+        }
+        if (!string.IsNullOrEmpty(composerFirstName))
+        {
+            query = ctx.SongComposers
+                .Include(x=> x.Contributor)
+                .Include(x=> x.Song)
+                .Where(x=> x.Contributor != null)
+                .Where(x =>  x.Contributor.FirstName == composerFirstName)
+                .Where(x => x.Contributor.LastName == composerLastName);
+        }
+        
+        return await query?.ToListAsync()!;
+    }
+        
+    
+    private async Task<SongInformation> LoadSongInformation(SongsContext ctx)
+    {
+        var si = new SongInformation();
+
+        si.Song = await ctx.Songs.Where(x => x.Name == SongName).FirstAsync();
+        si.SongWords = await ctx.SongWords.Where(x => x.SongId == si.Song.Id).ToListAsync();
+
+        // TODO - finish this
+
+        return si;
     }
 
     private async Task InsertContributorsIfMissing(HashSet<Name> composers, SongsContext ctx,
@@ -124,7 +173,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     private async Task<(Dictionary<string, int> wordIndex, Word[])> InsertWordsIfMissing(SongsContext ctx, string text)
     {
-        var words = text.Split([" ", Environment.NewLine, ","], StringSplitOptions.RemoveEmptyEntries);
+        var words = text.Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries);
 
         string[] wordsDistinct = words.Distinct().ToArray();
 
@@ -150,7 +199,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     {
         var song = new Song
         {
-            Name = System.IO.Path.GetFileNameWithoutExtension(path),
+            Name = System.IO.Path.GetFileNameWithoutExtension(path)?.ToLower(),
             Path = path,
             DocDate = createDate.ToUniversalTime(),
             WordLength = text.Length
@@ -169,24 +218,6 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             .AnyAsync();
 
         return isSongExists;
-    }
-
-    public async Task<List<Word>> GetWords()
-    {
-        await using var ctx = ctxFactory();
-        var words = await ctx.Words.ToListAsync();
-        return words;
-    }
-    
-    public async Task<Stats> GetStats()
-    {
-        await using var ctx = ctxFactory();
-        var averageWordLength = await ctx.Words.AverageAsync(x=> x.Length);
-        var averageSongLineWordLength = await ctx.SongLines.AverageAsync(x=> x.WordLength);
-        var averageSongStanzaWordLength = await ctx.SongStanzas.AverageAsync(x=> x.WordLength);
-        var averageSongWordLength = await ctx.Songs.AverageAsync(x=> x.WordLength);
-        
-        return new Stats(averageWordLength, averageSongLineWordLength, averageSongStanzaWordLength, averageSongWordLength);
     }
 
     private async Task<(ContributorContributorType, SongComposer)> InsertContributorIfMissing(Contributor contributor,
@@ -251,8 +282,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     private async Task<SongStanza[]> InsertSongStanzas(string input, Song song, SongsContext ctx)
     {
-        var stanzas = input.Split($"{Environment.NewLine}{Environment.NewLine}",
-            StringSplitOptions.RemoveEmptyEntries);
+        var stanzas = input.Split(_stanzaSplit, StringSplitOptions.RemoveEmptyEntries);
 
         var songStanzas = new List<SongStanza>();
 
@@ -281,7 +311,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     private async Task<SongLine[]> InsertSongLines(string input, Song song, SongsContext ctx)
     {
-        var lines = input.Split($"{Environment.NewLine}");
+        var lines = input.Split(_lineSplit, StringSplitOptions.RemoveEmptyEntries);
 
         var songLines = new List<SongLine>();
 
@@ -316,7 +346,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     {
         var wordToSongWord = songWords.ToDictionary(x => x.Word.WordText, y => y);
 
-        var words = input.Split(new[] { " ", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+        var words = input.Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries);
 
         var wordLocations = new List<WordLocation>();
 

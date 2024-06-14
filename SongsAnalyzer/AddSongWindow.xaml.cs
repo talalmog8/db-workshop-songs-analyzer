@@ -65,7 +65,6 @@ namespace SongsAnalyzer
                 return;
             }
             
-            var songName = SongNameTextBox.Text;
             var composers = new HashSet<Name>();
             var writers = new HashSet<Name>();
             var performers = new HashSet<Name>();
@@ -74,7 +73,17 @@ namespace SongsAnalyzer
             PopulateSet(writers, WritersListBox.Items);
             PopulateSet(performers, PerformersListBox.Items);
 
-            await _songAnalyzer.AddSong(composers, performers, writers);
+            try
+            {
+                await _songAnalyzer.AddSong(composers, performers, writers);
+                ComposersListBox.Dispatcher.InvokeAsync(() => ComposersListBox.Items.Clear());
+                WritersListBox.Dispatcher.InvokeAsync(() => WritersListBox.Items.Clear());
+                PerformersListBox.Dispatcher.InvokeAsync(() => PerformersListBox.Items.Clear());
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show($"Failed to add song. {exception}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void PopulateSet(HashSet<Name> hashSet, ItemCollection collection)

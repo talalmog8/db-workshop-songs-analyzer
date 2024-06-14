@@ -51,23 +51,31 @@ namespace SongsAnalyzer
                 await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
                 await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Text = Path.GetFileNameWithoutExtension(filename));
                 await UpdateStats();
+                await UpdateWordTable();
             }
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // populate  word data grid
-            
-            var words = await _songAnalyzer.GetWords();
-           
-            foreach (var word in words)
-                _words.Add(word);
-            
+            // Populate Words
+            await UpdateWordTable();
             
             // Populate Stats
             await UpdateStats();
         }
 
+        private async Task UpdateWordTable()
+        {
+            // populate  word data grid
+            
+            _words.Clear();
+            
+            var words = await _songAnalyzer.GetWords();
+           
+            foreach (var word in words)
+                _words.Add(word);
+        }
+        
         private async Task UpdateStats()
         {
             var stats = await _songAnalyzer.GetStats();
