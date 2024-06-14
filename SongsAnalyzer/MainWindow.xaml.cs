@@ -49,7 +49,7 @@ namespace SongsAnalyzer
             else
             {
                 await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
-                await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Text = Path.GetFileNameWithoutExtension(filename));
+                await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Content = Path.GetFileNameWithoutExtension(filename));
                 await UpdateStats();
                 await UpdateWordTable();
             }

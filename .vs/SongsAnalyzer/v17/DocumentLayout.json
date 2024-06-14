@@ -7,6 +7,10 @@
       "RelativeMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|solutionrelative:songsanalyzer\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|c:\\users\\user\\documents\\drive_laptop\\onedrive\\documents\\university\\current\\databases workshop\\songsanalyzer\\songsanalyzer\\mainwindow.xaml||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|solutionrelative:songsanalyzer\\mainwindow.xaml||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|c:\\users\\user\\documents\\drive_laptop\\onedrive\\documents\\university\\current\\databases workshop\\songsanalyzer\\songsanalyzer\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E1BD4760-DD82-4ADC-8200-03CBBAF31A04}|SongsAnalyzer\\SongsAnalyzer.csproj|solutionrelative:songsanalyzer\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -26,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -34,7 +38,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "SongsAnalyzer\\MainWindow.xaml.cs",
@@ -59,7 +63,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "App.xaml",
               "DocumentMoniker": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\App.xaml",
               "RelativeDocumentMoniker": "SongsAnalyzer\\App.xaml",
@@ -71,7 +75,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "SongsAnalyzer.csproj",
               "DocumentMoniker": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\SongsAnalyzer.csproj",
               "RelativeDocumentMoniker": "SongsAnalyzer\\SongsAnalyzer.csproj",
@@ -80,6 +84,40 @@
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2024-05-17T14:22:43.078Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "FloatingWindowState": {
+        "Id": "0cc0fb2b-ad2c-472a-a969-9c72c2efadd1",
+        "Display": 1,
+        "X": 0,
+        "Y": 79,
+        "Width": 800,
+        "Height": 600,
+        "WindowState": 2
+      },
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "SongsAnalyzer\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\user\\Documents\\drive_laptop\\OneDrive\\Documents\\University\\Current\\databases workshop\\SongsAnalyzer\\SongsAnalyzer\\MainWindow.xaml",
+              "RelativeToolTip": "SongsAnalyzer\\MainWindow.xaml",
+              "ViewState": "AQIAAEIAAAAAAAAAAIAxwHIAAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-06-14T11:54:34.723Z",
+              "EditorCaption": ""
             }
           ]
         }
