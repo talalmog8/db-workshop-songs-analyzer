@@ -6,9 +6,9 @@ namespace Model;
 
 public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 {
-    private readonly string[] _wordSplit = new[] { " ", "\r\n", "\n", "," };
-    private readonly string[] _stanzaSplit = new[] { $"{Environment.NewLine}{Environment.NewLine}" };
-    private readonly string[] _lineSplit = new[] { $"{Environment.NewLine}" };
+    private readonly string[] _wordSplit = [" ", "\r\n", "\n", ","];
+    private readonly string[] _stanzaSplit = [$"{Environment.NewLine}{Environment.NewLine}"];
+    private readonly string[] _lineSplit = [$"{Environment.NewLine}"];
     public string? Path { get; set; }
     public string? SongName => System.IO.Path.GetFileNameWithoutExtension(Path);
     public string SongContent { get; set; }
@@ -108,6 +108,22 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             .OrderBy(x=> x.Id).ToListAsync();
         
         return words;
+    }
+
+    public async Task<List<WordDetailsView>> GetWordIndex(bool filterCurrentSong = false)
+    {
+        await using var ctx = ctxFactory();
+
+        var query = ctx.WordDetailsViews
+            .AsQueryable();
+
+        if (filterCurrentSong)
+            query = query.Where(x => x.Id == Song.Id);
+        
+        var wordIndex = await query
+            .ToListAsync();
+        
+        return wordIndex;
     }
 
     public async Task<Stats> GetStats()

@@ -13,7 +13,5 @@ public class WordLocation
 
     [Column("song_word_id")]
     public long SongWordId { get; set; }
-
-    [ForeignKey("SongWordId")]
     public virtual SongWord SongWord { get; set; }
 }

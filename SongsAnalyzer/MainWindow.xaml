@@ -7,7 +7,7 @@
         <StackPanel Orientation="Horizontal" Margin="5">
             <!-- Song Name -->
             <TextBlock   MinWidth="100" Margin="0" VerticalAlignment="Center"  HorizontalAlignment="Left">Song Name:</TextBlock>
-            <Label MinWidth="250" MinHeight="20" Margin="05" VerticalAlignment="Top" HorizontalAlignment="Left" Name="SongNameTextBox"/>
+            <TextBlock  MinWidth="250" MinHeight="20" Margin="05" VerticalAlignment="Top" HorizontalAlignment="Left" Name="SongNameTextBox"/>
         </StackPanel>
         <TabControl>
             <TabItem Header="Load Song">
@@ -144,26 +144,30 @@ Margin="5"
                     </StackPanel>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="Groups">
+            <TabItem Header="Word Index">
                 <StackPanel Margin="5" Orientation="Horizontal" VerticalAlignment="Stretch">
                     <StackPanel Margin="10,0,0,0" MinWidth="380">
                         <StackPanel Margin="0,0,5,5" Orientation="Vertical">
-                            <TextBlock  Margin="0,0,0,5" HorizontalAlignment="Left">Words Index:</TextBlock>
+                            <TextBlock Margin="0,5,0,5" HorizontalAlignment="Left">Index:</TextBlock>
+                            <Border    Margin="0,0,0,5" BorderBrush="Black" BorderThickness="1">
+                                <DataGrid FontSize="14" Height="350" MaxWidth="1000" x:Name="WordsIndexDataGrid" AutoGenerateColumns="True" Margin="0">
+                                    <DataGrid.Columns>
+                                        <!-- Column for Word Offset -->
+                                        <DataGridTextColumn Header="Word Location Offset" Binding="{Binding WordLocationOffset}" />
+                                       
+                                        <!-- Add more columns as needed for other properties -->
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Border>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock HorizontalAlignment="Left">Group:</TextBlock>
                                 <ListBox SelectionMode="Multiple" MinHeight="200" Margin="5" MinWidth="250" HorizontalAlignment="Left"/>
                             </StackPanel>
-                            <Border    Margin="0,0,0,5" BorderBrush="Black" BorderThickness="1">
-                                <DataGrid MinHeight="400" x:Name="WordsIndexDataGrid" AutoGenerateColumns="True" Margin="0"/>
-                            </Border>
                         </StackPanel>
                     </StackPanel>
-                    <StackPanel Margin="5,0,0,0">
-                        <!-- Add Song Label -->
+                    <StackPanel Margin="10,5,5,0">
                         <TextBlock    Margin="0,0,0,0" VerticalAlignment="Center"  MinHeight="20">Define A Group:</TextBlock>
-
                         <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
-                            <!-- Song Name -->
                             <TextBlock  MinWidth="70"  Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Name:</TextBlock>
                             <TextBox   
 MinWidth="150" 

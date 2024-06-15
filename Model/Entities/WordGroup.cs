@@ -13,10 +13,7 @@ public class WordGroup
 
     [Column("word_id")]
     public long WordId { get; set; }
-
-    [ForeignKey("GroupId")]
+    
     public virtual Group Group { get; set; }
-
-    [ForeignKey("WordId")]
     public virtual Word Word { get; set; }
 }

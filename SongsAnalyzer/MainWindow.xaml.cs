@@ -9,6 +9,7 @@ namespace SongsAnalyzer
         private readonly ISongAnalyzer _songAnalyzer;
         private readonly ObservableCollection<WordTable> _words = [];
         private readonly ObservableCollection<SongQueryResult> _songComposers = [];
+        private readonly ObservableCollection<WordDetailsView> _wordDetailsViews = [];
 
         public WindowHandlers()
         {
@@ -16,6 +17,7 @@ namespace SongsAnalyzer
             _songAnalyzer = App.Provider.GetRequiredService<ISongAnalyzer>();
             WordsDataGrid.ItemsSource = _words;
             QuerySongResultsDataGrid.ItemsSource = _songComposers;
+            WordsIndexDataGrid.ItemsSource = _wordDetailsViews;
         }
 
         #region Load Song Tab 1
@@ -47,7 +49,7 @@ namespace SongsAnalyzer
             else
             {
                 await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
-                await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Content = Path.GetFileNameWithoutExtension(filename));
+                await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Text = Path.GetFileNameWithoutExtension(filename));
                 await RefreshUI();
             }
         }
@@ -64,8 +66,29 @@ namespace SongsAnalyzer
             await UpdateWordTable();
             await UpdateStats();
             await UpdateSongsResultsTable();
+            await UpdateWordIndex();
         }
 
+        #region Tab 4 Word Index
+
+        private async Task UpdateWordIndex(bool filterCurrentSong = false)
+        {
+            if (filterCurrentSong && !_songAnalyzer.Processed)
+            {
+                SongIsNotProcessed();
+                return;
+            }
+            
+            var wordIndex = await _songAnalyzer.GetWordIndex(filterCurrentSong);
+            
+            _wordDetailsViews.Clear();
+            
+            foreach (var word in wordIndex)
+                _wordDetailsViews.Add(word);
+        }
+
+        #endregion
+        
         #region Stats Tab 5
 
         private async Task UpdateStats()
@@ -95,11 +118,6 @@ namespace SongsAnalyzer
            
             foreach (var song in songs)
                 _songComposers.Add(song);
-
-            await QuerySongNameTextBox.Dispatcher.InvokeAsync(() => QuerySongNameTextBox.Clear());
-            await QueryComposerFirstNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerFirstNameTextBox.Clear());
-            await QueryComposerLastNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerLastNameTextBox.Clear());
-            await QueryWordsTextBox.Dispatcher.InvokeAsync(() => QueryWordsTextBox.Clear());
         }
 
         private async void QuerySongButton_Click(object sender, RoutedEventArgs e)
@@ -110,6 +128,11 @@ namespace SongsAnalyzer
         private async void ClearQuerySongButton_Click(object sender, RoutedEventArgs e)
         {
             await UpdateSongsResultsTable();
+            
+            await QuerySongNameTextBox.Dispatcher.InvokeAsync(() => QuerySongNameTextBox.Clear());
+            await QueryComposerFirstNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerFirstNameTextBox.Clear());
+            await QueryComposerLastNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerLastNameTextBox.Clear());
+            await QueryWordsTextBox.Dispatcher.InvokeAsync(() => QueryWordsTextBox.Clear());
         }
         
         #endregion

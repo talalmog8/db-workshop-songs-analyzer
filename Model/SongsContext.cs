@@ -21,6 +21,7 @@ public class SongsContext : DbContext
     public DbSet<WordLocation> WordLocations { get; set; }
     public DbSet<Phrase> Phrases { get; set; }
     public DbSet<PhraseWord> PhraseWords { get; set; }
+    public DbSet<WordDetailsView> WordDetailsViews { get; set; }
 
     public SongsContext(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
@@ -148,10 +149,12 @@ public class SongsContext : DbContext
                 .HasOne(sw => sw.Song)
                 .WithMany(s => s.SongWords)
                 .HasForeignKey(sw => sw.SongId);
-
+            
             modelBuilder.Entity<WordLocation>()
                 .HasOne(wl => wl.SongWord)
-                .WithMany()
+                .WithMany(sw=> sw.WordLocations)
                 .HasForeignKey(wl => wl.SongWordId);
+
+            modelBuilder.Entity<WordDetailsView>().ToView("word_details_view");
     }
 }

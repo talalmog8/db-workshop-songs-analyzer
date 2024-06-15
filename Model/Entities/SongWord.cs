@@ -17,9 +17,9 @@ public class SongWord
     [Column("num_of_occurrences")]
     public int NumberOfOccurrences { get; set; }
 
-    [ForeignKey("WordId")]
     public virtual Word Word { get; set; }
 
-    [ForeignKey("SongId")]
     public virtual Song Song { get; set; }
+    
+    public virtual ICollection<WordLocation> WordLocations { get; set; }
 }
