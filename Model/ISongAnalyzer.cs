@@ -15,7 +15,7 @@ public interface ISongAnalyzer
     Task<SongInformation> ProcessSong();
     Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers);
     Task<List<WordTable>> GetWords(string? songName = null, bool filterCurrentSong = false);
-    Task<List<WordDetailsView>> GetWordIndex(bool filterCurrentSong = false);
+    Task<List<WordDetailsView>> GetWordIndex();
     Task<Stats> GetStats();
 
     Task<List<SongQueryResult>> GetSongs(string songName, string composerFirstName, string composerLastName, string freeText);

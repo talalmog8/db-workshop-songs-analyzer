@@ -70,16 +70,10 @@ namespace SongsAnalyzer
         }
 
         #region Tab 4 Word Index
-
-        private async Task UpdateWordIndex(bool filterCurrentSong = false)
+        
+        private async Task UpdateWordIndex()
         {
-            if (filterCurrentSong && !_songAnalyzer.Processed)
-            {
-                SongIsNotProcessed();
-                return;
-            }
-            
-            var wordIndex = await _songAnalyzer.GetWordIndex(filterCurrentSong);
+            var wordIndex = await _songAnalyzer.GetWordIndex();
             
             _wordDetailsViews.Clear();
             
@@ -167,12 +161,12 @@ namespace SongsAnalyzer
             await UpdateWordTable();
         }
 
-        private async void QuerySongButton_WordView_Click(object sender, RoutedEventArgs e)
+        private async void FilterCurrentSongButton_WordView_Click(object sender, RoutedEventArgs e)
         {
             await UpdateWordTable(QuerySong_SongName_WordViewTextBox.Text);
         }
 
-        private async void ClearQuerySongButton_WordView_Click(object sender, RoutedEventArgs e)
+        private async void ClearFilterButton_WordView_Click(object sender, RoutedEventArgs e)
         {
             await UpdateWordTable();
         }
@@ -286,7 +280,6 @@ namespace SongsAnalyzer
             MessageBox.Show("Please load a song first", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        #endregion
-
+        #endregion        
     }
 }

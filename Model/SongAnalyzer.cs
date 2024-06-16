@@ -6,7 +6,12 @@ namespace Model;
 
 public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 {
-    private readonly string[] _wordSplit = [" ", Environment.NewLine, ",", ".", "?"];
+    private readonly string[] _wordSplit =
+    [
+        " ", "\t", "\u00A0", ".", ",", "!", "?", ":", ";", "-", "–", "—", "/", "\\", "\"", "'", "(", ")", "[", "]", "{",
+        "}", "<", ">", "_", "@", "&", "*", "+", "=", "|", "~", "`", Environment.NewLine 
+    ];
+
     private readonly string[] _stanzaSplit = [$"{Environment.NewLine}{Environment.NewLine}"];
     private readonly string[] _lineSplit = [$"{Environment.NewLine}"];
     public string? Path { get; set; }
@@ -14,7 +19,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     public string SongContent { get; set; }
 
 
-    public Song Song { get; set; }
+    public Song? Song { get; set; }
     public bool Processed { get; set; }
 
     public async Task<string> LoadSong(string path)
@@ -110,17 +115,15 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return words;
     }
 
-    public async Task<List<WordDetailsView>> GetWordIndex(bool filterCurrentSong = false)
+    public async Task<List<WordDetailsView>> GetWordIndex()
     {
         await using var ctx = ctxFactory();
 
-        var query = ctx.WordDetailsViews
-            .AsQueryable();
+        if (Song is null)
+            return Enumerable.Empty<WordDetailsView>().ToList();
 
-        if (filterCurrentSong)
-            query = query.Where(x => x.Id == Song.Id);
-
-        var wordIndex = await query
+        var wordIndex = await ctx.WordDetailsViews
+            .Where(x => x.SongId == Song.Id)
             .ToListAsync();
 
         return wordIndex;
@@ -392,13 +395,11 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             {
                 SongId = song.Id,
                 Song = song,
-                Offset = offset,
+                Offset = offset++,
                 WordLength = stanza.Length,
                 StanzaText = stanza
             };
-
-            offset += stanza.Length + Environment.NewLine.Length * 2; // ad cr and newline twice 
-
+            
             return songStanza;
         }).ToArray();
 
@@ -422,14 +423,12 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
                 {
                     SongId = song.Id,
                     Song = song,
-                    Offset = offset,
+                    Offset = offset++,
                     WordLength = lineAndStanza.Line.Length,
                     SongStanzaId = lineAndStanza.StanzaId,
                     SongLineText = lineAndStanza.Line
                 };
-
-                offset += lineAndStanza.Line.Length + 2; // ad cr and newline
-
+                
                 return songLine;
             }).ToArray();
 
@@ -445,7 +444,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         var wordToSongWord = songWords.ToDictionary(x => x.Word.WordText, y => y);
 
         var offset = 0;
-        
+
         var wordLocations = songLines
             .SelectMany(songLine => songLine.SongLineText.Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries)
                 .Select(word => new { Word = word.ToLower(), LineId = songLine.Id }))
