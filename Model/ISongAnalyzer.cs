@@ -12,7 +12,7 @@ public interface ISongAnalyzer
     string? SongName { get; }
     bool Processed { get; set; }
     Task<string> LoadSong(string path);
-    Task<SongInformation> ProcessSong();
+    Task<ProcessingResult> ProcessSong();
     Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers);
     Task<List<WordTable>> GetWords(string? songName = null, bool filterCurrentSong = false);
     Task<List<WordDetailsView>> GetWordIndex();

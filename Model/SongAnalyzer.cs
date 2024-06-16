@@ -15,7 +15,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     private readonly string[] _stanzaSplit = [$"{Environment.NewLine}{Environment.NewLine}"];
     private readonly string[] _lineSplit = [$"{Environment.NewLine}"];
     public string? Path { get; set; }
-    public string? SongName => System.IO.Path.GetFileNameWithoutExtension(Path);
+    public string? SongName => System.IO.Path.GetFileNameWithoutExtension(Path)?.ToLower();
     public string SongContent { get; set; }
 
 
@@ -29,7 +29,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return SongContent;
     }
 
-    public async Task<SongInformation> ProcessSong()
+    public async Task<ProcessingResult> ProcessSong()
     {
         try
         {
@@ -38,41 +38,36 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
             await using var ctx = ctxFactory();
 
-            if (await IsSongExists(ctx))
-                return await LoadSongInformation(ctx);
+            var song = await ctx.Songs.AsQueryable()
+                .Where(x => x.Name == SongName)
+                .FirstOrDefaultAsync();
+
+            if (song is not null)
+            {
+                Song = song;
+                return ProcessingResult.AlreadyExists;
+            }
 
             await using var tran = await ctx.Database.BeginTransactionAsync();
 
-            var song = await InsertSong(Path, createDate, text, ctx);
+            song = await InsertSong(Path, createDate, text, ctx);
             var songStanzas = await InsertSongStanzas(text, song, ctx);
             var songLines = await InsertSongLines(songStanzas, text, song, ctx);
             var (wordIndex, words) = await InsertWordsIfMissing(ctx, text);
             var songWords = await InsertSongWords(words, song, wordIndex, ctx);
-            var wordLocations = await InsertWordLocations(songLines, text, songWords, ctx);
+            _ = await InsertWordLocations(songLines, text, songWords, ctx);
 
             await tran.CommitAsync();
-
-            var songInfo = new SongInformation
-            {
-                Song = song,
-                SongStanzas = songStanzas,
-                SongLines = songLines,
-                SongWords = songWords,
-                WordLocations = wordLocations,
-                WordIndex = wordIndex,
-                Words = words,
-                ProcessingResult = ProcessingResult.Succeeded,
-            };
-
+            
             Song = song;
             Processed = true;
 
-            return songInfo;
+            return  ProcessingResult.Succeeded;
         }
         catch (Exception e)
         {
             Processed = false;
-            return new SongInformation { ProcessingResult = ProcessingResult.Failed };
+            return ProcessingResult.Failed;
         }
     }
 
@@ -228,20 +223,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         return result;
     }
-
-
-    private async Task<SongInformation> LoadSongInformation(SongsContext ctx)
-    {
-        var si = new SongInformation();
-
-        si.Song = await ctx.Songs.Where(x => x.Name == SongName).FirstAsync();
-        si.SongWords = await ctx.SongWords.Where(x => x.SongId == si.Song.Id).ToListAsync();
-
-        // TODO - finish this
-
-        return si;
-    }
-
+    
     private async Task InsertContributorsIfMissing(HashSet<Name> composers, SongsContext ctx,
         ContributorType contributorType, Song song)
     {
@@ -315,16 +297,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         return song;
     }
-
-    private async Task<bool> IsSongExists(SongsContext ctx)
-    {
-        var isSongExists = await ctx.Songs.AsQueryable()
-            .Where(x => x.Name == SongName)
-            .AnyAsync();
-
-        return isSongExists;
-    }
-
+    
     private async Task InsertContributorIfMissing(Contributor contributor, SongsContext ctx,
         ContributorType contributorTypeId, Song song)
     {

@@ -3,5 +3,6 @@
 public enum ProcessingResult
 {
     Succeeded,
-    Failed
+    Failed,
+    AlreadyExists
 }

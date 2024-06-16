@@ -44,12 +44,12 @@ namespace SongsAnalyzer
                 
             var processingResult = await _songAnalyzer.ProcessSong();
                 
-            if(processingResult.ProcessingResult == ProcessingResult.Failed)
+            if(processingResult == ProcessingResult.Failed)
                 MessageBox.Show("Failed To Process Song", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             else
             {
                 await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
-                await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Text = Path.GetFileNameWithoutExtension(filename));
+                await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Text = _songAnalyzer.SongName);
                 await RefreshUI();
             }
         }
