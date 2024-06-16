@@ -150,12 +150,33 @@ Margin="5"
                         <StackPanel Margin="0,0,5,5" Orientation="Vertical">
                             <TextBlock Margin="0,5,0,5" HorizontalAlignment="Left">Index:</TextBlock>
                             <Border    Margin="0,0,0,5" BorderBrush="Black" BorderThickness="1">
-                                <DataGrid FontSize="14" Height="350" MaxWidth="1000" x:Name="WordsIndexDataGrid" AutoGenerateColumns="True" Margin="0">
+                                <DataGrid FontSize="14" Height="350" MaxWidth="1000" x:Name="WordsIndexDataGrid" AutoGenerateColumns="False" Margin="0">
                                     <DataGrid.Columns>
-                                        <!-- Column for Word Offset -->
-                                        <DataGridTextColumn Header="Word Location Offset" Binding="{Binding WordLocationOffset}" />
-                                       
-                                        <!-- Add more columns as needed for other properties -->
+                                        <!-- Column for Word Text -->
+                                        <DataGridTextColumn Header="Word" Binding="{Binding WordText}" />
+
+                                        <!-- Column for Word Location Offset -->
+                                        <DataGridTextColumn Header="Word Offset" Binding="{Binding WordLocationOffset}" />
+
+                                        <!-- Column for Line Offset -->
+                                        <DataGridTextColumn Header="Line Offset" Binding="{Binding SongLineOffset}" />
+
+                                        <!-- Column for Stanza Offset -->
+                                        <DataGridTextColumn Header="Stanza Offset" Binding="{Binding SongStanzaOffset}" />
+
+                                        <!-- Column for Word Song Occurrences -->
+                                        <DataGridTextColumn Header="Word Song Occurrences" Binding="{Binding WordNumOfOccurrences}" />
+
+                                        <!-- Column for Word Length -->
+                                        <DataGridTextColumn Header="Word Length" Binding="{Binding WordLength}" />
+
+
+                                        <!-- Column for Line Length -->
+                                        <DataGridTextColumn Header="Line Length" Binding="{Binding SongLineWordLength}" />
+
+
+                                        <!-- Column for Stanza Length -->
+                                        <DataGridTextColumn Header="Stanza Length" Binding="{Binding SongStanzaWordLength}" />
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Border>

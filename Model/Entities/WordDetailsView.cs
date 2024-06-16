@@ -7,32 +7,32 @@ public class WordDetailsView
 {
     [Key]
     [Column("id")]
-    public int Id { get; set; }
+    public long Id { get; set; }
 
-    [Column("word_location_offset"), Display(Name ="word offset")]
+    [Column("word_location_offset"), ]
     public int WordLocationOffset { get; set; }
-
-    [Column("song_word_id"), Browsable(false)] 
-    public int SongWordId { get; set; }
-
-    [Column("word_num_of_occurrences"), Display(Name ="word song occurrences")]
+    
+    [Column("word_num_of_occurrences")]
     public int WordNumOfOccurrences { get; set; }
     
-    [Column("word_length"), Display(Name ="word length")]
+    [Column("word_length"), ]
     public int WordLength { get; set; }
 
-    [Column("word_text"), Display(Name ="word")]
+    [Column("word_text"), ]
     public string WordText { get; set; }
 
-    [Column("song_line_word_length"), Display(Name ="line length")]
+    [Column("song_line_word_length"), ]
     public int SongLineWordLength { get; set; }
 
-    [Column("song_stanza_offset"), Display(Name ="stanza offset")]
+    [Column("song_stanza_offset"), ]
     public int SongStanzaOffset { get; set; }
     
-    [Column("song_line_offset"), Display(Name ="line offset")]
+    [Column("song_line_offset"), ]
     public int SongLineOffset { get; set; }
     
-    [Column("song_stanza_word_length"), Display(Name ="stanza length")]
-    public int SongStanzaWordLength { get; set; }
+    [Column("song_stanza_word_length"), ]
+    public int SongStanzaWordLength { get; set; } 
+    
+    [Column("song_id"), ]
+    public long SongId { get; set; }
 }

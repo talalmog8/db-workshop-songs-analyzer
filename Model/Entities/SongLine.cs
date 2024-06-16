@@ -16,7 +16,14 @@ public class SongLine
 
     [Column("word_length")]
     public int WordLength { get; set; }
+    
+    [Column("song_stanza_id")]
+    public long SongStanzaId { get; set; }
 
     [ForeignKey("SongId")]
     public virtual Song Song { get; set; }
+
+    // Not saved to db
+    [NotMapped]
+    public string SongLineText { get; set; }
 }

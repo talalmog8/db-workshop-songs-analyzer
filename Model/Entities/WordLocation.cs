@@ -13,5 +13,8 @@ public class WordLocation
 
     [Column("song_word_id")]
     public long SongWordId { get; set; }
+    
+    [Column("song_line_id")]
+    public long SongLineId { get; set; }
     public virtual SongWord SongWord { get; set; }
 }

@@ -19,4 +19,8 @@ public class SongStanza
 
     [ForeignKey("SongId")]
     public virtual Song Song { get; set; }
+
+    // Not saved to db
+    [NotMapped]
+    public string StanzaText { get; set; }
 }
