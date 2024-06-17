@@ -19,8 +19,12 @@ public class SongsContext : DbContext
     public DbSet<Word> Words { get; set; }
     public DbSet<SongWord> SongWords { get; set; }
     public DbSet<WordLocation> WordLocations { get; set; }
+    
     public DbSet<Phrase> Phrases { get; set; }
+
     public DbSet<PhraseWord> PhraseWords { get; set; }
+
+    public DbSet<Group> Group { get; set; }
     public DbSet<WordDetailsView> WordDetailsViews { get; set; }
 
     public SongsContext(ILoggerFactory loggerFactory, IConfiguration configuration)
@@ -40,7 +44,7 @@ public class SongsContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-              // Configure unique indexes
+            // Configure unique indexes
             modelBuilder.Entity<Group>().HasIndex(g => g.Name).IsUnique();
             modelBuilder.Entity<Phrase>().HasIndex(p => p.PhraseText).IsUnique();
             modelBuilder.Entity<Word>().HasIndex(w => w.WordText).IsUnique();

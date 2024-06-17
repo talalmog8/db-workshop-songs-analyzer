@@ -10,6 +10,7 @@ namespace SongsAnalyzer
         private readonly ObservableCollection<WordTable> _words = [];
         private readonly ObservableCollection<SongQueryResult> _songComposers = [];
         private readonly ObservableCollection<WordDetailsView> _wordDetailsViews = [];
+        private readonly ObservableCollection<string?> _groups = [];
 
         public WindowHandlers()
         {
@@ -18,6 +19,7 @@ namespace SongsAnalyzer
             WordsDataGrid.ItemsSource = _words;
             QuerySongResultsDataGrid.ItemsSource = _songComposers;
             WordsIndexDataGrid.ItemsSource = _wordDetailsViews;
+            GroupListBox.ItemsSource = _groups;
         }
 
         #region Load Song Tab 1
@@ -63,14 +65,15 @@ namespace SongsAnalyzer
         
         private async Task RefreshUI()
         {
+            await GetGroups();
             await UpdateWordTable();
             await UpdateStats();
             await UpdateSongsResultsTable();
             await UpdateWordIndex();
         }
-
-        #region Tab 4 Word Index
         
+        #region Tab 4 Word Index
+
         private async Task UpdateWordIndex()
         {
             var wordIndex = await _songAnalyzer.GetWordIndex();
@@ -280,6 +283,49 @@ namespace SongsAnalyzer
             MessageBox.Show("Please load a song first", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        #endregion        
+        #endregion
+
+        #region Groups
+        
+        private async void AddGroup_Click(object sender, RoutedEventArgs e)
+        {
+            string? groupName = Interaction.InputBox("Enter group name:", "Add Group", "");
+
+            if (!string.IsNullOrEmpty(groupName))
+            {
+                bool exists = await _songAnalyzer.IsGroupExists(groupName);
+                
+                if(!exists)
+                    _groups.Add(groupName);
+                else
+                    MessageBox.Show("Please use a valid group name", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else 
+                MessageBox.Show("Please use a new group name", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        
+        private async void SaveGroup_Click(object sender, RoutedEventArgs e)
+        {
+            string? groupName = GroupListBox?.SelectedItem?.ToString();
+
+            if (string.IsNullOrEmpty(groupName))
+                return;
+            
+            bool added = await _songAnalyzer.AddGroup(groupName);
+                
+            if(added)
+                _groups.Add(groupName);
+        }
+
+        private async Task GetGroups()
+        {
+            _groups.Clear();
+            
+            var groups = await _songAnalyzer.GetGroups();
+            
+            groups.ForEach(group => _groups.Add(group));
+        }
+        
+        #endregion
     }
 }

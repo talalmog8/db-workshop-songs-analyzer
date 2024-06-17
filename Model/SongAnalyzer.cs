@@ -223,6 +223,46 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         return result;
     }
+
+    public async Task<bool> IsGroupExists(string name)
+    {
+        await using var ctx = ctxFactory();
+        
+        bool isGroupExists = await ctx.Group.Where(x=> x.Name == name).AnyAsync();
+
+        return isGroupExists;  
+    }
+    
+    public async Task<List<string>> GetGroups()
+    {
+        await using var ctx = ctxFactory();
+        
+        var groups = await ctx.Group.Select(x=> x.Name).ToListAsync();
+
+        return groups;  
+    }
+
+    public async Task<bool> AddGroup(string? name)
+    {
+        name = name.ToLower();
+        
+        await using var ctx = ctxFactory();
+        
+        var groupExists = await ctx.Group.Where(x => x.Name == name).AnyAsync();
+        
+        if(groupExists)
+            return false;
+
+        var group = new Group
+        {
+            Name = name
+        };
+
+        ctx.Group.Add(group);
+        await ctx.SaveChangesAsync();
+
+        return true;
+    }
     
     private async Task InsertContributorsIfMissing(HashSet<Name> composers, SongsContext ctx,
         ContributorType contributorType, Song song)

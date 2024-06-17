@@ -182,7 +182,7 @@ Margin="5"
                             </Border>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock HorizontalAlignment="Left">Group:</TextBlock>
-                                <ListBox SelectionMode="Multiple" MinHeight="200" Margin="5" MinWidth="250" HorizontalAlignment="Left"/>
+                                <ListBox Name="GroupListBox" SelectionMode="Single" MinHeight="200" Margin="5" MinWidth="250" HorizontalAlignment="Left"/>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
@@ -207,7 +207,7 @@ VerticalAlignment="Top"
 Content="Add"/>
                         </StackPanel>
                         <!-- Save Button -->
-                        <Button Padding="5"  VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25" Name="SaveGroupButton" Click="AddSongButton_Click">Save</Button>
+                        <Button Click="AddGroup_Click" Padding="5"  VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25" Name="SaveGroupButton" >Save</Button>
                         <StackPanel Margin="0,15,0,15">
                             <!-- Add Song Label -->
                             <TextBlock    Margin="0,0,0,5" VerticalAlignment="Center"  MinHeight="20">Define A Phrase:</TextBlock>
