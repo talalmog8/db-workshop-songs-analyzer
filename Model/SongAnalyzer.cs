@@ -246,7 +246,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
                 .Select(x => x.Word)
                 .Select(x => x.WordText)
                 .Aggregate(new StringBuilder(), (builder, s) => builder.AppendFormat("{0}, ", s),
-                    builder => builder.Remove(builder.Length - 1, 1).ToString());
+                    builder => builder.Length > 0 ? builder.Remove(builder.Length - 1, 1).ToString() : builder.ToString());
 
             var groupView = new GroupView
             {

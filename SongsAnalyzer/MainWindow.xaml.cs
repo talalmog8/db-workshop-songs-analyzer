@@ -275,6 +275,11 @@ namespace SongsAnalyzer
         private static void FullNameError()
         {
             MessageBox.Show("Please use a full name, use a space as a separator", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        } 
+        
+        private static void StringEmptyError(string what)
+        {
+            MessageBox.Show($"{what} should not be null or empty", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         
         #endregion
@@ -296,7 +301,7 @@ namespace SongsAnalyzer
 
             if (string.IsNullOrEmpty(groupName))
             {
-                MessageBox.Show("Please use a new group name", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StringEmptyError("Group value");
                 return;
             }
             
@@ -308,7 +313,10 @@ namespace SongsAnalyzer
             var groupName = GroupNameTextBox.Text;
 
             if (string.IsNullOrEmpty(groupName))
+            {
+                StringEmptyError("Group Name");
                 return;
+            }
 
             var values = GroupValuesListBox.Items.Cast<string>().Select(x=> x.ToLower()).ToArray();
             
@@ -339,6 +347,12 @@ namespace SongsAnalyzer
 
         private async void SavePhraseButton_Click(object sender, RoutedEventArgs e)
         {
+            if(string.IsNullOrEmpty(PhraseTextBox.Text))
+            {
+                StringEmptyError("Phrase");
+                return;
+            }
+            
             var (phrase, added) = await _songAnalyzer.AddPhrase(PhraseTextBox.Text);
 
             if(added)
