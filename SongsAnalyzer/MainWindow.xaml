@@ -114,7 +114,7 @@ Margin="5"
 
                         <!-- DataGrid for Query Results with Border -->
 
-                        <DataGrid MinHeight="280" MinWidth="850"  HorizontalAlignment="Stretch" x:Name="QuerySongResultsDataGrid" AutoGenerateColumns="True" Margin="0"/>
+                        <DataGrid MinHeight="380" MinWidth="850"  HorizontalAlignment="Stretch" x:Name="QuerySongResultsDataGrid" AutoGenerateColumns="True" Margin="0"/>
 
                     </StackPanel>
                 </StackPanel>
@@ -124,7 +124,7 @@ Margin="5"
                     <StackPanel Margin="5,5,15,5" Orientation="Vertical">
                         <TextBlock Margin="0,5,0,5" HorizontalAlignment="Left">Words:</TextBlock>
                         <Border    Margin="0,0,0,0" BorderBrush="Black" BorderThickness="1">
-                            <DataGrid Height="450" MinWidth="350"  x:Name="WordsDataGrid" AutoGenerateColumns="True" Margin="0"/>
+                            <DataGrid Height="550" MinWidth="350"  x:Name="WordsDataGrid" AutoGenerateColumns="True" Margin="0"/>
                         </Border>
                         <Button  Click="FilterSongWordIndexButton_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,15,0,0" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="FilterSongWordIndexButton" >Filter Current Song</Button>
                         <Button  Click="UnFilterSongWordIndexButton_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,15,0,0" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="UnFilterSongWordIndexButton" >Clear Filter</Button>
