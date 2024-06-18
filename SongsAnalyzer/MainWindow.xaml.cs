@@ -340,7 +340,10 @@ namespace SongsAnalyzer
             var (phrase, added) = await _songAnalyzer.AddPhrase(PhraseTextBox.Text);
 
             if(added)
+            {
                 _pharses.Add(phrase);
+                await PhraseTextBox.Dispatcher.InvokeAsync(() => PhraseTextBox.Clear());                
+            }
             else 
                 MessageBox.Show("Phrase already exists or invalid", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
