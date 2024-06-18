@@ -10,7 +10,7 @@ namespace SongsAnalyzer
         private readonly ObservableCollection<WordTable> _words = [];
         private readonly ObservableCollection<SongQueryResult> _songComposers = [];
         private readonly ObservableCollection<WordDetailsView> _wordDetailsViews = [];
-        private readonly ObservableCollection<string> _groups = [];
+        private readonly ObservableCollection<GroupView> _groups = [];
         private readonly ObservableCollection<string> _pharses = [];
 
         public WindowHandlers()
@@ -20,7 +20,7 @@ namespace SongsAnalyzer
             WordsDataGrid.ItemsSource = _words;
             QuerySongResultsDataGrid.ItemsSource = _songComposers;
             WordsIndexDataGrid.ItemsSource = _wordDetailsViews;
-            GroupListBox.ItemsSource = _groups;
+            GroupsDataGrid.ItemsSource = _groups;
             PhrasesListBox.ItemsSource = _pharses;
         }
 
@@ -309,12 +309,14 @@ namespace SongsAnalyzer
 
             if (string.IsNullOrEmpty(groupName))
                 return;
+
+            var values = GroupValuesListBox.Items.Cast<string>().Select(x=> x.ToLower()).ToArray();
             
-            var added = await _songAnalyzer.AddGroup(groupName, _groups.ToArray());
+            var added = await _songAnalyzer.AddGroup(groupName, values);
                 
             if(added)
             {
-                _groups.Add(groupName);
+                _groups.Add(new GroupView{ Name = groupName, Values = groupName});
                 await GroupValuesListBox.Dispatcher.InvokeAsync(() => GroupValuesListBox.Items.Clear());
                 await GroupNameTextBox.Dispatcher.InvokeAsync(() => GroupNameTextBox.Clear());
             }

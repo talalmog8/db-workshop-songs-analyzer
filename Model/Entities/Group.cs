@@ -12,4 +12,6 @@ public class Group
     [MaxLength(50)]
     
     public string? Name { get; set; }
+    
+    public virtual ICollection<WordGroup> WordGroups { get; set; }
 }

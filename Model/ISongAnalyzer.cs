@@ -13,8 +13,8 @@ public interface ISongAnalyzer
     bool Processed { get; set; }
     Task<string> LoadSong(string path);
     Task<ProcessingResult> ProcessSong();
-    Task<bool> AddGroup(string name, string[] array);
-    Task<List<string>> GetGroups();
+    Task<bool> AddGroup(string name, string[] values);
+    Task<List<GroupView>> GetGroups();
     Task<(string phrase, bool)> AddPhrase(string phrase);
     Task<List<string>> GetPhrases();
     Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers);

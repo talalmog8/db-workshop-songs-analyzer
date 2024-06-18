@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Model.Contract;
 using Model.Entities;
 using Group = Model.Entities.Group;
@@ -230,34 +231,94 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return result;
     }
     
-    public async Task<List<string>> GetGroups()
+    public async Task<List<GroupView>> GetGroups()
     {
         await using var ctx = ctxFactory();
 
-        var groups = await ctx.Group.Select(x => x.Name).ToListAsync();
+        var groups = await ctx.Group
+            .Include(group=> group.WordGroups)
+            .ThenInclude(wordGroup=> wordGroup.Word)
+            .ToListAsync();
 
-        return groups;
+        var groupsView = groups.Select(group =>
+        {
+            var groupValues = groups.SelectMany(x => x.WordGroups)
+                .Select(x => x.Word)
+                .Select(x => x.WordText)
+                .Aggregate(new StringBuilder(), (builder, s) => builder.AppendFormat("{0}, ", s),
+                    builder => builder.Remove(builder.Length - 1, 1).ToString());
+
+            var groupView = new GroupView
+            {
+                Name = group.Name,
+                Values = groupValues
+            };
+
+            return groupView;
+        }).ToList();
+        
+        return groupsView;
     }
 
-    public async Task<bool> AddGroup(string name, string[] array)
+    public async Task<bool> AddGroup(string name, string[] values)
     {
         name = name.ToLower();
-
+        
         await using var ctx = ctxFactory();
 
-        var groupExists = await ctx.Group.Where(x => x.Name == name).AnyAsync();
+        await ctx.Database.BeginTransactionAsync();
 
-        if (groupExists)
-            return false;
-
-        var group = new Group
+        await InsertWordsIfMissing(ctx, values);
+        
+        var existingGroup = await ctx.Group.Where(x => x.Name == name).FirstOrDefaultAsync();
+        
+        var words = await ctx.Words.Where(x => values.Contains(x.WordText))
+            .ToListAsync();
+        
+        var wordIds = words.Select(x => x.Id).ToHashSet();
+        
+        if (existingGroup is not null)
         {
-            Name = name
-        };
+            var existingGroupWords = await ctx.WordGroup
+                .Where(wg => wg.GroupId == existingGroup.Id &&  wordIds.Contains(wg.WordId))
+                .Select(x=> x.WordId)
+                .ToListAsync();
 
-        ctx.Group.Add(group);
+            var existingGroupWordsIdsSet = existingGroupWords.ToHashSet();
+            
+            var wordGroups = words
+                .Where(wg => !existingGroupWordsIdsSet.Contains(wg.Id))
+                .Select(word => new WordGroup
+                {
+                    GroupId = existingGroup.Id,
+                    WordId = word.Id,
+                }).ToArray();
+            
+            ctx.WordGroup.AddRange(wordGroups);
+        }
+        else
+        {
+            var group = new Group
+            {
+                Name = name
+            };
+            
+            ctx.Group.Add(group); 
+            await ctx.SaveChangesAsync();
+
+            var wordGroups = words.Select(word => new WordGroup
+            {
+                GroupId = group.Id,
+                WordId = word.Id,
+            }).ToArray();
+            
+            ctx.WordGroup.AddRange(wordGroups);
+        }
+        
         await ctx.SaveChangesAsync();
-
+        
+        await ctx.Database.CommitTransactionAsync();
+        
         return true;
     }
 
@@ -348,6 +409,11 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             .Select(x => x.ToLower())
             .ToArray();
 
+        return await InsertWordsIfMissing(ctx, words);
+    }
+
+    private async Task<(Dictionary<string, int> wordIndex, Word[])> InsertWordsIfMissing(SongsContext ctx, string[] words)
+    {
         string[] wordsDistinct = words.Distinct().ToArray();
 
         var wordIndex = words.GroupBy(x => x)

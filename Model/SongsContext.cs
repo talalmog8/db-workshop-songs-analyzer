@@ -25,6 +25,7 @@ public class SongsContext : DbContext
     public DbSet<PhraseWord> PhraseWords { get; set; }
 
     public DbSet<Group> Group { get; set; }
+    public DbSet<WordGroup> WordGroup { get; set; }
     public DbSet<WordDetailsView> WordDetailsViews { get; set; }
 
     public SongsContext(ILoggerFactory loggerFactory, IConfiguration configuration)
@@ -131,7 +132,7 @@ public class SongsContext : DbContext
             // Additional relationships
             modelBuilder.Entity<WordGroup>()
                 .HasOne(wg => wg.Group)
-                .WithMany()
+                .WithMany(g => g.WordGroups)
                 .HasForeignKey(wg => wg.GroupId);
 
             modelBuilder.Entity<WordGroup>()
