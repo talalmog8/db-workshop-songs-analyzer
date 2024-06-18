@@ -637,10 +637,11 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     }
     
     #endregion
-    public static List<int> FindPhraseOccurrences(string songText, string phrase)
+    
+    public List<PhraseArea> FindPhraseOccurrences(string songText, string phrase)
     {
         var index = 0;
-        var occurrences = new List<int>();
+        var occurrences = new List<PhraseArea>();
 
         do
         {
@@ -648,14 +649,53 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
             if (index != -1)
             {
-                occurrences.Add(index);
-                int nextLine = songText.IndexOf(Environment.NewLine, index + phrase.Length - 1, StringComparison.Ordinal);
-                int beforeLine = songText.LastIndexOf(Environment.NewLine, 0, index + 1, StringComparison.Ordinal);
+                var nextLineIndex = FindNextLine(songText, phrase, index);
+                var prevLineIndex = FindPreviousLine(songText, phrase, index);
+                occurrences.Add(new PhraseArea(index, nextLineIndex, prevLineIndex, songText[prevLineIndex .. nextLineIndex].Trim()));
 
                 index += phrase.Length;
             }
         } while (index != -1);
 
         return occurrences;
+    }
+
+    private int FindNextLine(string songText, string phrase, int index)
+    {
+        int numOfNewLines = 1;
+        index = phrase.Length + index;
+        
+        while (index < songText.Length && (songText[index] != '\n' || numOfNewLines > 0))
+        {
+            if (songText[index] == '\n')
+                numOfNewLines--;
+            
+            index++;
+        }
+        
+        if(index < songText.Length)
+            return index;
+        
+        return songText.Length - 1;
+    }
+    
+    private int FindPreviousLine(string songText, string phrase, int index)
+    {
+        int numOfNewLines = 1;
+
+        index = phrase.Length + index;
+
+        while (index >= 0 && (songText[index] != '\n' || numOfNewLines > 0))
+        {
+            if (songText[index] == '\n')
+                numOfNewLines--;
+            
+            index--;
+        }
+        
+        if(index >= 0)
+            return index;
+        
+        return 0;
     }
 }
