@@ -3,7 +3,6 @@
 [Table("word_group")]
 public class WordGroup
 {
-    [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("id")]
     public long Id { get; set; }

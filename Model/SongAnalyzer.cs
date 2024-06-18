@@ -24,6 +24,8 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     public Song? Song { get; set; }
     public bool Processed { get; set; }
 
+    #region Load
+    
     public async Task<string> LoadSong(string path)
     {
         Path = path;
@@ -73,6 +75,10 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         }
     }
 
+    #endregion
+
+    #region Add Song
+    
     public async Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers)
     {
         await using var ctx = ctxFactory();
@@ -85,6 +91,10 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         await tran.CommitAsync();
     }
 
+    #endregion
+
+    #region Words
+    
     public async Task<List<WordTable>> GetWords(string? songName = null, bool filterCurrentSong = false)
     {
         await using var ctx = ctxFactory();
@@ -117,6 +127,10 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return words;
     }
 
+    #endregion
+
+    #region Words Index
+    
     public async Task<List<WordDetailsView>> GetWordIndex()
     {
         await using var ctx = ctxFactory();
@@ -131,6 +145,10 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return wordIndex;
     }
 
+    #endregion
+
+    #region Stats
+    
     public async Task<Stats> GetStats()
     {
         await using var ctx = ctxFactory();
@@ -145,9 +163,12 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return new Stats(averageWordLength, averageSongLineWordLength, averageSongStanzaWordLength,
             averageSongWordLength);
     }
+    
+    #endregion
 
-    public async Task<List<SongQueryResult>> GetSongs(string songName, string composerFirstName,
-        string composerLastName, string freeText)
+    #region Songs
+    
+    public async Task<List<SongQueryResult>> GetSongs(string songName, string composerFirstName, string composerLastName, string freeText)
     {
         List<SongQueryResult> result = null;
 
@@ -231,35 +252,24 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return result;
     }
     
-    public async Task<List<GroupView>> GetGroups()
+    #endregion
+
+    #region Group
+    
+    public async Task<List<GroupResult>> GetGroups()
     {
         await using var ctx = ctxFactory();
 
-        var groups = await ctx.Group
-            .Include(group=> group.WordGroups)
-            .ThenInclude(wordGroup=> wordGroup.Word)
-            .ToListAsync();
-
-        var groupsView = groups.Select(group =>
-        {
-            var groupValues = groups.SelectMany(x => x.WordGroups)
-                .Select(x => x.Word)
-                .Select(x => x.WordText)
-                .Aggregate(new StringBuilder(), (builder, s) => builder.AppendFormat("{0}, ", s),
-                    builder => builder.Length > 0 ? builder.Remove(builder.Length - 1, 1).ToString() : builder.ToString());
-
-            var groupView = new GroupView
+        var groups = await ctx.GroupsView
+            .Select(group =>  new GroupResult
             {
-                Name = group.Name,
-                Values = groupValues
-            };
-
-            return groupView;
-        }).ToList();
+                Name = group.GroupName,
+                Values = group.GroupValues
+            }).ToListAsync();
         
-        return groupsView;
+        return groups;
     }
-
+    
     public async Task<bool> AddGroup(string name, string[] values)
     {
         name = name.ToLower();
@@ -321,7 +331,11 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         
         return true;
     }
+    
+    #endregion
 
+    #region Phrase
+    
     public async Task<List<string>> GetPhrases()
     {
         await using var ctx = ctxFactory();
@@ -370,8 +384,11 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return (phrase,true);
     }
 
-    private async Task InsertContributorsIfMissing(HashSet<Name> composers, SongsContext ctx,
-        ContributorType contributorType, Song song)
+    #endregion
+
+    #region Song Processor Inserts
+    
+    private async Task InsertContributorsIfMissing(HashSet<Name> composers, SongsContext ctx, ContributorType contributorType, Song song)
     {
         try
         {
@@ -383,9 +400,8 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             // TODO fix this
         }
     }
-
-    private static async Task<SongWord[]> InsertSongWords(Word[] words, Song song, Dictionary<string, int> wordIndex,
-        SongsContext ctx)
+    
+    private static async Task<SongWord[]> InsertSongWords(Word[] words, Song song, Dictionary<string, int> wordIndex, SongsContext ctx)
     {
         var songWords = words.Select(x => new SongWord
         {
@@ -449,8 +465,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return song;
     }
 
-    private async Task InsertContributorIfMissing(Contributor contributor, SongsContext ctx,
-        ContributorType contributorTypeId, Song song)
+    private async Task InsertContributorIfMissing(Contributor contributor, SongsContext ctx, ContributorType contributorTypeId, Song song)
     {
         var existingContributor = await ctx.Contributors.AsQueryable()
             .Where(x => x.FullName == contributor.FullName)
@@ -566,8 +581,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return songLines.ToArray();
     }
 
-    private async Task<WordLocation[]> InsertWordLocations(SongLine[] songLines, string input, SongWord[] songWords,
-        SongsContext ctx)
+    private async Task<WordLocation[]> InsertWordLocations(SongLine[] songLines, string input, SongWord[] songWords, SongsContext ctx)
     {
         var wordToSongWord = songWords.ToDictionary(x => x.Word.WordText, y => y);
 
@@ -607,6 +621,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return wordLocations.ToArray();
     }
     
+    #endregion
     public static List<int> FindPhraseOccurrences(string songText, string phrase)
     {
         var index = 0;

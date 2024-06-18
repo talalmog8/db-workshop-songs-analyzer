@@ -204,7 +204,7 @@ Margin="5"
                                     <Button Padding="5"  VerticalAlignment="Center" Margin="0,5,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25" Name="SavePhraseButton" Click="SavePhraseButton_Click">Save</Button>
                                 </StackPanel>
                                 <StackPanel Margin="0,0,15,10">
-                                    <TextBlock    Margin="0,0,0,0" VerticalAlignment="Center"  MinHeight="20">Define A Group:</TextBlock>
+                                    <TextBlock    Margin="0,0,0,0" VerticalAlignment="Center"  MinHeight="20">Upsert A Group:</TextBlock>
                                     <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
                                         <TextBlock  MinWidth="70"  Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Name:</TextBlock>
                                         <TextBox   MinWidth="200" MinHeight="20" Margin="5" VerticalAlignment="Top" HorizontalAlignment="Left" Name="GroupNameTextBox"/>

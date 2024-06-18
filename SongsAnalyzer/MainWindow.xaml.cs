@@ -10,7 +10,7 @@ namespace SongsAnalyzer
         private readonly ObservableCollection<WordTable> _words = [];
         private readonly ObservableCollection<SongQueryResult> _songComposers = [];
         private readonly ObservableCollection<WordDetailsView> _wordDetailsViews = [];
-        private readonly ObservableCollection<GroupView> _groups = [];
+        private readonly ObservableCollection<GroupResult> _groups = [];
         private readonly ObservableCollection<string> _pharses = [];
 
         public WindowHandlers()
@@ -324,7 +324,7 @@ namespace SongsAnalyzer
                 
             if(added)
             {
-                _groups.Add(new GroupView{ Name = groupName, Values = groupName});
+                await GetGroups();
                 await GroupValuesListBox.Dispatcher.InvokeAsync(() => GroupValuesListBox.Items.Clear());
                 await GroupNameTextBox.Dispatcher.InvokeAsync(() => GroupNameTextBox.Clear());
             }

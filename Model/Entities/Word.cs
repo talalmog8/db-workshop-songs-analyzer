@@ -15,4 +15,6 @@ public class Word
 
     [Column("length")]
     public int Length { get; set; }
+    
+    public virtual ICollection<WordGroup> WordGroups { get; set; }
 }

@@ -2,9 +2,6 @@
 
 namespace Model.Entities;
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 [Table("contributor")]
 public class Contributor
 {
