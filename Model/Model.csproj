@@ -9,6 +9,10 @@
     <PropertyGroup>
         <NoWarn>1701;1702;CS8619</NoWarn>
     </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <NoWarn>1701;1702;CS8619;CS8625</NoWarn>
+    </PropertyGroup>
     
     <ItemGroup>
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />

@@ -28,6 +28,7 @@ public class SongsContext : DbContext
     public DbSet<WordGroup> WordGroup { get; set; }
     public DbSet<GroupsView> GroupsView { get; set; }
     public DbSet<WordDetailsView> WordDetailsViews { get; set; }
+    public DbSet<GroupWordDetailsView> GroupWordDetailsView { get; set; }
 
     public SongsContext(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
@@ -165,6 +166,7 @@ public class SongsContext : DbContext
             .HasForeignKey(wl => wl.SongWordId);
 
         modelBuilder.Entity<WordDetailsView>().ToView("word_details_view");
+        modelBuilder.Entity<GroupWordDetailsView>().ToView("group_word_details_view");
         modelBuilder.Entity<GroupsView>().ToView("groups_view")
             .HasKey(view => new {view.GroupId, view.GroupName});
     }

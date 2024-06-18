@@ -131,14 +131,29 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     #region Words Index
     
-    public async Task<List<WordDetailsView>> GetWordIndex()
+    public async Task<List<WordDetailsView>> GetWordIndex(string groupName = null)
     {
+        List<WordDetailsView> wordIndex;
+        
         await using var ctx = ctxFactory();
 
         if (Song is null)
             return Enumerable.Empty<WordDetailsView>().ToList();
+        
+        if (!string.IsNullOrEmpty(groupName))
+        {
+            var groupWordDetails = await ctx.GroupWordDetailsView
+                .Where(x => x.SongId == Song.Id)
+                .Where(x=> x.GroupName == groupName)
+                .ToListAsync();
 
-        var wordIndex = await ctx.WordDetailsViews
+            wordIndex = groupWordDetails.Select(groupWordDetailsView => (WordDetailsView)groupWordDetailsView).ToList();    
+            
+            return wordIndex;
+        }            
+        
+        
+        wordIndex = await ctx.WordDetailsViews
             .Where(x => x.SongId == Song.Id)
             .ToListAsync();
 

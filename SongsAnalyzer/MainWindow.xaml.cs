@@ -77,9 +77,9 @@ namespace SongsAnalyzer
         
         #region Tab 4 Word Index
 
-        private async Task UpdateWordIndex()
+        private async Task UpdateWordIndex(string groupName = null)
         {
-            var wordIndex = await _songAnalyzer.GetWordIndex();
+            var wordIndex = await _songAnalyzer.GetWordIndex(groupName);
             
             _wordDetailsViews.Clear();
             
@@ -341,6 +341,36 @@ namespace SongsAnalyzer
             groups.ForEach(group => _groups.Add(group));
         }
         
+        
+        private async void FilterCurrentGroupButton_WordIndexView_Click(object sender, RoutedEventArgs e)
+        {
+            if(GroupsDataGrid.SelectedItem is null)
+            {
+                MessageBox.Show("No Group Is Selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if(GroupsDataGrid.SelectedItem is not GroupResult selectedItem)
+            {
+                MessageBox.Show("Selected Group Is Not Valid", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var groupName = selectedItem.Name;
+            
+            if(string.IsNullOrEmpty(groupName))
+            {
+                MessageBox.Show("Selected Group Is Not Valid", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            
+            await UpdateWordIndex(groupName);
+        }
+
+        private async void ClearFilterButton_WordIndexView_Click(object sender, RoutedEventArgs e)
+        {
+            await UpdateWordIndex();
+        }
+        
         #endregion
 
         #region Phrase
@@ -374,5 +404,6 @@ namespace SongsAnalyzer
         }
 
         #endregion
+
     }
 }

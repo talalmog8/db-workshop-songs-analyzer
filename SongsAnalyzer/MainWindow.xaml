@@ -183,7 +183,10 @@ Margin="5"
                             <StackPanel Orientation="Horizontal">
                                 <StackPanel Margin="0,0,15,10">
                                     <TextBlock HorizontalAlignment="Left">Groups:</TextBlock>
-                                    <DataGrid  AutoGenerateColumns="True" Name="GroupsDataGrid" SelectionMode="Single" Height="200" MinWidth="300" HorizontalAlignment="Left"/>
+                                    <DataGrid SelectionUnit="FullRow" IsReadOnly="True" AutoGenerateColumns="True" Name="GroupsDataGrid" SelectionMode="Single" Height="200" MinWidth="300" HorizontalAlignment="Left"/>
+                                    <Button Click="FilterCurrentGroupButton_WordIndexView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="FilterCurrentGroupButton_WordIndexView" >Query</Button>
+                                    <Button Click="ClearFilterButton_WordIndexView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="ClearFilterButton_WordIndexView" >Clear Filters</Button>
+
                                 </StackPanel>
                                 <StackPanel Margin="0,0,15,10">
                                     <TextBlock HorizontalAlignment="Left" >Phrases:</TextBlock>

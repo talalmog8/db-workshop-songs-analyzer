@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <NoWarn>1701;1702;CS8619</NoWarn>
+      <NoWarn>1701;1702;CS8619;CS8625</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
