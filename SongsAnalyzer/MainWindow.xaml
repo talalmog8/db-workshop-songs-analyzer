@@ -191,15 +191,16 @@ Margin="5"
                         <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
                             <TextBlock  MinWidth="70"  Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Name:</TextBlock>
                             <TextBox   
-MinWidth="150" 
+MinWidth="200" 
 MinHeight="20" 
 Margin="5" 
 VerticalAlignment="Top" HorizontalAlignment="Left" Name="GroupNameTextBox"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock  MinWidth="70"  Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Values:</TextBlock>
-                            <ListBox MinWidth="150"  Margin="5" Name="GroupValuesListBox"/>
+                            <ListBox MinWidth="150" Height="150" Margin="5" Name="GroupValuesListBox"/>
                             <Button x:Name="AddGroupValueButton" 
+                                    Click="AddGroup_Click"
 MinWidth="60" 
 MinHeight="20" 
 Margin="5" 
@@ -207,7 +208,7 @@ VerticalAlignment="Top"
 Content="Add"/>
                         </StackPanel>
                         <!-- Save Button -->
-                        <Button Click="AddGroup_Click" Padding="5"  VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25" Name="SaveGroupButton" >Save</Button>
+                        <Button Click="SaveGroup_Click" Padding="5"  VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25" Name="SaveGroupButton" >Save</Button>
                         <StackPanel Margin="0,15,0,15">
                             <!-- Add Song Label -->
                             <TextBlock    Margin="0,0,0,5" VerticalAlignment="Center"  MinHeight="20">Define A Phrase:</TextBlock>

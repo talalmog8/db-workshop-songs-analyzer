@@ -292,32 +292,34 @@ namespace SongsAnalyzer
         
         private async void AddGroup_Click(object sender, RoutedEventArgs e)
         {
-            string? groupName = Interaction.InputBox("Enter group name:", "Add Group", "");
+            var groupName = Interaction.InputBox("Enter group name:", "Add Group", "");
 
-            if (!string.IsNullOrEmpty(groupName))
+            if (string.IsNullOrEmpty(groupName))
             {
-                bool exists = await _songAnalyzer.IsGroupExists(groupName);
-                
-                if(!exists)
-                    _groups.Add(groupName);
-                else
-                    MessageBox.Show("Please use a valid group name", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else 
                 MessageBox.Show("Please use a new group name", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            
+            await GroupValuesListBox.Dispatcher.InvokeAsync(() => GroupValuesListBox.Items.Add(groupName));
         }
         
         private async void SaveGroup_Click(object sender, RoutedEventArgs e)
-        {
-            string? groupName = GroupListBox?.SelectedItem?.ToString();
+        { 
+            var groupName = GroupNameTextBox.Text;
 
             if (string.IsNullOrEmpty(groupName))
                 return;
             
-            bool added = await _songAnalyzer.AddGroup(groupName);
+            var added = await _songAnalyzer.AddGroup(groupName, _groups.ToArray());
                 
             if(added)
+            {
                 _groups.Add(groupName);
+                await GroupValuesListBox.Dispatcher.InvokeAsync(() => GroupValuesListBox.Items.Clear());
+                await GroupNameTextBox.Dispatcher.InvokeAsync(() => GroupNameTextBox.Clear());
+            }
+            else
+                MessageBox.Show("Group Must Be Unique", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private async Task GetGroups()

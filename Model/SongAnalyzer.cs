@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Model.Contract;
 using Model.Entities;
 using Group = Model.Entities.Group;
@@ -230,16 +229,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         return result;
     }
-
-    public async Task<bool> IsGroupExists(string name)
-    {
-        await using var ctx = ctxFactory();
-
-        bool isGroupExists = await ctx.Group.Where(x => x.Name == name).AnyAsync();
-
-        return isGroupExists;
-    }
-
+    
     public async Task<List<string>> GetGroups()
     {
         await using var ctx = ctxFactory();
@@ -249,7 +239,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return groups;
     }
 
-    public async Task<bool> AddGroup(string name)
+    public async Task<bool> AddGroup(string name, string[] array)
     {
         name = name.ToLower();
 
