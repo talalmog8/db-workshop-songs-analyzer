@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 using Model.Contract;
 using Model.Entities;
+using Group = Model.Entities.Group;
 
 namespace Model;
 
@@ -9,7 +11,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     private readonly string[] _wordSplit =
     [
         " ", "\t", "\u00A0", ".", ",", "!", "?", ":", ";", "-", "–", "—", "/", "\\", "\"", "'", "(", ")", "[", "]", "{",
-        "}", "<", ">", "_", "@", "&", "*", "+", "=", "|", "~", "`", Environment.NewLine 
+        "}", "<", ">", "_", "@", "&", "*", "+", "=", "|", "~", "`", Environment.NewLine
     ];
 
     private readonly string[] _stanzaSplit = [$"{Environment.NewLine}{Environment.NewLine}"];
@@ -58,11 +60,11 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             _ = await InsertWordLocations(songLines, text, songWords, ctx);
 
             await tran.CommitAsync();
-            
+
             Song = song;
             Processed = true;
 
-            return  ProcessingResult.Succeeded;
+            return ProcessingResult.Succeeded;
         }
         catch (Exception e)
         {
@@ -97,7 +99,12 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         var words = await query.Include(x => x.SongWords)
             .ThenInclude(y => y.Word)
             .SelectMany(x => x.SongWords)
-            .GroupBy(x => new { x.Word.Id, x.Word.WordText, x.Word.Length })
+            .GroupBy(x => new
+            {
+                x.Word.Id,
+                x.Word.WordText,
+                x.Word.Length
+            })
             .Select(g => new WordTable
             {
                 Id = g.Key.Id,
@@ -227,30 +234,30 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     public async Task<bool> IsGroupExists(string name)
     {
         await using var ctx = ctxFactory();
-        
-        bool isGroupExists = await ctx.Group.Where(x=> x.Name == name).AnyAsync();
 
-        return isGroupExists;  
+        bool isGroupExists = await ctx.Group.Where(x => x.Name == name).AnyAsync();
+
+        return isGroupExists;
     }
-    
+
     public async Task<List<string>> GetGroups()
     {
         await using var ctx = ctxFactory();
-        
-        var groups = await ctx.Group.Select(x=> x.Name).ToListAsync();
 
-        return groups;  
+        var groups = await ctx.Group.Select(x => x.Name).ToListAsync();
+
+        return groups;
     }
 
-    public async Task<bool> AddGroup(string? name)
+    public async Task<bool> AddGroup(string name)
     {
         name = name.ToLower();
-        
+
         await using var ctx = ctxFactory();
-        
+
         var groupExists = await ctx.Group.Where(x => x.Name == name).AnyAsync();
-        
-        if(groupExists)
+
+        if (groupExists)
             return false;
 
         var group = new Group
@@ -263,7 +270,55 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         return true;
     }
-    
+
+    public async Task<List<string>> GetPhrases()
+    {
+        await using var ctx = ctxFactory();
+        var phrases = await ctx.Phrases.Select(x => x.PhraseText).ToListAsync();
+
+        return phrases;
+    }
+
+    public async Task<(string phrase, bool)> AddPhrase(string phrase)
+    {
+        phrase = phrase.ToLower();
+
+        await using var ctx = ctxFactory();
+
+        bool phraseExists = await ctx.Phrases.Where(x => x.PhraseText == phrase).AnyAsync();
+
+        if (phraseExists)
+            return (phrase,false);
+        
+        await using var tran = await ctx.Database.BeginTransactionAsync();
+
+        var phraseToInsert = new Phrase
+        {
+            PhraseText = phrase
+        };
+        
+        ctx.Phrases.Add(phraseToInsert);
+        await ctx.SaveChangesAsync();
+
+        var offset = 0;
+
+        var phraseWords = phrase.Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries)
+            .Select(word => new PhraseWord
+            {
+                PhraseId = phraseToInsert.Id,
+                Word = word,
+                Offset = offset++
+            }).ToArray();
+
+
+        ctx.PhraseWords.AddRange(phraseWords);
+        await ctx.SaveChangesAsync();
+
+        await tran.CommitAsync();
+
+        return (phrase,true);
+    }
+
     private async Task InsertContributorsIfMissing(HashSet<Name> composers, SongsContext ctx,
         ContributorType contributorType, Song song)
     {
@@ -337,7 +392,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         return song;
     }
-    
+
     private async Task InsertContributorIfMissing(Contributor contributor, SongsContext ctx,
         ContributorType contributorTypeId, Song song)
     {
@@ -412,7 +467,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
                 WordLength = stanza.Length,
                 StanzaText = stanza
             };
-            
+
             return songStanza;
         }).ToArray();
 
@@ -429,7 +484,11 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         var songLines = songStanzas
             .SelectMany(songStanza => songStanza.StanzaText
                 .Split(_lineSplit, StringSplitOptions.RemoveEmptyEntries)
-                .Select(line => new { Line = line, StanzaId = songStanza.Id }))
+                .Select(line => new
+                {
+                    Line = line,
+                    StanzaId = songStanza.Id
+                }))
             .Select((lineAndStanza) =>
             {
                 var songLine = new SongLine
@@ -441,7 +500,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
                     SongStanzaId = lineAndStanza.StanzaId,
                     SongLineText = lineAndStanza.Line
                 };
-                
+
                 return songLine;
             }).ToArray();
 
@@ -460,7 +519,11 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         var wordLocations = songLines
             .SelectMany(songLine => songLine.SongLineText.Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries)
-                .Select(word => new { Word = word.ToLower(), LineId = songLine.Id }))
+                .Select(word => new
+                {
+                    Word = word.ToLower(),
+                    LineId = songLine.Id
+                }))
             .Select(wordAndLineId =>
             {
                 if (wordToSongWord.TryGetValue(wordAndLineId.Word, out var songWord))
@@ -486,5 +549,27 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         await ctx.SaveChangesAsync();
         return wordLocations.ToArray();
+    }
+    
+    public static List<int> FindPhraseOccurrences(string songText, string phrase)
+    {
+        var index = 0;
+        var occurrences = new List<int>();
+
+        do
+        {
+            index = songText.IndexOf(value: phrase, startIndex: index, StringComparison.OrdinalIgnoreCase);
+
+            if (index != -1)
+            {
+                occurrences.Add(index);
+                int nextLine = songText.IndexOf(Environment.NewLine, index + phrase.Length - 1, StringComparison.Ordinal);
+                int beforeLine = songText.LastIndexOf(Environment.NewLine, 0, index + 1, StringComparison.Ordinal);
+
+                index += phrase.Length;
+            }
+        } while (index != -1);
+
+        return occurrences;
     }
 }

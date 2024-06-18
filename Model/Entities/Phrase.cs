@@ -12,4 +12,7 @@ public class Phrase
     [MaxLength(250)]
     
     public string PhraseText { get; set; }
+    
+    public virtual ICollection<PhraseWord> PhraseWords { get; set; }
+    
 }

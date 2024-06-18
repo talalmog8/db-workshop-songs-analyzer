@@ -148,7 +148,7 @@ Margin="5"
                 <StackPanel Margin="5" Orientation="Horizontal" VerticalAlignment="Stretch">
                     <StackPanel Margin="10,0,0,0" MinWidth="380">
                         <StackPanel Margin="0,0,5,5" Orientation="Vertical">
-                            <TextBlock Margin="0,5,0,5" HorizontalAlignment="Left">Index:</TextBlock>
+                            <TextBlock Margin="0,5,0,5" HorizontalAlignment="Left">Index: (Load Song First)</TextBlock>
                             <Border    Margin="0,0,0,5" BorderBrush="Black" BorderThickness="1">
                                 <DataGrid FontSize="14" Height="350" MaxWidth="1000" x:Name="WordsIndexDataGrid" AutoGenerateColumns="False" Margin="0">
                                     <DataGrid.Columns>
@@ -219,15 +219,15 @@ Content="Add"/>
 MinWidth="270" 
 MinHeight="20" 
 Margin="5" 
-VerticalAlignment="Top" HorizontalAlignment="Left" Name="PhraseNameTextBox"/>
+VerticalAlignment="Top" HorizontalAlignment="Left" Name="PhraseTextBox"/>
                             </StackPanel>
 
 
                             <!-- Save Button -->
-                            <Button Padding="5"  VerticalAlignment="Center" Margin="0,5,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25" Name="SavePhraseButton" Click="AddSongButton_Click">Save</Button>
+                            <Button Padding="5"  VerticalAlignment="Center" Margin="0,5,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25" Name="SavePhraseButton" Click="SavePhraseButton_Click">Save</Button>
 
                             <TextBlock HorizontalAlignment="Left" Margin="0,15,0,5">Filter By Phrase:</TextBlock>
-                            <ListBox SelectionMode="Multiple" MinHeight="100" Margin="0,5,0,5" MinWidth="200" HorizontalAlignment="Left"/>
+                            <ListBox SelectionMode="Multiple" MinHeight="150" Margin="0,5,0,5" MinWidth="330" HorizontalAlignment="Left" Name="PhrasesListBox"/>
                         </StackPanel>
                     </StackPanel>
 

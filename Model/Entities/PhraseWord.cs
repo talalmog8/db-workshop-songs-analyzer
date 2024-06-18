@@ -18,6 +18,5 @@ public class PhraseWord
     [Column("offset")]
     public int Offset { get; set; }
 
-    [ForeignKey("PhraseId")]
     public virtual Phrase Phrase { get; set; }
 }

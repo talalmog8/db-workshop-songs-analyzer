@@ -141,7 +141,7 @@ public class SongsContext : DbContext
 
             modelBuilder.Entity<PhraseWord>()
                 .HasOne(pw => pw.Phrase)
-                .WithMany()
+                .WithMany(p => p.PhraseWords)
                 .HasForeignKey(pw => pw.PhraseId);
 
             modelBuilder.Entity<SongWord>()

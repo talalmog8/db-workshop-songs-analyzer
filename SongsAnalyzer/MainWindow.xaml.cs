@@ -10,7 +10,8 @@ namespace SongsAnalyzer
         private readonly ObservableCollection<WordTable> _words = [];
         private readonly ObservableCollection<SongQueryResult> _songComposers = [];
         private readonly ObservableCollection<WordDetailsView> _wordDetailsViews = [];
-        private readonly ObservableCollection<string?> _groups = [];
+        private readonly ObservableCollection<string> _groups = [];
+        private readonly ObservableCollection<string> _pharses = [];
 
         public WindowHandlers()
         {
@@ -20,6 +21,7 @@ namespace SongsAnalyzer
             QuerySongResultsDataGrid.ItemsSource = _songComposers;
             WordsIndexDataGrid.ItemsSource = _wordDetailsViews;
             GroupListBox.ItemsSource = _groups;
+            PhrasesListBox.ItemsSource = _pharses;
         }
 
         #region Load Song Tab 1
@@ -61,11 +63,12 @@ namespace SongsAnalyzer
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await RefreshUI();
+            await GetGroups();
+            await GetPhrases();
         }
         
         private async Task RefreshUI()
         {
-            await GetGroups();
             await UpdateWordTable();
             await UpdateStats();
             await UpdateSongsResultsTable();
@@ -326,6 +329,29 @@ namespace SongsAnalyzer
             groups.ForEach(group => _groups.Add(group));
         }
         
+        #endregion
+
+        #region Phrase
+
+        private async void SavePhraseButton_Click(object sender, RoutedEventArgs e)
+        {
+            var (phrase, added) = await _songAnalyzer.AddPhrase(PhraseTextBox.Text);
+
+            if(added)
+                _pharses.Add(phrase);
+            else 
+                MessageBox.Show("Phrase already exists or invalid", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        
+        private async Task GetPhrases()
+        {
+            _pharses.Clear();
+            
+            var phrases = await _songAnalyzer.GetPhrases();
+            
+            phrases.ForEach(phrase => _pharses.Add(phrase));
+        }
+
         #endregion
     }
 }

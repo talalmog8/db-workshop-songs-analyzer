@@ -12,7 +12,7 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-        
+
         // Configure Serilog for logging
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
@@ -21,7 +21,7 @@ public partial class App : Application
 
         // Log application start
         Log.Information("Application started");
-        
+
         // Build configuration
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -30,29 +30,12 @@ public partial class App : Application
 
         var services = new ServiceCollection();
         var loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog());
-        
+
         services.AddSingleton(loggerFactory);
         services.AddSingleton(configuration);
         services.AddSingleton<Func<SongsContext>>(_ => () => new SongsContext(loggerFactory, configuration));
         services.AddSingleton<ISongAnalyzer, SongAnalyzer>();
-        
-        Provider = services.BuildServiceProvider();
-        
-        /*
-        analyzer.Path = "C:\\Users\\talal\\OneDrive\\Documents\\University\\Current\\databases workshop\\songs\\All Along the Watchtower.txt";
-        analyzer.SongName = "All Along the Watchtower.txt";
-        analyzer.Performer = new Contributor(firstName: "aal", lastName: "almog");
-        analyzer.MusicComposer = new Contributor(firstName: "bal", lastName: "blmog");
-        analyzer.Writer = new Contributor(firstName: "cal", lastName: "clmog");
 
-        try
-        {
-            analyzer.ProcessSong();
-        }
-        catch (Exception exception)
-        {
-            Log.Logger.Error(exception, "Failed ProcessSong");
-        }
-        */
+        Provider = services.BuildServiceProvider();
     }
 }
