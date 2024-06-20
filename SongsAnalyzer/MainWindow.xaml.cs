@@ -12,6 +12,7 @@ namespace SongsAnalyzer
         private readonly ObservableCollection<WordDetailsView> _wordDetailsViews = [];
         private readonly ObservableCollection<GroupResult> _groups = [];
         private readonly ObservableCollection<string> _pharses = [];
+        private readonly ObservableCollection<TextOccurence> _wordReferences = [];
 
         public WindowHandlers()
         {
@@ -22,11 +23,11 @@ namespace SongsAnalyzer
             WordsIndexDataGrid.ItemsSource = _wordDetailsViews;
             GroupsDataGrid.ItemsSource = _groups;
             PhrasesListBox.ItemsSource = _pharses;
+            WordReferencesDataGrid.ItemsSource = _wordReferences;
         }
 
         #region Load Song Tab 1
 
-        
         private async void BrowseSong_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Microsoft.Win32.OpenFileDialog
@@ -40,82 +41,86 @@ namespace SongsAnalyzer
             bool? result = dialog.ShowDialog();
 
             // Process open file dialog box results
-            if (result != true) 
+            if (result != true)
                 return;
-            
+
             var filename = dialog.FileName;
             var content = await _songAnalyzer.LoadSong(filename);
-                
+
             var processingResult = await _songAnalyzer.ProcessSong();
-                
-            if(processingResult == ProcessingResult.Failed)
+
+            if (processingResult == ProcessingResult.Failed)
                 MessageBox.Show("Failed To Process Song", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             else
             {
                 await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
                 await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Text = _songAnalyzer.SongName);
-                await RefreshUI();
+                await RefreshUI(true);
             }
         }
-        
+
         #endregion
-        
+
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await RefreshUI();
             await GetGroups();
             await GetPhrases();
         }
-        
-        private async Task RefreshUI()
+
+        private async Task RefreshUI(bool filterCurrentSong = false)
         {
-            await UpdateWordTable();
+            await UpdateWordTable(filterCurrentSong: filterCurrentSong);
             await UpdateStats();
             await UpdateSongsResultsTable();
             await UpdateWordIndex();
         }
-        
+
         #region Tab 4 Word Index
 
         private async Task UpdateWordIndex(string groupName = null)
         {
             var wordIndex = await _songAnalyzer.GetWordIndex(groupName);
-            
+
             _wordDetailsViews.Clear();
-            
+
             foreach (var word in wordIndex)
                 _wordDetailsViews.Add(word);
         }
 
         #endregion
-        
+
         #region Stats Tab 5
 
         private async Task UpdateStats()
         {
             var stats = await _songAnalyzer.GetStats();
-            await Stats_PerWord.Dispatcher.InvokeAsync(() =>  Stats_PerWord.Text = stats.AverageWordLength.ToString(CultureInfo.InvariantCulture));
-            await Stats_PerLine.Dispatcher.InvokeAsync(() =>  Stats_PerLine.Text = stats.AverageSongLineWordLength.ToString(CultureInfo.InvariantCulture));
-            await Stats_PerStanza.Dispatcher.InvokeAsync(() =>  Stats_PerStanza.Text = stats.AverageSongStanzaWordLength.ToString(CultureInfo.InvariantCulture));
-            await Stats_PerSong.Dispatcher.InvokeAsync(() =>  Stats_PerSong.Text = stats.AverageSongWordLength.ToString(CultureInfo.InvariantCulture));
+            await Stats_PerWord.Dispatcher.InvokeAsync(() =>
+                Stats_PerWord.Text = stats.AverageWordLength.ToString(CultureInfo.InvariantCulture));
+            await Stats_PerLine.Dispatcher.InvokeAsync(() =>
+                Stats_PerLine.Text = stats.AverageSongLineWordLength.ToString(CultureInfo.InvariantCulture));
+            await Stats_PerStanza.Dispatcher.InvokeAsync(() =>
+                Stats_PerStanza.Text = stats.AverageSongStanzaWordLength.ToString(CultureInfo.InvariantCulture));
+            await Stats_PerSong.Dispatcher.InvokeAsync(() =>
+                Stats_PerSong.Text = stats.AverageSongWordLength.ToString(CultureInfo.InvariantCulture));
         }
-        
+
         #endregion
-        
-        #region Tab 2 - Words + QuerySong
+
+        #region Tab 2 - QuerySong
 
         private async Task UpdateSongsResultsTable()
         {
             // populate  word data grid
-            
+
             _songComposers.Clear();
-            
+
             var songs = await _songAnalyzer.GetSongs(
                 songName: QuerySongNameTextBox.Text,
                 composerFirstName: QueryComposerFirstNameTextBox.Text,
                 composerLastName: QueryComposerLastNameTextBox.Text,
                 freeText: QueryWordsTextBox.Text);
-           
+
             foreach (var song in songs)
                 _songComposers.Add(song);
         }
@@ -124,17 +129,17 @@ namespace SongsAnalyzer
         {
             await UpdateSongsResultsTable();
         }
-        
+
         private async void ClearQuerySongButton_Click(object sender, RoutedEventArgs e)
         {
             await UpdateSongsResultsTable();
-            
+
             await QuerySongNameTextBox.Dispatcher.InvokeAsync(() => QuerySongNameTextBox.Clear());
             await QueryComposerFirstNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerFirstNameTextBox.Clear());
             await QueryComposerLastNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerLastNameTextBox.Clear());
             await QueryWordsTextBox.Dispatcher.InvokeAsync(() => QueryWordsTextBox.Clear());
         }
-        
+
         #endregion
 
         #region Words Tab 3
@@ -146,22 +151,32 @@ namespace SongsAnalyzer
                 SongIsNotProcessed();
                 return;
             }
-            
-            await UpdateWordTable(filterCurrentSong: true);
+
+            int? stanza = string.IsNullOrEmpty(QuerySong_WordByStanza_WordViewTextBox.Text)
+                ? null
+                : int.Parse(QuerySong_WordByStanza_WordViewTextBox.Text);
+            int? line = string.IsNullOrEmpty(QuerySong_WordByLine_WordViewTextBox.Text)
+                ? null
+                : int.Parse(QuerySong_WordByLine_WordViewTextBox.Text);
+            int? offset = string.IsNullOrEmpty(QuerySong_WordByOffset_WordViewTextBox.Text)
+                ? null
+                : int.Parse(QuerySong_WordByOffset_WordViewTextBox.Text);
+
+            await UpdateWordTable(songName: null, filterCurrentSong: true, stanza, line, offset);
         }
-        
-        private async Task UpdateWordTable(string? songName = null, bool filterCurrentSong = false)
+
+        private async Task UpdateWordTable(string? songName = null, bool filterCurrentSong = false, int? stanza = null, int? line = null, int? offset = null)
         {
             // populate  word data grid
-            
+
             _words.Clear();
-            
+
             var words = await _songAnalyzer.GetWords(songName, filterCurrentSong);
-           
+
             foreach (var word in words)
                 _words.Add(word);
         }
-        
+
         private async void UnFilterSongWordIndexButton_Click(object sender, RoutedEventArgs e)
         {
             await UpdateWordTable();
@@ -177,8 +192,23 @@ namespace SongsAnalyzer
             await UpdateWordTable();
         }
 
-        #endregion
+        private void WordsDataGrid_Selected(object sender, RoutedEventArgs e)
+        {
+            if (WordsDataGrid.SelectedItem is null)
+                return;
+            
+            if (WordsDataGrid.SelectedItem is not WordTable selectedItem)
+                return;
+            
+            if (!_songAnalyzer.Processed)
+                return;
+            
+            foreach (var reference in _songAnalyzer.GetWordReference(selectedItem.WordText))
+                _wordReferences.Add(reference);
+        }
         
+        #endregion
+
         #region Add Song
 
         private const string SPACE = " ";
@@ -190,11 +220,12 @@ namespace SongsAnalyzer
                 SongIsNotProcessed();
                 return;
             }
-            
+
             var composer = Interaction.InputBox("Enter composer name:", "Add Composer", "");
-            if (!string.IsNullOrEmpty(composer) && composer.Split(SPACE, StringSplitOptions.RemoveEmptyEntries).Length > 1) 
+            if (!string.IsNullOrEmpty(composer) &&
+                composer.Split(SPACE, StringSplitOptions.RemoveEmptyEntries).Length > 1)
                 ComposersListBox.Items.Add(composer);
-            else 
+            else
                 FullNameError();
         }
 
@@ -205,14 +236,14 @@ namespace SongsAnalyzer
                 SongIsNotProcessed();
                 return;
             }
-            
+
             var writer = Interaction.InputBox("Enter writer name:", "Add Writer", "");
             if (!string.IsNullOrEmpty(writer) && writer.Split(SPACE, StringSplitOptions.RemoveEmptyEntries).Length > 1)
                 WritersListBox.Items.Add(writer);
-            else 
+            else
                 FullNameError();
         }
-        
+
         private void AddPerformerButton_Click(object sender, RoutedEventArgs e)
         {
             if (!_songAnalyzer.Processed)
@@ -220,11 +251,13 @@ namespace SongsAnalyzer
                 SongIsNotProcessed();
                 return;
             }
-            
-            var performer = Interaction.InputBox("Enter performer full name. use a space as a separator:", "Add Performer", "");
-            if (!string.IsNullOrEmpty(performer) && performer.Split(SPACE, StringSplitOptions.RemoveEmptyEntries).Length > 1)
+
+            var performer = Interaction.InputBox("Enter performer full name. use a space as a separator:",
+                "Add Performer", "");
+            if (!string.IsNullOrEmpty(performer) &&
+                performer.Split(SPACE, StringSplitOptions.RemoveEmptyEntries).Length > 1)
                 PerformersListBox.Items.Add(performer);
-            else 
+            else
                 FullNameError();
         }
 
@@ -235,7 +268,7 @@ namespace SongsAnalyzer
                 SongIsNotProcessed();
                 return;
             }
-            
+
             var composers = new HashSet<Name>();
             var writers = new HashSet<Name>();
             var performers = new HashSet<Name>();
@@ -253,7 +286,8 @@ namespace SongsAnalyzer
             }
             catch (Exception exception)
             {
-                MessageBox.Show($"Failed to add song. {exception}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to add song. {exception}", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
 
@@ -261,7 +295,7 @@ namespace SongsAnalyzer
         {
             foreach (var item in collection)
             {
-                if(item is not null && !string.IsNullOrEmpty(item?.ToString()))
+                if (item is not null && !string.IsNullOrEmpty(item?.ToString()))
                 {
                     var fullName = item!.ToString();
                     var sep = fullName!.IndexOf(SPACE, StringComparison.Ordinal);
@@ -274,16 +308,17 @@ namespace SongsAnalyzer
 
         private static void FullNameError()
         {
-            MessageBox.Show("Please use a full name, use a space as a separator", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        } 
-        
+            MessageBox.Show("Please use a full name, use a space as a separator", "Error", MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+
         private static void StringEmptyError(string what)
         {
             MessageBox.Show($"{what} should not be null or empty", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-        
+
         #endregion
-        
+
         #region Messages
 
         private void SongIsNotProcessed()
@@ -294,7 +329,7 @@ namespace SongsAnalyzer
         #endregion
 
         #region Groups
-        
+
         private async void AddGroup_Click(object sender, RoutedEventArgs e)
         {
             var groupName = Interaction.InputBox("Enter group name:", "Add Group", "");
@@ -304,12 +339,12 @@ namespace SongsAnalyzer
                 StringEmptyError("Group value");
                 return;
             }
-            
+
             await GroupValuesListBox.Dispatcher.InvokeAsync(() => GroupValuesListBox.Items.Add(groupName));
         }
-        
+
         private async void SaveGroup_Click(object sender, RoutedEventArgs e)
-        { 
+        {
             var groupName = GroupNameTextBox.Text;
 
             if (string.IsNullOrEmpty(groupName))
@@ -318,11 +353,11 @@ namespace SongsAnalyzer
                 return;
             }
 
-            var values = GroupValuesListBox.Items.Cast<string>().Select(x=> x.ToLower()).ToArray();
-            
+            var values = GroupValuesListBox.Items.Cast<string>().Select(x => x.ToLower()).ToArray();
+
             var added = await _songAnalyzer.AddGroup(groupName, values);
-                
-            if(added)
+
+            if (added)
             {
                 await GetGroups();
                 await GroupValuesListBox.Dispatcher.InvokeAsync(() => GroupValuesListBox.Items.Clear());
@@ -335,34 +370,35 @@ namespace SongsAnalyzer
         private async Task GetGroups()
         {
             _groups.Clear();
-            
+
             var groups = await _songAnalyzer.GetGroups();
-            
+
             groups.ForEach(group => _groups.Add(group));
         }
-        
-        
+
+
         private async void FilterCurrentGroupButton_WordIndexView_Click(object sender, RoutedEventArgs e)
         {
-            if(GroupsDataGrid.SelectedItem is null)
+            if (GroupsDataGrid.SelectedItem is null)
             {
                 MessageBox.Show("No Group Is Selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            if(GroupsDataGrid.SelectedItem is not GroupResult selectedItem)
+
+            if (GroupsDataGrid.SelectedItem is not GroupResult selectedItem)
             {
                 MessageBox.Show("Selected Group Is Not Valid", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             var groupName = selectedItem.Name;
-            
-            if(string.IsNullOrEmpty(groupName))
+
+            if (string.IsNullOrEmpty(groupName))
             {
                 MessageBox.Show("Selected Group Is Not Valid", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            
+
             await UpdateWordIndex(groupName);
         }
 
@@ -370,40 +406,40 @@ namespace SongsAnalyzer
         {
             await UpdateWordIndex();
         }
-        
+
         #endregion
 
         #region Phrase
 
         private async void SavePhraseButton_Click(object sender, RoutedEventArgs e)
         {
-            if(string.IsNullOrEmpty(PhraseTextBox.Text))
+            if (string.IsNullOrEmpty(PhraseTextBox.Text))
             {
                 StringEmptyError("Phrase");
                 return;
             }
-            
+
             var (phrase, added) = await _songAnalyzer.AddPhrase(PhraseTextBox.Text);
 
-            if(added)
+            if (added)
             {
                 _pharses.Add(phrase);
-                await PhraseTextBox.Dispatcher.InvokeAsync(() => PhraseTextBox.Clear());                
+                await PhraseTextBox.Dispatcher.InvokeAsync(() => PhraseTextBox.Clear());
             }
-            else 
-                MessageBox.Show("Phrase already exists or invalid", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            else
+                MessageBox.Show("Phrase already exists or invalid", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
         }
-        
+
         private async Task GetPhrases()
         {
             _pharses.Clear();
-            
+
             var phrases = await _songAnalyzer.GetPhrases();
-            
+
             phrases.ForEach(phrase => _pharses.Add(phrase));
         }
 
         #endregion
-
     }
 }

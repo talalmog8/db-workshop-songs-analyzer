@@ -22,4 +22,5 @@ public interface ISongAnalyzer
     Task<List<WordDetailsView>> GetWordIndex(string groupName);
     Task<Stats> GetStats();
     Task<List<SongQueryResult>> GetSongs(string songName, string composerFirstName, string composerLastName, string freeText);
+    TextOccurence[] GetWordReference(string word);
 }

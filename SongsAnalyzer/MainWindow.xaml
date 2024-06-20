@@ -124,7 +124,7 @@ Margin="5"
                     <StackPanel Margin="5,5,15,5" Orientation="Vertical">
                         <TextBlock Margin="0,5,0,5" HorizontalAlignment="Left">Words:</TextBlock>
                         <Border    Margin="0,0,0,0" BorderBrush="Black" BorderThickness="1">
-                            <DataGrid Height="550" MinWidth="350"  x:Name="WordsDataGrid" AutoGenerateColumns="True" Margin="0"/>
+                            <DataGrid SelectionChanged="WordsDataGrid_Selected" SelectionUnit="FullRow" Height="550" MinWidth="350"  x:Name="WordsDataGrid" AutoGenerateColumns="True" Margin="0"/>
                         </Border>
                         <Button  Click="FilterSongWordIndexButton_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,15,0,0" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="FilterSongWordIndexButton" >Filter Current Song</Button>
                         <Button  Click="UnFilterSongWordIndexButton_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,15,0,0" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="UnFilterSongWordIndexButton" >Clear Filter</Button>
@@ -138,9 +138,32 @@ Margin="5"
                             <TextBox    MinWidth="250"  Name="QuerySong_SongName_WordViewTextBox"/>
                         </StackPanel>
 
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20" >Line Number:</TextBlock>
+                            <TextBox MinWidth="250"  Name="QuerySong_WordByLine_WordViewTextBox"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                            <!-- Query Song Name -->
+                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20" >Song Name:</TextBlock>
+                            <TextBox    MinWidth="250"  Name="QuerySong_WordByStanza_WordViewTextBox"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                            <!-- Query Song Name -->
+                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20" >Offset:</TextBlock>
+                            <TextBox    MinWidth="250"  Name="QuerySong_WordByOffset_WordViewTextBox"/>
+                        </StackPanel>
+
                         <Button Click="FilterCurrentSongButton_WordView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="FilterCurrentSongButton_WordView" >Query</Button>
                         <Button Click="ClearFilterButton_WordView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="ClearFilterButton_WordView" >Clear Filters</Button>
 
+                    </StackPanel>
+                    <StackPanel Margin="10,5,10,5">
+                        <TextBlock  HorizontalAlignment="Left">Words Occurrences:</TextBlock>
+                        <Border  Margin="0,5,15,5" BorderBrush="Black" BorderThickness="1">
+                            <DataGrid Height="550" MinWidth="350"  x:Name="WordReferencesDataGrid" AutoGenerateColumns="True" Margin="0"/>
+                        </Border>
                     </StackPanel>
                 </StackPanel>
             </TabItem>
@@ -230,6 +253,13 @@ Content="Add"/>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Phrases">
+                <StackPanel Margin="20,0,20,0">
+                    <Label >Full Song Text:</Label>
+                    <!-- TextBox for Full Song Text -->
+                    <TextBox MinHeight="700" MaxHeight="500" MinWidth="700" VerticalScrollBarVisibility="Visible" HorizontalAlignment="Stretch"  Margin="5" TextWrapping="Wrap" IsReadOnly="True" x:Name="FullSongTextBox2"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Stats">
