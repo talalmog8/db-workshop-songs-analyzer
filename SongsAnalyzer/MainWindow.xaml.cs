@@ -170,6 +170,7 @@ namespace SongsAnalyzer
             // populate  word data grid
 
             _words.Clear();
+            _wordReferences.Clear();
 
             var words = await _songAnalyzer.GetWords(songName, filterCurrentSong);
 
@@ -202,6 +203,8 @@ namespace SongsAnalyzer
             
             if (!_songAnalyzer.Processed)
                 return;
+            
+            _wordReferences.Clear();
             
             foreach (var reference in _songAnalyzer.GetWordReference(selectedItem.WordText))
                 _wordReferences.Add(reference);

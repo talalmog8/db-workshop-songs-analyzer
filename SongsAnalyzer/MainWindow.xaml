@@ -160,9 +160,9 @@ Margin="5"
 
                     </StackPanel>
                     <StackPanel Margin="10,5,10,5">
-                        <TextBlock  HorizontalAlignment="Left">Words Occurrences:</TextBlock>
+                        <TextBlock  HorizontalAlignment="Left">Words Occurrences: (Load Song To Start)</TextBlock>
                         <Border  Margin="0,5,15,5" BorderBrush="Black" BorderThickness="1">
-                            <DataGrid Height="550" MinWidth="350"  x:Name="WordReferencesDataGrid" AutoGenerateColumns="True" Margin="0"/>
+                            <DataGrid Height="550" Width="550" FontSize="14"  x:Name="WordReferencesDataGrid" AutoGenerateColumns="True" Margin="0"/>
                         </Border>
                     </StackPanel>
                 </StackPanel>
