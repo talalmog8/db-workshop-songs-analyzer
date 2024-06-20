@@ -131,7 +131,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         return words;
     }
 
-    public TextOccurence[] GetWordReference(string word)
+    public TextOccurence[] GetPhraseReference(string word)
     {
         var occurrences =
             FindPhraseOccurrences(SongContent, word)
@@ -663,7 +663,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         var index = 0;
         var occurrences = new List<TextOccurence>();
         
-        var wordRegex = new Regex($@"\b{Regex.Escape(phrase)}\b", RegexOptions.Compiled);
+        var wordRegex = new Regex($@"\b{phrase}\b", RegexOptions.Compiled);
         
         foreach (Match match in wordRegex.Matches(songText))
         {

@@ -211,24 +211,7 @@ Margin="5"
                                     <Button Click="ClearFilterButton_WordIndexView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="ClearFilterButton_WordIndexView" >Clear Filters</Button>
 
                                 </StackPanel>
-                                <StackPanel Margin="0,0,15,10">
-                                    <TextBlock HorizontalAlignment="Left" >Phrases:</TextBlock>
-                                    <ListBox SelectionMode="Single" Height="200" MinWidth="300" HorizontalAlignment="Left" Name="PhrasesListBox"/>
-                                </StackPanel>
-                                <StackPanel Margin="0,0,15,10">
-                                    <!-- Add Song Label -->
-                                    <TextBlock    Margin="0,0,0,5"  MinHeight="20">Add A Phrase:</TextBlock>
-
-                                    <StackPanel     Orientation="Horizontal" Margin="0,0,0,0">
-                                        <!-- Song Name -->
-                                        <TextBlock  MinWidth="70"  Margin="0" VerticalAlignment="Center" HorizontalAlignment="Left">Phrase:</TextBlock>
-                                        <TextBox   MinWidth="270" MinHeight="20" Margin="5" VerticalAlignment="Top" HorizontalAlignment="Left" Name="PhraseTextBox"/>
-                                    </StackPanel>
-
-
-                                    <!-- Save Button -->
-                                    <Button Padding="5"  VerticalAlignment="Center" Margin="0,5,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25" Name="SavePhraseButton" Click="SavePhraseButton_Click">Save</Button>
-                                </StackPanel>
+                 
                                 <StackPanel Margin="0,0,15,10">
                                     <TextBlock    Margin="0,0,0,0" VerticalAlignment="Center"  MinHeight="20">Upsert A Group:</TextBlock>
                                     <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
@@ -256,11 +239,34 @@ Content="Add"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Phrases">
-                <StackPanel Margin="20,0,20,0">
-                    <Label >Full Song Text:</Label>
-                    <!-- TextBox for Full Song Text -->
-                    <TextBox MinHeight="700" MaxHeight="500" MinWidth="700" VerticalScrollBarVisibility="Visible" HorizontalAlignment="Stretch"  Margin="5" TextWrapping="Wrap" IsReadOnly="True" x:Name="FullSongTextBox2"/>
-                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Margin="10,5,10,5">
+                        <TextBlock  HorizontalAlignment="Left">Phrases Occurrences: (Load Song To Start)</TextBlock>
+                        <Border  Margin="0,5,15,5" BorderBrush="Black" BorderThickness="1">
+                            <DataGrid Height="500" Width="1000" FontSize="14"  x:Name="PhrasesReferencesDataGrid" AutoGenerateColumns="True" Margin="0"/>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Margin="0,0,15,10">
+                            <TextBlock HorizontalAlignment="Left" >Phrases:</TextBlock>
+                            <ListBox SelectionMode="Single" SelectionChanged="PhrasesListBox_OnSelectionChanged" Height="200" Width="500" HorizontalAlignment="Left" Name="PhrasesListBox"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,15,10">
+                            <!-- Add Song Label -->
+                            <TextBlock    Margin="0,0,0,5"  MinHeight="20">Add A Phrase:</TextBlock>
+
+                            <StackPanel     Orientation="Horizontal" Margin="0,0,0,0">
+                                <!-- Song Name -->
+                                <TextBlock  MinWidth="70"  Margin="0" VerticalAlignment="Center" HorizontalAlignment="Left">Phrase:</TextBlock>
+                                <TextBox   MinWidth="270" MinHeight="20" Margin="5" VerticalAlignment="Top" HorizontalAlignment="Left" Name="PhraseTextBox"/>
+                            </StackPanel>
+
+
+                            <!-- Save Button -->
+                            <Button Padding="5"  VerticalAlignment="Center" Margin="0,5,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25" Name="SavePhraseButton" Click="SavePhraseButton_Click">Save</Button>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>                
             </TabItem>
             <TabItem Header="Stats">
                 <StackPanel Margin="5" HorizontalAlignment="Stretch">

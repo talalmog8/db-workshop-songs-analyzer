@@ -13,6 +13,7 @@ namespace SongsAnalyzer
         private readonly ObservableCollection<GroupResult> _groups = [];
         private readonly ObservableCollection<string> _pharses = [];
         private readonly ObservableCollection<TextOccurence> _wordReferences = [];
+        private readonly ObservableCollection<TextOccurence> _phrasesReferences = [];
 
         public WindowHandlers()
         {
@@ -24,6 +25,7 @@ namespace SongsAnalyzer
             GroupsDataGrid.ItemsSource = _groups;
             PhrasesListBox.ItemsSource = _pharses;
             WordReferencesDataGrid.ItemsSource = _wordReferences;
+            PhrasesReferencesDataGrid.ItemsSource = _phrasesReferences;
         }
 
         #region Load Song Tab 1
@@ -206,7 +208,7 @@ namespace SongsAnalyzer
             
             _wordReferences.Clear();
             
-            foreach (var reference in _songAnalyzer.GetWordReference(selectedItem.WordText))
+            foreach (var reference in _songAnalyzer.GetPhraseReference(selectedItem.WordText))
                 _wordReferences.Add(reference);
         }
         
@@ -443,6 +445,23 @@ namespace SongsAnalyzer
             phrases.ForEach(phrase => _pharses.Add(phrase));
         }
 
+        
+        private void PhrasesListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (PhrasesListBox.SelectedItem is null)
+                return;
+
+            if (PhrasesListBox.SelectedItem is not string selectedItem)
+                return;
+            if (!_songAnalyzer.Processed)
+                return;
+
+            _phrasesReferences.Clear();
+            
+            foreach (var occurence in _songAnalyzer.GetPhraseReference(selectedItem))
+                _phrasesReferences.Add(occurence);
+        }
+        
         #endregion
     }
 }
