@@ -2,8 +2,8 @@
 
 namespace Model.Entities;
 
-[Table("word_details_view")]
-public class WordDetailsView
+[Table("word_index_view")]
+public class WordIndexView
 {
     [Key]
     [Column("id")]
@@ -34,5 +34,5 @@ public class WordDetailsView
     public int SongStanzaWordLength { get; set; } 
     
     [Column("song_id"), ]
-    public long SongId { get; set; }
+    public long SongId { get; set; }   
 }

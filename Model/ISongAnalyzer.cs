@@ -19,8 +19,9 @@ public interface ISongAnalyzer
     Task<List<string>> GetPhrases();
     Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers);
     Task<List<WordTable>> GetWords(string? songName = null, bool filterCurrentSong = false);
-    Task<List<WordDetailsView>> GetWordIndex(string groupName);
+    Task<List<WordIndexView>> GetWordIndex(string groupName);
     Task<Stats> GetStats();
     Task<List<SongQueryResult>> GetSongs(string songName, string composerFirstName, string composerLastName, string freeText);
     TextOccurence[] GetPhraseReference(string word);
+    Task<string> FindWords(int stanzaOffset, int lineOffset, int wordOffset);
 }

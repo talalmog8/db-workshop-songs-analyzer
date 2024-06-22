@@ -6,4 +6,5 @@ public class WordTable
     public string WordText { get; set; }
     public int Length { get; set; }
     public int NumberOfOccurrences { get; set; }
+    public int MinOffset { get; set; }
 }

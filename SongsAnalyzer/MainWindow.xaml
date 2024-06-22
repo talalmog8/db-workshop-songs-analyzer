@@ -126,8 +126,8 @@ Margin="5"
                         <Border    Margin="0,0,0,0" BorderBrush="Black" BorderThickness="1">
                             <DataGrid SelectionChanged="WordsDataGrid_Selected" SelectionUnit="FullRow" Height="550" MinWidth="350"  x:Name="WordsDataGrid" AutoGenerateColumns="True" Margin="0"/>
                         </Border>
-                        <Button  Click="FilterSongWordIndexButton_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,15,0,0" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="FilterSongWordIndexButton" >Filter Current Song</Button>
-                        <Button  Click="UnFilterSongWordIndexButton_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,15,0,0" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="UnFilterSongWordIndexButton" >Clear Filter</Button>
+                        <Button  Click="FilterSongWordButton_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,15,0,0" HorizontalAlignment="Left" MinWidth="70" MinHeight="25">Filter Current Song</Button>
+                        <Button  Click="UnFilterSongWordButton_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,15,0,0" HorizontalAlignment="Left" MinWidth="70" MinHeight="25">Clear Filter</Button>
                     </StackPanel>
                     <StackPanel>
                         <!-- Query Songs Label -->
@@ -138,25 +138,36 @@ Margin="5"
                             <TextBox    MinWidth="250"  Name="QuerySong_SongName_WordViewTextBox"/>
                         </StackPanel>
 
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20" >Line Number:</TextBlock>
-                            <TextBox MinWidth="250"  Name="QuerySong_WordByLine_WordViewTextBox"/>
-                        </StackPanel>
+                        <Button Click="FilterCurrentSongButton_WordView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="FilterCurrentSongButton_WordView" >Query</Button>
+                        <Button Click="ClearFilterButton_WordView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="ClearFilterButton_WordView" >Clear Filters</Button>
+
+                        <TextBlock   Margin="0,15,0,5" VerticalAlignment="Center">Find Word By Location:</TextBlock>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                            <!-- Query Song Name -->
-                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20" >Song Name:</TextBlock>
+                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="125" MinHeight="20" >Stanza Offset:</TextBlock>
                             <TextBox    MinWidth="250"  Name="QuerySong_WordByStanza_WordViewTextBox"/>
                         </StackPanel>
 
+                        
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                            <!-- Query Song Name -->
-                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20" >Offset:</TextBlock>
-                            <TextBox    MinWidth="250"  Name="QuerySong_WordByOffset_WordViewTextBox"/>
+                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="125" MinHeight="20" >Line Offset In Stanza:</TextBlock>
+                            <TextBox MinWidth="250"  Name="QuerySong_WordByLine_WordViewTextBox"/>
+                        </StackPanel>
+                        
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="125" MinHeight="20" >Word Offset In Line:</TextBlock>
+                            <TextBox MinWidth="250"  Name="QuerySong_ByWord_WordViewTextBox"/>
                         </StackPanel>
 
-                        <Button Click="FilterCurrentSongButton_WordView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="FilterCurrentSongButton_WordView" >Query</Button>
-                        <Button Click="ClearFilterButton_WordView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="ClearFilterButton_WordView" >Clear Filters</Button>
+
+
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                            <Button Click="FindWord_WordView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="FindWord_WordView" >Go</Button>
+                            <TextBox   IsReadOnly="True" Margin="10,0,10,0" MinWidth="250"  Name="FindWord_Result_WordViewTextBox"/>
+                        </StackPanel>
+
+
+
 
                     </StackPanel>
                     <StackPanel Margin="10,5,10,5">

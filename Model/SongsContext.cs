@@ -27,8 +27,9 @@ public class SongsContext : DbContext
     public DbSet<Group> Group { get; set; }
     public DbSet<WordGroup> WordGroup { get; set; }
     public DbSet<GroupsView> GroupsView { get; set; }
-    public DbSet<WordDetailsView> WordDetailsViews { get; set; }
-    public DbSet<GroupWordDetailsView> GroupWordDetailsView { get; set; }
+    public DbSet<WordIndexView> WordIndexView { get; set; }
+    public DbSet<GroupWordIndexView> GroupWordIndexView { get; set; }
+    public DbSet<WordView> WordView { get; set; }
 
     public SongsContext(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
@@ -99,7 +100,12 @@ public class SongsContext : DbContext
         modelBuilder.Entity<SongLine>()
             .HasOne(sl => sl.Song)
             .WithMany(s => s.SongLines)
-            .HasForeignKey(sl => sl.SongId);
+            .HasForeignKey(sl => sl.SongId);    
+        
+        modelBuilder.Entity<SongLine>()
+            .HasOne(sl => sl.Stanza)
+            .WithMany(s => s.SongLines)
+            .HasForeignKey(sl => sl.SongStanzaId);
 
         modelBuilder.Entity<SongStanza>()
             .HasOne(ss => ss.Song)
@@ -165,8 +171,10 @@ public class SongsContext : DbContext
             .WithMany(sw => sw.WordLocations)
             .HasForeignKey(wl => wl.SongWordId);
 
-        modelBuilder.Entity<WordDetailsView>().ToView("word_details_view");
-        modelBuilder.Entity<GroupWordDetailsView>().ToView("group_word_details_view");
+        modelBuilder.Entity<WordIndexView>().ToView("word_index_view");
+        modelBuilder.Entity<GroupWordIndexView>().ToView("group_word_index_view");
+        modelBuilder.Entity<WordView>().ToView("words_view");
+        
         modelBuilder.Entity<GroupsView>().ToView("groups_view")
             .HasKey(view => new {view.GroupId, view.GroupName});
     }

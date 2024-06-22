@@ -9,7 +9,7 @@ namespace SongsAnalyzer
         private readonly ISongAnalyzer _songAnalyzer;
         private readonly ObservableCollection<WordTable> _words = [];
         private readonly ObservableCollection<SongQueryResult> _songComposers = [];
-        private readonly ObservableCollection<WordDetailsView> _wordDetailsViews = [];
+        private readonly ObservableCollection<WordIndexView> _wordDetailsViews = [];
         private readonly ObservableCollection<GroupResult> _groups = [];
         private readonly ObservableCollection<string> _pharses = [];
         private readonly ObservableCollection<TextOccurence> _wordReferences = [];
@@ -146,7 +146,7 @@ namespace SongsAnalyzer
 
         #region Words Tab 3
 
-        private async void FilterSongWordIndexButton_Click(object sender, RoutedEventArgs e)
+        private async void FilterSongWordButton_Click(object sender, RoutedEventArgs e)
         {
             if (!_songAnalyzer.Processed)
             {
@@ -154,20 +154,10 @@ namespace SongsAnalyzer
                 return;
             }
 
-            int? stanza = string.IsNullOrEmpty(QuerySong_WordByStanza_WordViewTextBox.Text)
-                ? null
-                : int.Parse(QuerySong_WordByStanza_WordViewTextBox.Text);
-            int? line = string.IsNullOrEmpty(QuerySong_WordByLine_WordViewTextBox.Text)
-                ? null
-                : int.Parse(QuerySong_WordByLine_WordViewTextBox.Text);
-            int? offset = string.IsNullOrEmpty(QuerySong_WordByOffset_WordViewTextBox.Text)
-                ? null
-                : int.Parse(QuerySong_WordByOffset_WordViewTextBox.Text);
-
-            await UpdateWordTable(songName: null, filterCurrentSong: true, stanza, line, offset);
+            await UpdateWordTable(songName: null, filterCurrentSong: true);
         }
 
-        private async Task UpdateWordTable(string? songName = null, bool filterCurrentSong = false, int? stanza = null, int? line = null, int? offset = null)
+        private async Task UpdateWordTable(string? songName = null, bool filterCurrentSong = false)
         {
             // populate  word data grid
 
@@ -180,7 +170,7 @@ namespace SongsAnalyzer
                 _words.Add(word);
         }
 
-        private async void UnFilterSongWordIndexButton_Click(object sender, RoutedEventArgs e)
+        private async void UnFilterSongWordButton_Click(object sender, RoutedEventArgs e)
         {
             await UpdateWordTable();
         }
@@ -193,25 +183,93 @@ namespace SongsAnalyzer
         private async void ClearFilterButton_WordView_Click(object sender, RoutedEventArgs e)
         {
             await UpdateWordTable();
+            await FindWord_Result_WordViewTextBox.Dispatcher.InvokeAsync(() => FindWord_Result_WordViewTextBox.Clear());
         }
 
         private void WordsDataGrid_Selected(object sender, RoutedEventArgs e)
         {
             if (WordsDataGrid.SelectedItem is null)
                 return;
-            
+
             if (WordsDataGrid.SelectedItem is not WordTable selectedItem)
                 return;
-            
+
             if (!_songAnalyzer.Processed)
                 return;
-            
+
             _wordReferences.Clear();
-            
+
             foreach (var reference in _songAnalyzer.GetPhraseReference(selectedItem.WordText))
                 _wordReferences.Add(reference);
         }
-        
+
+        private async void FindWord_WordView_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_songAnalyzer.Processed)
+            {
+                SongIsNotProcessed();
+                return;
+            }
+
+            int? stanzaOffset;
+            int? lineOffset;
+            int? wordOffset;
+
+            try
+            {
+                stanzaOffset = string.IsNullOrEmpty(QuerySong_WordByStanza_WordViewTextBox.Text)
+                    ? null
+                    : int.Parse(QuerySong_WordByStanza_WordViewTextBox.Text);
+                lineOffset = string.IsNullOrEmpty(QuerySong_WordByLine_WordViewTextBox.Text)
+                    ? null
+                    : int.Parse(QuerySong_WordByLine_WordViewTextBox.Text);
+                wordOffset = string.IsNullOrEmpty(QuerySong_ByWord_WordViewTextBox.Text)
+                    ? null
+                    : int.Parse(QuerySong_ByWord_WordViewTextBox.Text);
+
+                if (stanzaOffset is < 0)
+                    throw new FormatException();
+                if (lineOffset is < 0)
+                    throw new FormatException();
+                if (wordOffset is < 0)
+                    throw new FormatException();
+                
+            }
+            catch (OverflowException exception)
+            {
+                MessageBox.Show("Please enter a positive integer within 32 bit number range", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            catch (FormatException exception)
+            {
+                MessageBox.Show("Please enter a positive integer", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (stanzaOffset is null)
+            {
+                MessageBox.Show("Please enter a stanza offset", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (lineOffset is null)
+            {
+                MessageBox.Show("Please enter a line offset", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (wordOffset is null)
+            {
+                MessageBox.Show("Please enter a word offset", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var words = await _songAnalyzer.FindWords(stanzaOffset.Value, lineOffset.Value, wordOffset.Value);
+
+            await FindWord_Result_WordViewTextBox.Dispatcher.InvokeAsync(() =>
+                FindWord_Result_WordViewTextBox.Text = words);
+        }
+
         #endregion
 
         #region Add Song
@@ -445,7 +503,7 @@ namespace SongsAnalyzer
             phrases.ForEach(phrase => _pharses.Add(phrase));
         }
 
-        
+
         private void PhrasesListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (PhrasesListBox.SelectedItem is null)
@@ -457,11 +515,11 @@ namespace SongsAnalyzer
                 return;
 
             _phrasesReferences.Clear();
-            
+
             foreach (var occurence in _songAnalyzer.GetPhraseReference(selectedItem))
                 _phrasesReferences.Add(occurence);
         }
-        
+
         #endregion
     }
 }

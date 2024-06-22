@@ -26,4 +26,6 @@ public class SongLine
     // Not saved to db
     [NotMapped]
     public string SongLineText { get; set; }
+    
+    public virtual SongStanza Stanza { get; set; }
 }

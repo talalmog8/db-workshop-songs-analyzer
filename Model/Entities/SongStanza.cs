@@ -23,4 +23,6 @@ public class SongStanza
     // Not saved to db
     [NotMapped]
     public string StanzaText { get; set; }
+
+    public ICollection<SongLine> SongLines { get; set; }
 }
