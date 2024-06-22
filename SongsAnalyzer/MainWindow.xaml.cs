@@ -58,7 +58,6 @@ namespace SongsAnalyzer
             else
             {
                 await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
-                await FullSongTextBox_PhrasesView.Dispatcher.InvokeAsync(() => FullSongTextBox_PhrasesView.Text = content);
                 await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Text = _songAnalyzer.SongName);
                 await RefreshUI(true);
             }
