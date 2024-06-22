@@ -68,7 +68,7 @@ Margin="5"
                     </StackPanel>
                     <StackPanel Margin="20,0,20,0">
                         <Label>Current Composers:</Label>
-                        <DataGrid Margin="5" Height="680" Width="500"  HorizontalAlignment="Stretch" x:Name="ComposersDataGrid" AutoGenerateColumns="True"/>
+                        <DataGrid IsReadOnly="True" FontSize="14" Margin="5" Height="680" Width="500"  HorizontalAlignment="Stretch" x:Name="ComposersDataGrid" AutoGenerateColumns="True"/>
                     </StackPanel>
                     <StackPanel Margin="20,0,20,0">
                         <Label >Full Song Text:</Label>

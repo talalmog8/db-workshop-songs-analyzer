@@ -85,14 +85,45 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     public async Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers)
     {
+        await InsertContributorsIfMissing(composers, ContributorType.MusicComposer, Song);
+        await InsertContributorsIfMissing(writers, ContributorType.Writer, Song);
+        await InsertContributorsIfMissing(performers, ContributorType.Performer, Song);
+    }
+
+    public async Task<ComposerView[]> GetComposers()
+    {
         await using var ctx = ctxFactory();
-        await using var tran = await ctx.Database.BeginTransactionAsync();
+        
+        var composers =  await ctx.Contributors
+            .Include(x=> x.ContributorContributorTypes)
+            .ThenInclude(x=> x.ContributorType)
+            .ToListAsync();
 
-        await InsertContributorsIfMissing(composers, ctx, ContributorType.MusicComposer, Song);
-        await InsertContributorsIfMissing(writers, ctx, ContributorType.Writer, Song);
-        await InsertContributorsIfMissing(performers, ctx, ContributorType.Performer, Song);
+        var composersView = 
+            composers.Select(x =>  new ComposerView
+            {
+                Id = x.Id,
+                ComposerTypes = GetComposersList(x.ContributorContributorTypes),
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+            })
+            .OrderBy(x=> x.Id).ToArray();
 
-        await tran.CommitAsync();
+        return composersView;
+    }
+
+    private string GetComposersList(ICollection<ContributorContributorType> contributorContributorTypes)
+    {
+        var builder = new StringBuilder();
+
+        builder = contributorContributorTypes.Select(x => x.ContributorType)
+            .Select(x => x.ContributorTypeDescription)
+            .Aggregate(builder, (current, contributorTypeDescription) => current.Append($"{contributorTypeDescription}, "));
+
+        if (builder.Length > 1)
+            builder.Length -= 2;
+        
+        return builder.ToString();
     }
 
     #endregion
@@ -441,18 +472,23 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     #region Song Processor Inserts
 
-    private async Task InsertContributorsIfMissing(HashSet<Name> composers, SongsContext ctx,
-        ContributorType contributorType, Song song)
+    private async Task InsertContributorsIfMissing(HashSet<Name> composers, ContributorType contributorType, Song song)
     {
-        try
-        {
             foreach (var composer in composers)
-                await InsertContributorIfMissing(new Contributor(composer), ctx, contributorType, song);
-        }
-        catch (Exception e)
-        {
-            // TODO fix this
-        }
+            {
+                await using var ctx = ctxFactory();
+                await using var tran = await ctx.Database.BeginTransactionAsync();
+                try
+                {
+                    await InsertContributorIfMissing(new Contributor(composer), ctx, contributorType, song);
+                    await tran.CommitAsync();
+                }
+                catch (Exception e)
+                {
+                    await tran.RollbackAsync();
+                    throw;
+                }
+            }
     }
 
     private static async Task<SongWord[]> InsertSongWords(Word[] words, Song song, Dictionary<string, int> wordIndex,
@@ -525,6 +561,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         ContributorType contributorTypeId, Song song)
     {
         var existingContributor = await ctx.Contributors.AsQueryable()
+            .AsNoTracking()
             .Where(x => x.FullName == contributor.FullName)
             .FirstOrDefaultAsync();
 
@@ -537,14 +574,14 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             contributor = existingContributor;
 
         var existingContributorContributorType = await ctx.ContributorContributorTypes.AsQueryable()
+            .AsNoTracking()
             .Where(x => x.ContributorId == contributor.Id && x.ContributorTypeId == (int)contributorTypeId)
             .FirstOrDefaultAsync();
 
         var contributorContributorType = new ContributorContributorType
         {
             ContributorTypeId = (int)contributorTypeId,
-            ContributorId = contributor.Id,
-            Contributor = contributor
+            ContributorId = contributor.Id
         };
 
         if (existingContributorContributorType is null)
@@ -555,6 +592,8 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         else
             contributorContributorType = existingContributorContributorType;
 
+        contributorContributorType.Contributor = contributor;
+        
         var songComposer = new SongComposer
         {
             ContributorId = contributor.Id,
@@ -563,6 +602,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         };
 
         var existingSongComposer = await ctx.SongComposers.AsQueryable()
+            .AsNoTracking()
             .Where(x => x.ContributorId == contributor.Id && x.ContributorTypeId == (int)contributorTypeId &&
                         x.SongId == song.Id)
             .FirstOrDefaultAsync();

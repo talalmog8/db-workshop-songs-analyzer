@@ -14,6 +14,7 @@ namespace SongsAnalyzer
         private readonly ObservableCollection<string> _pharses = [];
         private readonly ObservableCollection<TextOccurence> _wordReferences = [];
         private readonly ObservableCollection<TextOccurence> _phrasesReferences = [];
+        private readonly ObservableCollection<ComposerView> _composersView = [];
 
         public WindowHandlers()
         {
@@ -26,6 +27,7 @@ namespace SongsAnalyzer
             PhrasesListBox.ItemsSource = _pharses;
             WordReferencesDataGrid.ItemsSource = _wordReferences;
             PhrasesReferencesDataGrid.ItemsSource = _phrasesReferences;
+            ComposersDataGrid.ItemsSource = _composersView;
         }
 
         #region Load Song Tab 1
@@ -68,6 +70,7 @@ namespace SongsAnalyzer
             await RefreshUI();
             await GetGroups();
             await GetPhrases();
+            await LoadComposers();
         }
 
         private async Task RefreshUI(bool filterCurrentSong = false)
@@ -332,9 +335,10 @@ namespace SongsAnalyzer
             try
             {
                 await _songAnalyzer.AddSong(composers, performers, writers);
-                ComposersListBox.Dispatcher.InvokeAsync(() => ComposersListBox.Items.Clear());
-                WritersListBox.Dispatcher.InvokeAsync(() => WritersListBox.Items.Clear());
-                PerformersListBox.Dispatcher.InvokeAsync(() => PerformersListBox.Items.Clear());
+                await ComposersListBox.Dispatcher.InvokeAsync(() => ComposersListBox.Items.Clear());
+                await WritersListBox.Dispatcher.InvokeAsync(() => WritersListBox.Items.Clear());
+                await PerformersListBox.Dispatcher.InvokeAsync(() => PerformersListBox.Items.Clear());
+                await LoadComposers();
             }
             catch (Exception exception)
             {
@@ -369,6 +373,18 @@ namespace SongsAnalyzer
             MessageBox.Show($"{what} should not be null or empty", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
+        private async Task LoadComposers()
+        {
+            var composers = await _songAnalyzer.GetComposers();
+
+            _composersView.Clear();
+            
+            foreach (var composer in composers)
+            {
+                _composersView.Add(composer);
+            }
+        }
+        
         #endregion
 
         #region Messages
