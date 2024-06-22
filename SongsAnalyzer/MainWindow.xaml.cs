@@ -172,12 +172,7 @@ namespace SongsAnalyzer
             foreach (var word in words)
                 _words.Add(word);
         }
-
-        private async void UnFilterSongWordButton_Click(object sender, RoutedEventArgs e)
-        {
-            await UpdateWordTable();
-        }
-
+        
         private async void FilterCurrentSongButton_WordView_Click(object sender, RoutedEventArgs e)
         {
             await UpdateWordTable(QuerySong_SongName_WordViewTextBox.Text);
