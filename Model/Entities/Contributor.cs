@@ -7,9 +7,9 @@ public class Contributor
 {
     public Contributor(Name name)
     {
-        FirstName = name.FirstName;
-        LastName = name.LastName;
-        FullName = $"{FirstName} {LastName}";
+        FirstName = name.FirstName.TrimToMaxLength(50);
+        LastName = name.LastName.TrimToMaxLength(50);
+        FullName = $"{FirstName} {LastName}".TrimToMaxLength(100);
     }
 
     public Contributor()
