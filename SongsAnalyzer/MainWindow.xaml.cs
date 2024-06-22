@@ -276,38 +276,23 @@ namespace SongsAnalyzer
 
         private const string SPACE = " ";
 
-        private void AddComposerButton_Click(object sender, RoutedEventArgs e)
+        private async void AddWriterButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!_songAnalyzer.Processed)
-            {
-                SongIsNotProcessed();
-                return;
-            }
+            await AddComposerButtonToListBox("song writer", WritersListBox);
 
-            var composer = Interaction.InputBox("Enter composer name:", "Add Composer", "");
-            if (!string.IsNullOrEmpty(composer) &&
-                composer.Split(SPACE, StringSplitOptions.RemoveEmptyEntries).Length > 1)
-                ComposersListBox.Items.Add(composer);
-            else
-                FullNameError();
         }
 
-        private void AddWriterButton_Click(object sender, RoutedEventArgs e)
+        private async void AddPerformerButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!_songAnalyzer.Processed)
-            {
-                SongIsNotProcessed();
-                return;
-            }
-
-            var writer = Interaction.InputBox("Enter writer name:", "Add Writer", "");
-            if (!string.IsNullOrEmpty(writer) && writer.Split(SPACE, StringSplitOptions.RemoveEmptyEntries).Length > 1)
-                WritersListBox.Items.Add(writer);
-            else
-                FullNameError();
+            await AddComposerButtonToListBox("song performer", PerformersListBox);
         }
 
-        private void AddPerformerButton_Click(object sender, RoutedEventArgs e)
+        private async void AddComposerButton_Click(object sender, RoutedEventArgs e)
+        {
+            await AddComposerButtonToListBox("music composer", ComposersListBox);
+        }
+
+        private async Task AddComposerButtonToListBox(string composerType, ListBox listBox)
         {
             if (!_songAnalyzer.Processed)
             {
@@ -315,11 +300,15 @@ namespace SongsAnalyzer
                 return;
             }
 
-            var performer = Interaction.InputBox("Enter performer full name. use a space as a separator:",
-                "Add Performer", "");
-            if (!string.IsNullOrEmpty(performer) &&
-                performer.Split(SPACE, StringSplitOptions.RemoveEmptyEntries).Length > 1)
-                PerformersListBox.Items.Add(performer);
+            var composer = Interaction.InputBox($"Enter {composerType} name:", $"Add {composerType}");
+            
+            if (!string.IsNullOrEmpty(composer) && composer.Split(SPACE, StringSplitOptions.RemoveEmptyEntries).Length > 1)
+            {
+                composer = composer.ToLower().Trim();
+                
+                if(!listBox.Items.Contains(composer))
+                    await listBox.Items.Dispatcher.InvokeAsync(() =>listBox.Items.Add(composer));
+            }
             else
                 FullNameError();
         }
@@ -339,7 +328,7 @@ namespace SongsAnalyzer
             PopulateSet(composers, ComposersListBox.Items);
             PopulateSet(writers, WritersListBox.Items);
             PopulateSet(performers, PerformersListBox.Items);
-
+            
             try
             {
                 await _songAnalyzer.AddSong(composers, performers, writers);

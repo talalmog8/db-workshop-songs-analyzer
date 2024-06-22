@@ -20,8 +20,8 @@
                         <!-- Add Song Label -->
 
                         <StackPanel   Orientation="Horizontal" HorizontalAlignment="Left" Margin="0">
-                            
-                            
+
+
 
                         </StackPanel>
 
@@ -66,11 +66,14 @@ Margin="5"
                         <Button   VerticalAlignment="Center" Margin="0,20,0,20" HorizontalAlignment="Left" Padding="5"  Name="AddSongButton" Click="AddSongButton_Click">Save Song Details</Button>
 
                     </StackPanel>
-
+                    <StackPanel Margin="20,0,20,0">
+                        <Label>Current Composers:</Label>
+                        <DataGrid Margin="5" Height="680" Width="500"  HorizontalAlignment="Stretch" x:Name="ComposersDataGrid" AutoGenerateColumns="True"/>
+                    </StackPanel>
                     <StackPanel Margin="20,0,20,0">
                         <Label >Full Song Text:</Label>
                         <!-- TextBox for Full Song Text -->
-                        <TextBox MinHeight="700" MaxHeight="500" MinWidth="700" VerticalScrollBarVisibility="Visible" HorizontalAlignment="Stretch"  Margin="5" TextWrapping="Wrap" IsReadOnly="True" x:Name="FullSongTextBox"/>
+                        <TextBox  Height="680" MinWidth="700" VerticalScrollBarVisibility="Visible" HorizontalAlignment="Stretch"  Margin="5" TextWrapping="Wrap" IsReadOnly="True" x:Name="FullSongTextBox"/>
                     </StackPanel>
                 </StackPanel>
             </TabItem>
