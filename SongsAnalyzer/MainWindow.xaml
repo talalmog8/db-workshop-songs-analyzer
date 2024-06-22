@@ -1,13 +1,14 @@
-﻿<Window x:Class="SongsAnalyzer.WindowHandlers" 
+﻿<Window x:Class="SongsAnalyzer.WindowHandlers"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Song Text Analyzer" FontSize="16" Loaded="Window_Loaded" MinHeight="900">
+        Title="Song Text Analyzer" FontSize="16" Loaded="Window_Loaded" MinHeight="900" MinWidth="1000">
     <StackPanel Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        
+
         <StackPanel Orientation="Horizontal" Margin="5">
             <!-- Song Name -->
-            <TextBlock   MinWidth="100" Margin="0" VerticalAlignment="Center"  HorizontalAlignment="Left">Song Name:</TextBlock>
-            <TextBlock  MinWidth="250" MinHeight="20" Margin="05" VerticalAlignment="Top" HorizontalAlignment="Left" Name="SongNameTextBox"/>
+            <TextBlock MinWidth="100" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Left">Song Name:</TextBlock>
+            <TextBlock MinWidth="250" MinHeight="20" Margin="05" VerticalAlignment="Top" HorizontalAlignment="Left"
+                       Name="SongNameTextBox" />
         </StackPanel>
         <TabControl Margin="5">
             <TabItem Header="Load Song">
@@ -16,94 +17,108 @@
                     <StackPanel>
                         <!-- Load File Btn -->
 
-                        <Button Click="BrowseSong_Click" Margin="10" Padding="50,10,50,10" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20">Browse</Button>
+                        <Button Click="BrowseSong_Click" Margin="10" Padding="50,10,50,10" VerticalAlignment="Center"
+                                HorizontalAlignment="Left" FontSize="20">
+                            Browse
+                        </Button>
                         <!-- Add Song Label -->
 
-                        <StackPanel   Orientation="Horizontal" HorizontalAlignment="Left" Margin="0">
-
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0">
 
 
                         </StackPanel>
 
-                        <StackPanel     Orientation="Horizontal" Margin="0,10,0,10">
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
                             <!-- Composers' Names -->
                             <TextBlock MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center">Composers:</TextBlock>
-                            <ListBox Width="210" Margin="5" Height="150" ScrollViewer.CanContentScroll="True" Name="ComposersListBox"/>
-                            <Button x:Name="AddComposerButton" 
-Padding="3"
-Margin="5" 
-VerticalAlignment="Top"
-Content="Add"
-Click="AddComposerButton_Click"/>
+                            <ListBox Width="210" Margin="5" Height="150" ScrollViewer.CanContentScroll="True"
+                                     Name="ComposersListBox" />
+                            <Button x:Name="AddComposerButton"
+                                    Padding="3"
+                                    Margin="5"
+                                    VerticalAlignment="Top"
+                                    Content="Add"
+                                    Click="AddComposerButton_Click" />
                         </StackPanel>
 
-                        <StackPanel     Orientation="Horizontal" Margin="0,10,0,10">
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
                             <!-- Writers' Names -->
                             <TextBlock MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center">Writers:</TextBlock>
                             <ListBox Width="210" Margin="5" Name="WritersListBox" Height="150" />
-                            <Button x:Name="AddWriterButton" 
-Padding="3"
-Margin="5" 
-    VerticalAlignment="Top"
-    Content="Add"
-    Click="AddWriterButton_Click"/>
+                            <Button x:Name="AddWriterButton"
+                                    Padding="3"
+                                    Margin="5"
+                                    VerticalAlignment="Top"
+                                    Content="Add"
+                                    Click="AddWriterButton_Click" />
                         </StackPanel>
 
-                        <StackPanel     Orientation="Horizontal" Margin="0,10,0,10">
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
                             <!-- Performers' Names -->
                             <TextBlock MinWidth="100" Margin="0,0,5,0" VerticalAlignment="Center">Performers:</TextBlock>
-                            <ListBox Width="210"  Margin="5" Height="150" Name="PerformersListBox"/>
-                            <Button x:Name="AddPerformerButton" 
-Padding="3"
-Margin="5" 
-    VerticalAlignment="Top"
-    Content="Add"
-    Click="AddPerformerButton_Click"/>
+                            <ListBox Width="210" Margin="5" Height="150" Name="PerformersListBox" />
+                            <Button x:Name="AddPerformerButton"
+                                    Padding="3"
+                                    Margin="5"
+                                    VerticalAlignment="Top"
+                                    Content="Add"
+                                    Click="AddPerformerButton_Click" />
                         </StackPanel>
 
 
                         <!-- Save Button -->
-                        <Button   VerticalAlignment="Center" Margin="0,20,0,20" HorizontalAlignment="Left" Padding="5"  Name="AddSongButton" Click="AddSongButton_Click">Save Song Details</Button>
+                        <Button VerticalAlignment="Center" Margin="0,20,0,20" HorizontalAlignment="Left" Padding="5"
+                                Name="AddSongButton" Click="AddSongButton_Click">
+                            Save Song Details
+                        </Button>
 
                     </StackPanel>
                     <StackPanel Margin="20,0,20,0">
                         <Label>Current Composers:</Label>
-                        <DataGrid AutoGenerateColumns="False" IsReadOnly="True" FontSize="14" Margin="5" Height="680" Width="500"  HorizontalAlignment="Stretch" x:Name="ComposersDataGrid">
+                        <DataGrid AutoGenerateColumns="False" IsReadOnly="True" FontSize="14" Margin="5" Height="680"
+                                  Width="500" HorizontalAlignment="Stretch" x:Name="ComposersDataGrid">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="30"/>
-                                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="150"/>
-                                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="150"/>
-                                <DataGridTextColumn Header="Composer Types" Binding="{Binding ComposerTypes}" Width="180"/>
+                                <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="30" />
+                                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="150" />
+                                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="150" />
+                                <DataGridTextColumn Header="Composer Types" Binding="{Binding ComposerTypes}"
+                                                    Width="180" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </StackPanel>
                     <StackPanel Margin="20,0,20,0">
-                        <Label >Full Song Text:</Label>
+                        <Label>Full Song Text:</Label>
                         <!-- TextBox for Full Song Text -->
-                        <TextBox  Height="520" MinWidth="700" VerticalScrollBarVisibility="Visible" HorizontalAlignment="Stretch"  Margin="5" TextWrapping="Wrap" IsReadOnly="True" x:Name="FullSongTextBox"/>
-                        <TextBlock FontWeight="DemiBold"  Margin="0,15,0,5" VerticalAlignment="Center">Find Word By Location:</TextBlock>
+                        <TextBox Height="520" MinWidth="700" VerticalScrollBarVisibility="Visible"
+                                 HorizontalAlignment="Stretch" Margin="5" TextWrapping="Wrap" IsReadOnly="True"
+                                 x:Name="FullSongTextBox" />
+                        <TextBlock FontWeight="DemiBold" Margin="0,15,0,5" VerticalAlignment="Center">Find Word By Location:</TextBlock>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="125" MinHeight="20" >Stanza Offset:</TextBlock>
-                            <TextBox    MinWidth="250"  Name="QuerySong_WordByStanza_WordViewTextBox"/>
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="125" MinHeight="20">Stanza Offset:</TextBlock>
+                            <TextBox MinWidth="250" Name="QuerySong_WordByStanza_WordViewTextBox" />
                         </StackPanel>
 
 
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="125" MinHeight="20" >Line Offset In Stanza:</TextBlock>
-                            <TextBox MinWidth="250"  Name="QuerySong_WordByLine_WordViewTextBox"/>
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="125" MinHeight="20">Line Offset In Stanza:</TextBlock>
+                            <TextBox MinWidth="250" Name="QuerySong_WordByLine_WordViewTextBox" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="125" MinHeight="20" >Word Offset In Line:</TextBlock>
-                            <TextBox MinWidth="250"  Name="QuerySong_ByWord_WordViewTextBox"/>
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="125" MinHeight="20">Word Offset In Line:</TextBlock>
+                            <TextBox MinWidth="250" Name="QuerySong_ByWord_WordViewTextBox" />
                         </StackPanel>
 
 
-
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                            <Button Click="FindWord_WordView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="FindWord_WordView" >Go</Button>
-                            <TextBox   IsReadOnly="True" Margin="10,0,10,0" MinWidth="250"  Name="FindWord_Result_WordViewTextBox"/>
+                            <Button Click="FindWord_WordView_Click" Padding="30,5,30,5" VerticalAlignment="Center"
+                                    Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25"
+                                    Name="FindWord_WordView">
+                                Go
+                            </Button>
+                            <TextBox IsReadOnly="True" Margin="10,0,10,0" MinWidth="250"
+                                     Name="FindWord_Result_WordViewTextBox" />
                         </StackPanel>
 
                     </StackPanel>
@@ -113,89 +128,119 @@ Margin="5"
                 <StackPanel Margin="5" HorizontalAlignment="Stretch" Orientation="Horizontal">
                     <StackPanel>
                         <!-- Query Songs Label -->
-                        <TextBlock   Margin="0,0,0,5" VerticalAlignment="Center">Query Songs:</TextBlock>
+                        <TextBlock Margin="0,0,0,5" VerticalAlignment="Center">Query Songs:</TextBlock>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
                             <!-- Query Song Name -->
-                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20" >Song Name:</TextBlock>
-                            <TextBox    MinWidth="250"  Name="QuerySongNameTextBox"/>
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20">Song Name:</TextBlock>
+                            <TextBox MinWidth="250" Name="QuerySongNameTextBox" />
                         </StackPanel>
 
                         <TextBlock Margin="0,5,0,5">Composer:</TextBlock>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
                             <!-- Query Composer -->
-                            <TextBlock   Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="120" MinHeight="20" >First Name:</TextBlock>
-                            <TextBox   Margin="0,0,0,0"  MinWidth="250"  Name="QueryComposerFirstNameTextBox"/>
+                            <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="120" MinHeight="20">First Name:</TextBlock>
+                            <TextBox Margin="0,0,0,0" MinWidth="250" Name="QueryComposerFirstNameTextBox" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
                             <!-- Query Composer -->
-                            <TextBlock   Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="120" MinHeight="20" >Last Name:</TextBlock>
-                            <TextBox   Margin="0,0,0,0"  MinWidth="250"  Name="QueryComposerLastNameTextBox"/>
+                            <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="120" MinHeight="20">Last Name:</TextBlock>
+                            <TextBox Margin="0,0,0,0" MinWidth="250" Name="QueryComposerLastNameTextBox" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
                             <!-- Query Free Text-->
-                            <TextBlock   Margin="0,0,0,0" VerticalAlignment="Center"  MinWidth="120" MinHeight="20" Text="Words:"/>
-                            <TextBox   Margin="0,0,0,0"  MinWidth="250"  Name="QueryWordsTextBox"/>
+                            <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="120" MinHeight="20"
+                                       Text="Words:" />
+                            <TextBox Margin="0,0,0,0" MinWidth="250" Name="QueryWordsTextBox" />
                         </StackPanel>
 
                         <!-- Query Button -->
-                        <Button Click="QuerySongButton_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="QuerySongButton" >Query</Button>
-                        <Button Click="ClearQuerySongButton_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="ClearQuerySongButton" >Clear Filters</Button>
+                        <Button Click="QuerySongButton_Click" Padding="30,5,30,5" VerticalAlignment="Center"
+                                Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25"
+                                Name="QuerySongButton">
+                            Query
+                        </Button>
+                        <Button Click="ClearQuerySongButton_Click" Padding="30,5,30,5" VerticalAlignment="Center"
+                                Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25"
+                                Name="ClearQuerySongButton">
+                            Clear Filters
+                        </Button>
 
-                        <TextBlock   Margin="0,5,0,5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="100" >Songs Results:</TextBlock>
+                        <TextBlock Margin="0,5,0,5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                   MinWidth="100">
+                            Songs Results:
+                        </TextBlock>
 
                         <!-- DataGrid for Query Results with Border -->
 
-                        <DataGrid MinHeight="380" MinWidth="850"  HorizontalAlignment="Stretch" x:Name="QuerySongResultsDataGrid" AutoGenerateColumns="True" Margin="0"/>
+                        <DataGrid MinHeight="380" MinWidth="850" HorizontalAlignment="Stretch"
+                                  x:Name="QuerySongResultsDataGrid" AutoGenerateColumns="True" Margin="0" />
 
                     </StackPanel>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="Words">
-                <StackPanel Orientation="Horizontal">
+            <TabItem Header="Words" Width="58">
+                <StackPanel Orientation="Horizontal"  MinWidth="1000">
                     <StackPanel Margin="5,5,15,5" Orientation="Vertical">
-                        <TextBlock FontWeight="DemiBold"  Margin="0,5,0,5" HorizontalAlignment="Left">Words:</TextBlock>
-                        <Border    Margin="0,0,0,0" BorderBrush="Black" BorderThickness="1">
-                            <DataGrid IsReadOnly="True" FontSize="14" SelectionChanged="WordsDataGrid_Selected" SelectionUnit="FullRow" Height="550" MinWidth="350"  x:Name="WordsDataGrid" Margin="0">
+                        <TextBlock FontWeight="DemiBold" Margin="0,5,0,5" HorizontalAlignment="Left">Words:</TextBlock>
+                        <Border Margin="0,0,0,0" BorderBrush="Black" BorderThickness="1">
+                            <DataGrid AutoGenerateColumns="False" IsReadOnly="True" FontSize="14" SelectionChanged="WordsDataGrid_Selected"
+                                      SelectionUnit="FullRow" Height="550" MinWidth="350" x:Name="WordsDataGrid"
+                                      Margin="0">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
-                                    <DataGridTextColumn Header="Word Text" Binding="{Binding WordText}"/>
-                                    <DataGridTextColumn Header="Word Length" Binding="{Binding Length}"/>
-                                    <DataGridTextColumn Header="Number of Occurrences In All Songs" Binding="{Binding NumberOfOccurrences}"/>
-                                    <DataGridTextColumn Header="First Word Location Id" Binding="{Binding MinOffset}"/>
+                                    <DataGridTextColumn Header="Word Text" Binding="{Binding WordText}" />
+                                    <DataGridTextColumn Header="Word Length" Binding="{Binding Length}" />
+                                    <DataGridTextColumn Header="Number of Occurrences In All Songs"
+                                                        Binding="{Binding NumberOfOccurrences}" />
+                                    <DataGridTextColumn Header="First Word Location Id" Binding="{Binding MinOffset}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Border>
-                    </StackPanel>
-                    <StackPanel>
                         <!-- Query Songs Label -->
-                        <TextBlock FontWeight="DemiBold"   Margin="0,10,0,0" VerticalAlignment="Center">Filters:</TextBlock>
+                        <TextBlock FontWeight="DemiBold" Margin="0,10,0,0" VerticalAlignment="Center">Filters:</TextBlock>
 
-                        <Button  Click="FilterSongWordButton_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,0" HorizontalAlignment="Left" MinWidth="70" MinHeight="25">Filter Current Song</Button>
+                        <Button Click="FilterSongWordButton_Click" Padding="30,5,30,5" VerticalAlignment="Center"
+                                Margin="0,5,0,0" HorizontalAlignment="Left" MinWidth="70" MinHeight="25">
+                            Filter Current Song
+                        </Button>
 
-                        <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20" >Filter A Different Song:</TextBlock>
+                        <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20">Filter A Different Song:</TextBlock>
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                            <!-- Query Song Name -->                            
-                            <TextBlock  VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20" >Song Name:</TextBlock>
-                            <TextBox    MinWidth="250"  Name="QuerySong_SongName_WordViewTextBox"/>
+                            <!-- Query Song Name -->
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20">Song Name:</TextBlock>
+                            <TextBox MinWidth="250" Name="QuerySong_SongName_WordViewTextBox" />
                         </StackPanel>
 
-                        
-                        <Button Click="FilterCurrentSongButton_WordView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="FilterCurrentSongButton_WordView" >Query</Button>
-                        <Button Click="ClearFilterButton_WordView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="ClearFilterButton_WordView" >Clear Filters</Button>
-
-
-
-
-
+                        <StackPanel Orientation="Horizontal">
+                            <Button Click="FilterCurrentSongButton_WordView_Click" Padding="30,5,30,5"
+                                    VerticalAlignment="Center" Margin="0,5,5,5" HorizontalAlignment="Left"
+                                    MinWidth="70" MinHeight="25" Name="FilterCurrentSongButton_WordView">
+                                Query
+                            </Button>
+                            <Button Click="ClearFilterButton_WordView_Click" Padding="30,5,30,5"
+                                    VerticalAlignment="Center" Margin="5,5,0,5" HorizontalAlignment="Left"
+                                    MinWidth="70" MinHeight="25" Name="ClearFilterButton_WordView">
+                                Clear Filters
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
                     <StackPanel Margin="10,5,10,5">
-                        <TextBlock FontWeight="DemiBold"  HorizontalAlignment="Left">Words Occurrences: (Load Song To Start)</TextBlock>
-                        <Border  Margin="0,5,15,5" BorderBrush="Black" BorderThickness="1">
-                            <DataGrid Height="550" Width="550" FontSize="14"  x:Name="WordReferencesDataGrid" AutoGenerateColumns="True" Margin="0"/>
+                        <TextBlock FontWeight="DemiBold" HorizontalAlignment="Left">Words Occurrences: (Load Song To Start)</TextBlock>
+                        <Border Margin="0,5,15,5" BorderBrush="Black" BorderThickness="1">
+                            <DataGrid Height="550" Width="550" FontSize="14" x:Name="WordReferencesDataGrid"
+                                      AutoGenerateColumns="False" Margin="0" IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Word" Binding="{Binding Word}" Width="Auto" />
+                                    <DataGridTextColumn Header="Text" Binding="{Binding Text}" Width="Auto" />
+                                    <DataGridTextColumn Header="Offset" Binding="{Binding Offset}" Width="Auto" />
+                                    <DataGridTextColumn Header="Next Line Offset" Binding="{Binding NextLine}" Width="Auto" />
+                                    <DataGridTextColumn Header="Previous Line Offset" Binding="{Binding PrevLineIndex}" Width="Auto" />
+                                </DataGrid.Columns>
+                            </DataGrid>
                         </Border>
                     </StackPanel>
                 </StackPanel>
@@ -205,8 +250,9 @@ Margin="5"
                     <StackPanel Margin="10,0,0,0" MinWidth="380">
                         <StackPanel Margin="0,0,5,5" Orientation="Vertical">
                             <TextBlock Margin="0,5,0,5" HorizontalAlignment="Left">Index: (Load Song First)</TextBlock>
-                            <Border    Margin="0,0,0,5" BorderBrush="Black" BorderThickness="1">
-                                <DataGrid FontSize="14" Height="350" Width="1315" x:Name="WordsIndexDataGrid" AutoGenerateColumns="False" Margin="0">
+                            <Border Margin="0,0,0,5" BorderBrush="Black" BorderThickness="1">
+                                <DataGrid FontSize="14" Height="350" Width="1315" x:Name="WordsIndexDataGrid"
+                                          AutoGenerateColumns="False" Margin="0">
                                     <DataGrid.Columns>
                                         <!-- Column for Word Text -->
                                         <DataGridTextColumn Header="Word" Binding="{Binding WordText}" />
@@ -221,7 +267,8 @@ Margin="5"
                                         <DataGridTextColumn Header="Stanza Offset" Binding="{Binding SongStanzaOffset}" />
 
                                         <!-- Column for Word Song Occurrences -->
-                                        <DataGridTextColumn Header="Word Song Occurrences" Binding="{Binding WordNumOfOccurrences}" />
+                                        <DataGridTextColumn Header="Word Song Occurrences"
+                                                            Binding="{Binding WordNumOfOccurrences}" />
 
                                         <!-- Column for Word Length -->
                                         <DataGridTextColumn Header="Word Length" Binding="{Binding WordLength}" />
@@ -232,38 +279,60 @@ Margin="5"
 
 
                                         <!-- Column for Stanza Length -->
-                                        <DataGridTextColumn Header="Stanza Length" Binding="{Binding SongStanzaWordLength}" />
+                                        <DataGridTextColumn Header="Stanza Length"
+                                                            Binding="{Binding SongStanzaWordLength}" />
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Border>
                             <StackPanel Orientation="Horizontal">
                                 <StackPanel Margin="0,0,15,10">
                                     <TextBlock HorizontalAlignment="Left">Groups:</TextBlock>
-                                    <DataGrid SelectionUnit="FullRow" IsReadOnly="True" AutoGenerateColumns="True" Name="GroupsDataGrid" SelectionMode="Single" Height="200" MinWidth="300" HorizontalAlignment="Left"/>
-                                    <Button Click="FilterCurrentGroupButton_WordIndexView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="FilterCurrentGroupButton_WordIndexView" >Query</Button>
-                                    <Button Click="ClearFilterButton_WordIndexView_Click" Padding="30,5,30,5" VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25" Name="ClearFilterButton_WordIndexView" >Clear Filters</Button>
+                                    <DataGrid SelectionUnit="FullRow" IsReadOnly="True" AutoGenerateColumns="True"
+                                              Name="GroupsDataGrid" SelectionMode="Single" Height="200" MinWidth="300"
+                                              HorizontalAlignment="Left" />
+                                    <Button Click="FilterCurrentGroupButton_WordIndexView_Click" Padding="30,5,30,5"
+                                            VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left"
+                                            MinWidth="70" MinHeight="25" Name="FilterCurrentGroupButton_WordIndexView">
+                                        Query
+                                    </Button>
+                                    <Button Click="ClearFilterButton_WordIndexView_Click" Padding="30,5,30,5"
+                                            VerticalAlignment="Center" Margin="0,5,0,5" HorizontalAlignment="Left"
+                                            MinWidth="70" MinHeight="25" Name="ClearFilterButton_WordIndexView">
+                                        Clear Filters
+                                    </Button>
 
                                 </StackPanel>
-                 
+
                                 <StackPanel Margin="0,0,15,10">
-                                    <TextBlock    Margin="0,0,0,0" VerticalAlignment="Center"  MinHeight="20">Upsert A Group:</TextBlock>
-                                    <StackPanel     Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
-                                        <TextBlock  MinWidth="70"  Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Name:</TextBlock>
-                                        <TextBox   MinWidth="200" MinHeight="20" Margin="5" VerticalAlignment="Top" HorizontalAlignment="Left" Name="GroupNameTextBox"/>
+                                    <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" MinHeight="20">Upsert A Group:</TextBlock>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,0" Grid.RowSpan="2">
+                                        <TextBlock MinWidth="70" Margin="5" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Left">
+                                            Name:
+                                        </TextBlock>
+                                        <TextBox MinWidth="200" MinHeight="20" Margin="5" VerticalAlignment="Top"
+                                                 HorizontalAlignment="Left" Name="GroupNameTextBox" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock  MinWidth="70"  Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Values:</TextBlock>
-                                        <ListBox MinWidth="150" Height="150" Margin="5" Name="GroupValuesListBox"/>
-                                        <Button x:Name="AddGroupValueButton" 
-                                    Click="AddGroup_Click"
-MinWidth="60" 
-MinHeight="20" 
-Margin="5" 
-VerticalAlignment="Top"
-Content="Add"/>
+                                        <TextBlock MinWidth="70" Margin="5" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Left">
+                                            Values:
+                                        </TextBlock>
+                                        <ListBox MinWidth="150" Height="150" Margin="5" Name="GroupValuesListBox" />
+                                        <Button x:Name="AddGroupValueButton"
+                                                Click="AddGroup_Click"
+                                                MinWidth="60"
+                                                MinHeight="20"
+                                                Margin="5"
+                                                VerticalAlignment="Top"
+                                                Content="Add" />
                                     </StackPanel>
                                     <!-- Save Button -->
-                                    <Button Click="SaveGroup_Click" Padding="5"  VerticalAlignment="Center" Margin="0,0,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25" Name="SaveGroupButton" >Save</Button>
+                                    <Button Click="SaveGroup_Click" Padding="5" VerticalAlignment="Center"
+                                            Margin="0,0,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25"
+                                            Name="SaveGroupButton">
+                                        Save
+                                    </Button>
 
                                 </StackPanel>
                             </StackPanel>
@@ -272,52 +341,77 @@ Content="Add"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Phrases">
-                <StackPanel Orientation="Vertical">
-                    <StackPanel Margin="10,5,10,5">
-                        <TextBlock  HorizontalAlignment="Left">Phrases Occurrences: (Load Song To Start)</TextBlock>
-                        <Border  Margin="0,5,15,5" BorderBrush="Black" BorderThickness="1">
-                            <DataGrid Height="500" Width="1000" FontSize="14"  x:Name="PhrasesReferencesDataGrid" AutoGenerateColumns="True" Margin="0"/>
-                        </Border>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel Margin="0,0,15,10">
-                            <TextBlock HorizontalAlignment="Left" >Phrases:</TextBlock>
-                            <ListBox SelectionMode="Single" SelectionChanged="PhrasesListBox_OnSelectionChanged" Height="200" Width="500" HorizontalAlignment="Left" Name="PhrasesListBox"/>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Margin="10,5,10,5">
+                            <TextBlock HorizontalAlignment="Left">Phrases Occurrences: (Load Song To Start)</TextBlock>
+                            <Border Margin="0,5,15,5" BorderBrush="Black" BorderThickness="1">
+                                <DataGrid Height="500" HorizontalAlignment="Stretch" FontSize="14" x:Name="PhrasesReferencesDataGrid"
+                      AutoGenerateColumns="True" Margin="0" />
+                            </Border>
                         </StackPanel>
-                        <StackPanel Margin="0,0,15,10">
-                            <!-- Add Song Label -->
-                            <TextBlock    Margin="0,0,0,5"  MinHeight="20">Add A Phrase:</TextBlock>
-
-                            <StackPanel     Orientation="Horizontal" Margin="0,0,0,0">
-                                <!-- Song Name -->
-                                <TextBlock  MinWidth="70"  Margin="0" VerticalAlignment="Center" HorizontalAlignment="Left">Phrase:</TextBlock>
-                                <TextBox   MinWidth="270" MinHeight="20" Margin="5" VerticalAlignment="Top" HorizontalAlignment="Left" Name="PhraseTextBox"/>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Margin="0,0,15,10">
+                                <TextBlock HorizontalAlignment="Left">Phrases:</TextBlock>
+                                <ListBox SelectionMode="Single" SelectionChanged="PhrasesListBox_OnSelectionChanged"
+                     Height="200" Width="500" HorizontalAlignment="Left" Name="PhrasesListBox" />
                             </StackPanel>
+                            <StackPanel Margin="0,0,15,10">
+                                <!-- Add Song Label -->
+                                <TextBlock Margin="0,0,0,5" MinHeight="20">Add A Phrase:</TextBlock>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                                    <!-- Song Name -->
+                                    <TextBlock MinWidth="70" Margin="0" VerticalAlignment="Center"
+                           HorizontalAlignment="Left">
+                    Phrase:
+                                    </TextBlock>
+                                    <TextBox MinWidth="270" MinHeight="130" Margin="5" VerticalAlignment="Top"
+                         HorizontalAlignment="Left" Name="PhraseTextBox" />
+                                </StackPanel>
 
 
-                            <!-- Save Button -->
-                            <Button Padding="5"  VerticalAlignment="Center" Margin="0,5,0,0" HorizontalAlignment="Left" MinWidth="50" MinHeight="25" Name="SavePhraseButton" Click="SavePhraseButton_Click">Save</Button>
+                                <!-- Save Button -->
+                                <Button Padding="5" VerticalAlignment="Center" Margin="0,5,0,0" HorizontalAlignment="Left"
+                    MinWidth="50" MinHeight="25" Name="SavePhraseButton" Click="SavePhraseButton_Click">
+                                    Save
+                                </Button>
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
-                </StackPanel>                
+                    <StackPanel>
+                        <Label>Full Song Text:</Label>
+                        <TextBox Height="520" MinWidth="700" VerticalScrollBarVisibility="Visible"
+                                 HorizontalAlignment="Stretch" Margin="5" TextWrapping="Wrap" IsReadOnly="True"
+                                 x:Name="FullSongTextBox_PhrasesView" />
+                    </StackPanel>
+                </StackPanel>
             </TabItem>
             <TabItem Header="Stats">
                 <StackPanel Margin="5" HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per word:</TextBlock>
-                        <TextBlock x:Name="Stats_PerWord" MinWidth="100"  Margin="5" VerticalAlignment="Center" HorizontalAlignment="Stretch"></TextBlock>
+                        <TextBlock x:Name="Stats_PerWord" MinWidth="100" Margin="5" VerticalAlignment="Center"
+                                   HorizontalAlignment="Stretch">
+                        </TextBlock>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per line:</TextBlock>
-                        <TextBlock x:Name="Stats_PerLine" MinWidth="100" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+                        <TextBlock x:Name="Stats_PerLine" MinWidth="100" Margin="5" VerticalAlignment="Center"
+                                   HorizontalAlignment="Left">
+                        </TextBlock>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock  Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per stanza:</TextBlock>
-                        <TextBlock x:Name="Stats_PerStanza" MinWidth="100" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+                        <TextBlock Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per stanza:</TextBlock>
+                        <TextBlock x:Name="Stats_PerStanza" MinWidth="100" Margin="5" VerticalAlignment="Center"
+                                   HorizontalAlignment="Left">
+                        </TextBlock>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <TextBlock Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left">Number of symbols per song:</TextBlock>
-                        <TextBlock x:Name="Stats_PerSong" MinWidth="100" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+                        <TextBlock x:Name="Stats_PerSong" MinWidth="100" Margin="5" VerticalAlignment="Center"
+                                   HorizontalAlignment="Left">
+                        </TextBlock>
                     </StackPanel>
                 </StackPanel>
             </TabItem>

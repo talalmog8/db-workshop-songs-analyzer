@@ -33,6 +33,8 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     {
         Path = path;
         SongContent = await File.ReadAllTextAsync(Path);
+        SongContent = SongContent.ToLower();
+        
         return SongContent;
     }
 
@@ -110,6 +112,11 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             .OrderBy(x=> x.Id).ToArray();
 
         return composersView;
+    }
+
+    public int GetTokenCount(string text)
+    {
+        return _wordsRegex.Matches(text).Count;
     }
 
     private string GetComposersList(ICollection<ContributorContributorType> contributorContributorTypes)
@@ -357,7 +364,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     public async Task<bool> AddGroup(string name, string[] values)
     {
         name = name.ToLower();
-
+        
         await using var ctx = ctxFactory();
 
         await ctx.Database.BeginTransactionAsync();
@@ -430,8 +437,6 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     public async Task<(string phrase, bool)> AddPhrase(string phrase)
     {
-        phrase = phrase.ToLower();
-
         await using var ctx = ctxFactory();
 
         bool phraseExists = await ctx.Phrases.Where(x => x.PhraseText == phrase).AnyAsync();
@@ -455,7 +460,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             .Select(word => new PhraseWord
             {
                 PhraseId = phraseToInsert.Id,
-                Word = word,
+                Word = word.TrimToMaxLength(45),
                 Offset = offset++
             }).ToArray();
 
@@ -698,14 +703,12 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
                 {
                     var wordLocation = new WordLocation
                     {
-                        Offset = offset,
+                        Offset = offset++,
                         SongWordId = songWord.Id,
                         SongWord = songWord,
                         SongLineId = wordAndLineId.LineId
                     };
-
-                    offset += wordAndLineId.Word.Length;
-
+                    
                     return wordLocation;
                 }
 
@@ -734,7 +737,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
 
             var nextLineIndex = FindNextLine(songText, phrase, index);
-            var prevLineIndex = FindPreviousLine(songText, phrase, index);
+            var prevLineIndex = FindPreviousLine(songText, index);
             occurrences.Add(new TextOccurence(index, nextLineIndex, prevLineIndex,
                 songText[prevLineIndex .. nextLineIndex].Trim(), phrase));
         }
@@ -755,13 +758,13 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             index++;
         }
 
-        if (index < songText.Length)
+        if (index <= songText.Length)
             return index;
 
         return songText.Length - 1;
     }
 
-    private int FindPreviousLine(string songText, string phrase, int index)
+    private int FindPreviousLine(string songText, int index)
     {
         int numOfNewLines = 2;
 

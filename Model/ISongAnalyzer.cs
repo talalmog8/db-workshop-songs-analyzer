@@ -25,4 +25,5 @@ public interface ISongAnalyzer
     TextOccurence[] GetPhraseReference(string word);
     Task<string> FindWords(int stanzaOffset, int lineOffset, int wordOffset);
     Task<ComposerView[]> GetComposers();
+    int GetTokenCount(string text);
 }

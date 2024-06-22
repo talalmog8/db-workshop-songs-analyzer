@@ -58,6 +58,7 @@ namespace SongsAnalyzer
             else
             {
                 await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
+                await FullSongTextBox_PhrasesView.Dispatcher.InvokeAsync(() => FullSongTextBox_PhrasesView.Text = content);
                 await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Text = _songAnalyzer.SongName);
                 await RefreshUI(true);
             }
@@ -395,15 +396,33 @@ namespace SongsAnalyzer
 
         private async void AddGroup_Click(object sender, RoutedEventArgs e)
         {
-            var groupName = Interaction.InputBox("Enter group name:", "Add Group", "");
+            var groupValue = Interaction.InputBox("Enter A Group Value:", "Add Group", "");
 
-            if (string.IsNullOrEmpty(groupName))
+
+            if (string.IsNullOrEmpty(groupValue))
             {
-                StringEmptyError("Group value");
+                StringEmptyError("Group Value");
                 return;
             }
 
-            await GroupValuesListBox.Dispatcher.InvokeAsync(() => GroupValuesListBox.Items.Add(groupName));
+            groupValue = groupValue.ToLower().Trim().TrimToMaxLength(45);
+            
+            if (_songAnalyzer.GetTokenCount(groupValue) > 1)
+            {
+                OneWordError("Group");
+                return;
+            }
+            
+            await GroupValuesListBox.Dispatcher.InvokeAsync(() =>
+            {
+                if (!GroupValuesListBox.Items.Contains(groupValue))
+                    GroupValuesListBox.Items.Add(groupValue);
+            });
+        }
+
+        private void OneWordError(string to)
+        {
+            MessageBox.Show($"add one word to {to} each time", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private async void SaveGroup_Click(object sender, RoutedEventArgs e)
@@ -482,7 +501,7 @@ namespace SongsAnalyzer
                 return;
             }
 
-            var (phrase, added) = await _songAnalyzer.AddPhrase(PhraseTextBox.Text);
+            var (phrase, added) = await _songAnalyzer.AddPhrase(PhraseTextBox.Text.ToLower().Trim().TrimToMaxLength(250));
 
             if (added)
             {
