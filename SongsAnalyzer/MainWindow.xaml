@@ -141,8 +141,16 @@
 
                             <!-- DataGrid for Query Results with Border -->
 
-                            <DataGrid MinHeight="380" MinWidth="850" HorizontalAlignment="Stretch"
-                                  x:Name="QuerySongResultsDataGrid" AutoGenerateColumns="True" Margin="0" />
+                            <DataGrid FontSize="14" IsReadOnly="False" Height="380" Width="850" HorizontalAlignment="Stretch" x:Name="QuerySongResultsDataGrid" AutoGenerateColumns="False" Margin="0">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                                    <DataGridTextColumn Header="Document Date" Binding="{Binding DocDate, StringFormat=d}" />
+                                    <DataGridTextColumn Header="Word Length" Binding="{Binding WordLength}" />
+                                    <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
+                                    <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" />
+                                    <DataGridTextColumn Header="Contribution Type" Binding="{Binding ContributionType}" />
+                                </DataGrid.Columns>    
+                            </DataGrid>
 
                         </StackPanel>
                     </StackPanel>
@@ -314,8 +322,16 @@ AutoGenerateColumns="False" Margin="0">
                             <StackPanel Margin="10,5,10,5">
                                 <TextBlock HorizontalAlignment="Left">Phrases Occurrences: (Load Song To Start)</TextBlock>
                                 <Border Margin="0,5,15,5" BorderBrush="Black" BorderThickness="1">
-                                    <DataGrid Height="500" HorizontalAlignment="Stretch" FontSize="14" x:Name="PhrasesReferencesDataGrid"
-                      AutoGenerateColumns="True" Margin="0" />
+                                    <DataGrid IsReadOnly="True" Height="500" HorizontalAlignment="Stretch" FontSize="14" x:Name="PhrasesReferencesDataGrid"
+                      AutoGenerateColumns="False" Margin="0" >
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Word" Binding="{Binding Word}" Width="Auto" />
+                                            <DataGridTextColumn Header="Text" Binding="{Binding Text}" Width="Auto" />
+                                            <DataGridTextColumn Header="Offset" Binding="{Binding Offset}" Width="Auto" />
+                                            <DataGridTextColumn Header="Next Line Offset" Binding="{Binding NextLine}" Width="Auto" />
+                                            <DataGridTextColumn Header="Previous Line Offset" Binding="{Binding PrevLineIndex}" Width="Auto" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
                                 </Border>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">

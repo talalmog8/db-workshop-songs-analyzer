@@ -34,7 +34,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         Path = path;
         SongContent = await File.ReadAllTextAsync(Path);
         SongContent = SongContent.ToLower();
-        
+
         return SongContent;
     }
 
@@ -95,21 +95,21 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     public async Task<ComposerView[]> GetComposers()
     {
         await using var ctx = ctxFactory();
-        
-        var composers =  await ctx.Contributors
-            .Include(x=> x.ContributorContributorTypes)
-            .ThenInclude(x=> x.ContributorType)
+
+        var composers = await ctx.Contributors
+            .Include(x => x.ContributorContributorTypes)
+            .ThenInclude(x => x.ContributorType)
             .ToListAsync();
 
-        var composersView = 
-            composers.Select(x =>  new ComposerView
-            {
-                Id = x.Id,
-                ComposerTypes = GetComposersList(x.ContributorContributorTypes),
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-            })
-            .OrderBy(x=> x.Id).ToArray();
+        var composersView =
+            composers.Select(x => new ComposerView
+                {
+                    Id = x.Id,
+                    ComposerTypes = GetComposersList(x.ContributorContributorTypes),
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                })
+                .OrderBy(x => x.Id).ToArray();
 
         return composersView;
     }
@@ -125,11 +125,12 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         builder = contributorContributorTypes.Select(x => x.ContributorType)
             .Select(x => x.ContributorTypeDescription)
-            .Aggregate(builder, (current, contributorTypeDescription) => current.Append($"{contributorTypeDescription}, "));
+            .Aggregate(builder,
+                (current, contributorTypeDescription) => current.Append($"{contributorTypeDescription}, "));
 
         if (builder.Length > 1)
             builder.Length -= 2;
-        
+
         return builder.ToString();
     }
 
@@ -148,7 +149,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         if (!string.IsNullOrEmpty(songName))
             query = query.Where(x => x.Song_Name.StartsWith(songName));
-        
+
         var words = await query.Select(g => new WordTable
         {
             Id = g.WordId,
@@ -176,29 +177,29 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         await using var ctx = ctxFactory();
 
         var stanza = await ctx.SongStanzas
-            .Include(x=> x.SongLines)
+            .Include(x => x.SongLines)
             .Where(x => x.Offset == stanzaOffset)
             .Where(x => x.SongId == Song.Id)
             .FirstOrDefaultAsync();
 
-        if(stanza is null)
+        if (stanza is null)
             return "Location Does Not Exist In This Song";
-        
+
         var line = stanza.SongLines?.ElementAtOrDefault(lineOffset);
 
         if (line is null)
             return "Location Does Not Exist In This Song";
-        
+
         var query = ctx.WordIndexView.AsQueryable()
-            .Where(x=> x.SongId == Song.Id)
+            .Where(x => x.SongId == Song.Id)
             .Where(x => x.SongStanzaOffset == stanzaOffset)
             .Where(x => x.SongLineOffset == line.Offset);
 
         var result = await query
-            .OrderBy(x=> x.WordLocationOffset)
-            .Select(x=>x.WordText)
+            .OrderBy(x => x.WordLocationOffset)
+            .Select(x => x.WordText)
             .ToListAsync();
-        
+
         return result.ElementAtOrDefault(wordOffset) ?? "Location Does Not Exist In This Song";
     }
 
@@ -258,87 +259,42 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     #region Songs
 
-    public async Task<List<SongQueryResult>> GetSongs(string songName, string composerFirstName,
-        string composerLastName, string freeText)
+    public async Task<List<SongQueryResult>> GetSongs(
+        string songName,
+        string composerFirstName,
+        string composerLastName,
+        string freeText)
     {
-        List<SongQueryResult> result = null;
-
+        var words = _wordsRegex.Matches(freeText).Select(x => x.Value?.Trim()?.ToLower()).ToHashSet();
+        
         await using var ctx = ctxFactory();
 
+        var query = ctx.SongView.AsQueryable();
+
         if (!string.IsNullOrEmpty(songName))
-        {
-            var songs = await ctx.Songs.Where(x => x.Name.Contains(songName.ToLower())).ToListAsync();
+            query = query.Where(x => x.SongName.StartsWith(songName.Trim().ToLower()));
+        if (!string.IsNullOrEmpty(composerFirstName))
+            query = query.Where(x => x.FirstName.StartsWith(composerFirstName.Trim().ToLower()));
+        if (!string.IsNullOrEmpty(composerLastName))
+            query = query.Where(x => x.LastName.StartsWith(composerLastName.Trim().ToLower()));
+        if (words.Any())
+            query = query.Where(x => words.Contains(x.Word));
 
-            result = songs.Select(x => new SongQueryResult
+        var result = await query
+            .GroupBy(view => new { view.SongName, view.FirstName, view.LastName, view.ContributionType, view.SongComposerId, view.DocumentDate, view.SongWordLength })
+            .Select(x=> new SongQueryResult
             {
-                SongId = x.Id,
-                Name = x.Name,
-                DocDate = x.DocDate,
-                WordLength = x.WordLength
-            }).ToList();
-        }
-
-        if (!(string.IsNullOrEmpty(composerFirstName) && string.IsNullOrEmpty(composerLastName)))
-        {
-            var pool = ctx.SongComposers
-                .Include(x => x.Contributor)
-                .Include(x => x.Song);
-
-            IQueryable<SongComposer> query;
-
-            if (!string.IsNullOrEmpty(composerFirstName))
-                query = pool.Where(x => x.Contributor.FirstName == composerFirstName.ToLower());
-            else
-                query = pool.Where(x => x.Contributor.LastName == composerLastName.ToLower());
-
-            var songComposers = await query.ToListAsync();
-
-            result = songComposers.Select(x => new SongQueryResult
-                {
-                    SongId = x.Song.Id,
-                    Name = x.Song.Name,
-                    DocDate = x.Song.DocDate,
-                    WordLength = x.Song.WordLength
-                })
-                .GroupBy(x => x.SongId)
-                .Select(g => g.First())
-                .ToList();
-        }
-
-        if (!string.IsNullOrEmpty(freeText)) // TODO now it is any we need all
-        {
-            var words = freeText.Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries);
-
-            var pool = ctx.SongWords
-                .Include(x => x.Word)
-                .Include(x => x.Song);
-
-            var query = pool.Where(x => words.Contains(x.Word.WordText));
-            var songWords = await query.ToListAsync();
-
-            result = songWords.Select(x => new SongQueryResult
-                {
-                    SongId = x.Song.Id,
-                    Name = x.Song.Name,
-                    DocDate = x.Song.DocDate,
-                    WordLength = x.Song.WordLength
-                })
-                .GroupBy(x => x.SongId)
-                .Select(g => g.First())
-                .ToList();
-        }
-
-        if (result is null)
-        {
-            var songs = await ctx.Songs.ToListAsync();
-            result = songs.Select(x => new SongQueryResult
-            {
-                SongId = x.Id,
-                Name = x.Name,
-                DocDate = x.DocDate,
-                WordLength = x.WordLength
-            }).ToList();
-        }
+                Name = x.Key.SongName,
+                DocDate = x.Key.DocumentDate,
+                WordLength = x.Key.SongWordLength,
+                FirstName= x.Key.FirstName,
+                LastName= x.Key.LastName,
+                ContributionType= x.Key.ContributionType,
+            })
+            .OrderBy(x=> x.Name)
+            .ThenBy(x=> x.FirstName)
+            .ThenBy(x=> x.LastName)
+            .ToListAsync();
 
         return result;
     }
@@ -364,7 +320,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     public async Task<bool> AddGroup(string name, string[] values)
     {
         name = name.ToLower();
-        
+
         await using var ctx = ctxFactory();
 
         await ctx.Database.BeginTransactionAsync();
@@ -479,21 +435,21 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     private async Task InsertContributorsIfMissing(HashSet<Name> composers, ContributorType contributorType, Song song)
     {
-            foreach (var composer in composers)
+        foreach (var composer in composers)
+        {
+            await using var ctx = ctxFactory();
+            await using var tran = await ctx.Database.BeginTransactionAsync();
+            try
             {
-                await using var ctx = ctxFactory();
-                await using var tran = await ctx.Database.BeginTransactionAsync();
-                try
-                {
-                    await InsertContributorIfMissing(new Contributor(composer), ctx, contributorType, song);
-                    await tran.CommitAsync();
-                }
-                catch (Exception e)
-                {
-                    await tran.RollbackAsync();
-                    throw;
-                }
+                await InsertContributorIfMissing(new Contributor(composer), ctx, contributorType, song);
+                await tran.CommitAsync();
             }
+            catch (Exception e)
+            {
+                await tran.RollbackAsync();
+                throw;
+            }
+        }
     }
 
     private static async Task<SongWord[]> InsertSongWords(Word[] words, Song song, Dictionary<string, int> wordIndex,
@@ -598,7 +554,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             contributorContributorType = existingContributorContributorType;
 
         contributorContributorType.Contributor = contributor;
-        
+
         var songComposer = new SongComposer
         {
             ContributorId = contributor.Id,
@@ -708,7 +664,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
                         SongWord = songWord,
                         SongLineId = wordAndLineId.LineId
                     };
-                    
+
                     return wordLocation;
                 }
 

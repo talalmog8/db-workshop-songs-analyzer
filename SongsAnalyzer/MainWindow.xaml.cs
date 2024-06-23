@@ -75,10 +75,17 @@ namespace SongsAnalyzer
 
         private async Task RefreshUI(bool filterCurrentSong = false)
         {
-            await UpdateWordTable(filterCurrentSong: filterCurrentSong);
-            await UpdateStats();
-            await UpdateSongsResultsTable();
-            await UpdateWordIndex();
+            try
+            {
+                await UpdateWordTable(filterCurrentSong: filterCurrentSong);
+                await UpdateStats();
+                await UpdateSongsResultsTable();
+                await UpdateWordIndex();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Failed to refresh UI", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #region Tab 4 Word Index
@@ -132,7 +139,14 @@ namespace SongsAnalyzer
 
         private async void QuerySongButton_Click(object sender, RoutedEventArgs e)
         {
-            await UpdateSongsResultsTable();
+            try
+            {
+                await UpdateSongsResultsTable();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show("Failed to query songs", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private async void ClearQuerySongButton_Click(object sender, RoutedEventArgs e)

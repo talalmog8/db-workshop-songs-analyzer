@@ -30,6 +30,7 @@ public class SongsContext : DbContext
     public DbSet<WordIndexView> WordIndexView { get; set; }
     public DbSet<GroupWordIndexView> GroupWordIndexView { get; set; }
     public DbSet<WordView> WordView { get; set; }
+    public DbSet<SongView> SongView { get; set; }
 
     public SongsContext(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
@@ -100,8 +101,8 @@ public class SongsContext : DbContext
         modelBuilder.Entity<SongLine>()
             .HasOne(sl => sl.Song)
             .WithMany(s => s.SongLines)
-            .HasForeignKey(sl => sl.SongId);    
-        
+            .HasForeignKey(sl => sl.SongId);
+
         modelBuilder.Entity<SongLine>()
             .HasOne(sl => sl.Stanza)
             .WithMany(s => s.SongLines)
@@ -137,15 +138,15 @@ public class SongsContext : DbContext
             .HasForeignKey(cct => cct.ContributorTypeId);
 
         // Additional relationships
-        
+
         modelBuilder.Entity<WordGroup>().HasKey(wg => new { wg.GroupId, wg.WordId });
 
-        
+
         modelBuilder.Entity<WordGroup>()
             .HasOne(wg => wg.Group)
             .WithMany(g => g.WordGroups)
-            .HasForeignKey(wg =>  wg.WordId);
-        
+            .HasForeignKey(wg => wg.WordId);
+
         modelBuilder.Entity<WordGroup>()
             .HasOne(wg => wg.Group)
             .WithMany(w => w.WordGroups)
@@ -174,8 +175,10 @@ public class SongsContext : DbContext
         modelBuilder.Entity<WordIndexView>().ToView("word_index_view");
         modelBuilder.Entity<GroupWordIndexView>().ToView("group_word_index_view");
         modelBuilder.Entity<WordView>().ToView("words_view");
-        
-        modelBuilder.Entity<GroupsView>().ToView("groups_view")
-            .HasKey(view => new {view.GroupId, view.GroupName});
+        modelBuilder.Entity<GroupsView>().ToView("groups_view").HasKey(view => new { view.GroupId, view.GroupName });
+        modelBuilder.Entity<SongView>().ToView("songs_view").HasKey(view => new
+        {
+            view.SongName, view.FirstName, view.LastName, view.ContributionType, view.SongComposerId
+        });
     }
 }
