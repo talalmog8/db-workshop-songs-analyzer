@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Model.Contract;
 using Model.Entities;
+using Npgsql;
 
 namespace Model;
 
@@ -31,7 +33,8 @@ public class SongsContext : DbContext
     public DbSet<GroupWordIndexView> GroupWordIndexView { get; set; }
     public DbSet<WordView> WordView { get; set; }
     public DbSet<SongView> SongView { get; set; }
-
+    public DbSet<SongName> SongsSearch { get; set; } 
+    
     public SongsContext(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
         _loggerFactory = loggerFactory;
@@ -180,5 +183,18 @@ public class SongsContext : DbContext
         {
             view.SongName, view.FirstName, view.LastName, view.ContributionType, view.SongComposerId
         });
+        
+        modelBuilder.Entity<SongName>().HasNoKey();
+    }
+    
+    public async Task<List<SongName>> SearchSongsNames(string searchTerm)
+    {
+        var termParam = new NpgsqlParameter("term", searchTerm);
+
+        var results = await SongsSearch
+            .FromSqlRaw("SELECT * FROM search_song_by_similarity({0})", termParam)
+            .ToListAsync();
+
+        return results;
     }
 }

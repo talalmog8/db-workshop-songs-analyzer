@@ -92,48 +92,60 @@
                 <TabItem Header="Songs">
                     <StackPanel Margin="5" HorizontalAlignment="Stretch" Orientation="Horizontal">
                         <StackPanel>
-                            <!-- Query Songs Label -->
-                            <TextBlock Margin="0,0,0,5" VerticalAlignment="Center">Query Songs:</TextBlock>
 
-                            <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                                <!-- Query Song Name -->
-                                <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20">Song Name:</TextBlock>
-                                <TextBox MinWidth="250" Name="QuerySongNameTextBox" />
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel>
+
+
+                                    <!-- Query Songs Label -->
+                                    <TextBlock Margin="0,0,0,5" VerticalAlignment="Center">Query Songs:</TextBlock>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                                        <!-- Query Song Name -->
+                                        <TextBlock VerticalAlignment="Center" Margin="0,0,0,0" MinWidth="120" MinHeight="20">Song Name:</TextBlock>
+                                        <TextBox TextChanged="QuerySongNameTextBox_TextChanged" MinWidth="250" Name="QuerySongNameTextBox" />
+                                    </StackPanel>
+
+                                    <TextBlock Margin="0,5,0,5">Composer:</TextBlock>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                                        <!-- Query Composer -->
+                                        <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="120" MinHeight="20">First Name:</TextBlock>
+                                        <TextBox Margin="0,0,0,0" MinWidth="250" Name="QueryComposerFirstNameTextBox" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                                        <!-- Query Composer -->
+                                        <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="120" MinHeight="20">Last Name:</TextBlock>
+                                        <TextBox Margin="0,0,0,0" MinWidth="250" Name="QueryComposerLastNameTextBox" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                                        <!-- Query Free Text-->
+                                        <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="120" MinHeight="20"
+           Text="Words:" />
+                                        <TextBox Margin="0,0,0,0" MinWidth="250" Name="QueryWordsTextBox" />
+                                    </StackPanel>
+
+                                    <!-- Query Button -->
+                                    <Button Click="QuerySongButton_Click" Padding="30,5,30,5" VerticalAlignment="Center"
+    Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25"
+    Name="QuerySongButton">
+                                        Query
+                                    </Button>
+                                    <Button Click="ClearQuerySongButton_Click" Padding="30,5,30,5" VerticalAlignment="Center"
+    Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25"
+    Name="ClearQuerySongButton">
+                                        Clear Filters
+                                    </Button>
+
+                                </StackPanel>
+                                <StackPanel Margin="200,10,10,10">
+                                    <Label>Potential Songs:</Label>
+                                    <ListBox Width="270" Height="230" Name="PotentialSongsListBox"/>
+                                </StackPanel>
                             </StackPanel>
-
-                            <TextBlock Margin="0,5,0,5">Composer:</TextBlock>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                                <!-- Query Composer -->
-                                <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="120" MinHeight="20">First Name:</TextBlock>
-                                <TextBox Margin="0,0,0,0" MinWidth="250" Name="QueryComposerFirstNameTextBox" />
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                                <!-- Query Composer -->
-                                <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="120" MinHeight="20">Last Name:</TextBlock>
-                                <TextBox Margin="0,0,0,0" MinWidth="250" Name="QueryComposerLastNameTextBox" />
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                                <!-- Query Free Text-->
-                                <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" MinWidth="120" MinHeight="20"
-                                       Text="Words:" />
-                                <TextBox Margin="0,0,0,0" MinWidth="250" Name="QueryWordsTextBox" />
-                            </StackPanel>
-
-                            <!-- Query Button -->
-                            <Button Click="QuerySongButton_Click" Padding="30,5,30,5" VerticalAlignment="Center"
-                                Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25"
-                                Name="QuerySongButton">
-                                Query
-                            </Button>
-                            <Button Click="ClearQuerySongButton_Click" Padding="30,5,30,5" VerticalAlignment="Center"
-                                Margin="0,5,0,5" HorizontalAlignment="Left" MinWidth="70" MinHeight="25"
-                                Name="ClearQuerySongButton">
-                                Clear Filters
-                            </Button>
-
+                            
                             <TextBlock Margin="0,5,0,5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                    MinWidth="100">
                             Songs Results:

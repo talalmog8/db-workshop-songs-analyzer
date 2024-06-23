@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net.Security;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Model.Contract;
@@ -9,8 +10,9 @@ namespace Model;
 
 public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 {
-    private readonly Regex _wordsRegex = new Regex(@"\b\w+\b", RegexOptions.Compiled);
-
+    private readonly Regex _wordsRegex = new(@"\b\w+\b", RegexOptions.Compiled);
+    private readonly SemaphoreSlim _searchSync = new SemaphoreSlim(1, 1);
+    
     private readonly string[] _wordSplit =
     [
         " ", "\t", "\u00A0", ".", ",", "!", "?", ":", ";", "-", "–", "—", "/", "\\", "\"", "'", "(", ")", "[", "]", "{",
@@ -259,6 +261,26 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     #region Songs
 
+    public async Task<List<SongName>> SearchSongs(string searchTerm)
+    {
+        if (string.IsNullOrEmpty(searchTerm))
+            return [];
+
+        await _searchSync.WaitAsync();
+        try
+        {
+
+            await using var ctx = ctxFactory();
+            var result = await ctx.SearchSongsNames(searchTerm);
+            return result;
+
+        }
+        finally
+        {
+            _searchSync.Release();
+        }
+    }
+    
     public async Task<List<SongQueryResult>> GetSongs(
         string songName,
         string composerFirstName,

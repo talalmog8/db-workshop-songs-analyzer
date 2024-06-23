@@ -26,4 +26,5 @@ public interface ISongAnalyzer
     Task<string> FindWords(int stanzaOffset, int lineOffset, int wordOffset);
     Task<ComposerView[]> GetComposers();
     int GetTokenCount(string text);
+    Task<List<SongName>> SearchSongs(string searchTerm);
 }

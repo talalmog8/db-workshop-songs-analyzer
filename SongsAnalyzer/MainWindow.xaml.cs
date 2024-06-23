@@ -15,6 +15,7 @@ namespace SongsAnalyzer
         private readonly ObservableCollection<TextOccurence> _wordReferences = [];
         private readonly ObservableCollection<TextOccurence> _phrasesReferences = [];
         private readonly ObservableCollection<ComposerView> _composersView = [];
+        private readonly ObservableCollection<string> _potentialHits = [];
 
         public WindowHandlers()
         {
@@ -28,6 +29,7 @@ namespace SongsAnalyzer
             WordReferencesDataGrid.ItemsSource = _wordReferences;
             PhrasesReferencesDataGrid.ItemsSource = _phrasesReferences;
             ComposersDataGrid.ItemsSource = _composersView;
+            PotentialSongsListBox.ItemsSource = _potentialHits;
         }
 
         #region Load Song Tab 1
@@ -553,5 +555,21 @@ namespace SongsAnalyzer
         }
 
         #endregion
+
+        private async void QuerySongNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox? textBox = sender as TextBox;
+            string? textContent = textBox?.Text;
+
+            _potentialHits.Clear();
+            
+            var result = await _songAnalyzer.SearchSongs(textContent ?? string.Empty);
+            
+            foreach (var songName in result)
+            {
+                if(!string.IsNullOrEmpty(songName.Name))
+                    _potentialHits.Add(songName.Name);
+            }
+        }
     }
 }
