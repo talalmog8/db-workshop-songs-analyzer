@@ -24,4 +24,5 @@ public interface ISongAnalyzer
     Task<ComposerView[]> GetComposers();
     int GetTokenCount(string text);
     Task<List<SongName>> SearchSongs(string searchTerm);
+    Task SetUpDatabase();
 }

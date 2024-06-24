@@ -79,6 +79,7 @@ namespace SongsAnalyzer
         {
             try
             {
+                await _songAnalyzer.SetUpDatabase();
                 await RefreshUI();
                 await GetGroups();
                 await GetPhrases();

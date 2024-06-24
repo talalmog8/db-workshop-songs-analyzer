@@ -30,7 +30,7 @@ public class SongsContext : DbContext
     public DbSet<GroupWordIndexView> GroupWordIndexView { get; set; }
     public DbSet<WordView> WordView { get; set; }
     public DbSet<SongView> SongView { get; set; }
-    
+
     #endregion
 
     #region Function Repsonse
@@ -38,8 +38,8 @@ public class SongsContext : DbContext
     public DbSet<SongName> SongsSearch { get; set; }
 
     #endregion
-     
-    
+
+
     public SongsContext(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
         _loggerFactory = loggerFactory;
@@ -106,7 +106,7 @@ public class SongsContext : DbContext
         }).IsUnique();
 
         //  Relationships
-        
+
         modelBuilder.Entity<SongLine>()
             .HasOne(sl => sl.Song)
             .WithMany(s => s.SongLines)
@@ -144,7 +144,7 @@ public class SongsContext : DbContext
             .HasOne(cct => cct.ContributorType)
             .WithMany()
             .HasForeignKey(cct => cct.ContributorTypeId);
-        
+
         modelBuilder.Entity<WordGroup>().HasKey(wg => new { wg.GroupId, wg.WordId });
 
         modelBuilder.Entity<WordGroup>()
@@ -178,7 +178,7 @@ public class SongsContext : DbContext
             .HasForeignKey(wl => wl.SongWordId);
 
         // Views 
-        
+
         modelBuilder.Entity<WordIndexView>().ToView("word_index_view");
         modelBuilder.Entity<GroupWordIndexView>().ToView("group_word_index_view");
         modelBuilder.Entity<WordView>().ToView("words_view");
@@ -187,12 +187,12 @@ public class SongsContext : DbContext
         {
             view.SongName, view.FirstName, view.LastName, view.ContributionType, view.SongComposerId
         });
-        
+
         // Functions
-        
+
         modelBuilder.Entity<SongName>().HasNoKey();
     }
-    
+
     public async Task<List<SongName>> SearchSongsNames(string searchTerm)
     {
         var termParam = new NpgsqlParameter("term", searchTerm);
@@ -202,5 +202,25 @@ public class SongsContext : DbContext
             .ToListAsync();
 
         return results;
+    }
+
+    public async Task SetUpDatabase()
+    {
+        const string sqlFileName = "songs_project.sql";
+        var logger = _loggerFactory.CreateLogger<SongsContext>();
+
+        try
+        {
+            var sql = await File.ReadAllTextAsync(sqlFileName);
+
+            await using var connection = new NpgsqlConnection(_configuration.GetConnectionString("songs"));
+            await connection.OpenAsync();
+            await using var cmd = new NpgsqlCommand(sql, connection);
+            await cmd.ExecuteNonQueryAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"Error executing SQL script {sqlFileName}");
+        }
     }
 }

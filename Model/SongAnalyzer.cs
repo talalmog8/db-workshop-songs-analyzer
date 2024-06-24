@@ -276,7 +276,13 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             _searchSync.Release();
         }
     }
-    
+
+    public async Task SetUpDatabase()
+    {
+        await using var ctx = ctxFactory();
+        await ctx.SetUpDatabase();
+    }
+
     public async Task<List<SongQueryResult>> GetSongs(
         string songName,
         string composerFirstName,
