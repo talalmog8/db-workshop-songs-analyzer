@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using Microsoft.Win32;
 
 namespace SongsAnalyzer
 {
@@ -34,34 +35,41 @@ namespace SongsAnalyzer
 
         #region Load Song Tab 1
 
-        private async void BrowseSong_Click(object sender, RoutedEventArgs e)
+        private async void BrowseSong_Click_Inner(object sender, RoutedEventArgs e)
         {
-            var dialog = new Microsoft.Win32.OpenFileDialog
+            try
             {
-                FileName = "Document", // Default file name
-                DefaultExt = ".txt", // Default file extension
-                Filter = "Text documents (.txt)|*.txt" // Filter files by extension
-            };
+                var dialog = new OpenFileDialog
+                {
+                    FileName = "Document", // Default file name
+                    DefaultExt = ".txt", // Default file extension
+                    Filter = "Text documents (.txt)|*.txt" // Filter files by extension
+                };
 
-            // Show open file dialog box
-            bool? result = dialog.ShowDialog();
+                // Show open file dialog box
+                bool? result = dialog.ShowDialog();
 
-            // Process open file dialog box results
-            if (result != true)
-                return;
+                // Process open file dialog box results
+                if (result != true)
+                    return;
 
-            var filename = dialog.FileName;
-            var content = await _songAnalyzer.LoadSong(filename);
+                var filename = dialog.FileName;
+                var content = await _songAnalyzer.LoadSong(filename);
 
-            var processingResult = await _songAnalyzer.ProcessSong();
+                var processingResult = await _songAnalyzer.ProcessSong();
 
-            if (processingResult == ProcessingResult.Failed)
-                MessageBox.Show("Failed To Process Song", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            else
+                if (processingResult == ProcessingResult.Failed)
+                    MessageBox.Show("Failed To Process Song", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                else
+                {
+                    await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
+                    await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Text = _songAnalyzer.SongName);
+                    await RefreshUI(true);
+                }
+            }
+            catch (Exception exception)
             {
-                await FullSongTextBox.Dispatcher.InvokeAsync(() => FullSongTextBox.Text = content);
-                await SongNameTextBox.Dispatcher.InvokeAsync(() => SongNameTextBox.Text = _songAnalyzer.SongName);
-                await RefreshUI(true);
+                UnExpectedError(exception);
             }
         }
 
@@ -69,10 +77,17 @@ namespace SongsAnalyzer
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            await RefreshUI();
-            await GetGroups();
-            await GetPhrases();
-            await LoadComposers();
+            try
+            {
+                await RefreshUI();
+                await GetGroups();
+                await GetPhrases();
+                await LoadComposers();
+            }
+            catch (Exception exception)
+            {
+                UnExpectedError(exception);
+            }
         }
 
         private async Task RefreshUI(bool filterCurrentSong = false)
@@ -84,9 +99,9 @@ namespace SongsAnalyzer
                 await UpdateSongsResultsTable();
                 await UpdateWordIndex();
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                MessageBox.Show("Failed to refresh UI", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                UnExpectedError(exception);
             }
         }
 
@@ -147,18 +162,25 @@ namespace SongsAnalyzer
             }
             catch (Exception exception)
             {
-                MessageBox.Show("Failed to query songs", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                UnExpectedError(exception);
             }
         }
 
         private async void ClearQuerySongButton_Click(object sender, RoutedEventArgs e)
         {
-            await UpdateSongsResultsTable();
+            try
+            {
+                await UpdateSongsResultsTable();
 
-            await QuerySongNameTextBox.Dispatcher.InvokeAsync(() => QuerySongNameTextBox.Clear());
-            await QueryComposerFirstNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerFirstNameTextBox.Clear());
-            await QueryComposerLastNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerLastNameTextBox.Clear());
-            await QueryWordsTextBox.Dispatcher.InvokeAsync(() => QueryWordsTextBox.Clear());
+                await QuerySongNameTextBox.Dispatcher.InvokeAsync(() => QuerySongNameTextBox.Clear());
+                await QueryComposerFirstNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerFirstNameTextBox.Clear());
+                await QueryComposerLastNameTextBox.Dispatcher.InvokeAsync(() => QueryComposerLastNameTextBox.Clear());
+                await QueryWordsTextBox.Dispatcher.InvokeAsync(() => QueryWordsTextBox.Clear());
+            }
+            catch (Exception exception)
+            {
+                UnExpectedError(exception);
+            }
         }
 
         #endregion
@@ -173,7 +195,15 @@ namespace SongsAnalyzer
                 return;
             }
 
-            await UpdateWordTable(songName: null, filterCurrentSong: true);
+            try
+            {
+                await UpdateWordTable(songName: null, filterCurrentSong: true);
+            }
+            catch (Exception exception)
+            {
+                UnExpectedError(exception);
+                
+            }
         }
 
         private async Task UpdateWordTable(string? songName = null, bool filterCurrentSong = false)
@@ -188,16 +218,33 @@ namespace SongsAnalyzer
             foreach (var word in words)
                 _words.Add(word);
         }
-        
+
         private async void FilterCurrentSongButton_WordView_Click(object sender, RoutedEventArgs e)
         {
-            await UpdateWordTable(QuerySong_SongName_WordViewTextBox.Text);
+            try
+            {
+                await UpdateWordTable(QuerySong_SongName_WordViewTextBox.Text);
+            }
+            catch (Exception exception)
+            {
+                UnExpectedError(exception);
+                
+            }
         }
 
         private async void ClearFilterButton_WordView_Click(object sender, RoutedEventArgs e)
         {
-            await UpdateWordTable();
-            await FindWord_Result_WordViewTextBox.Dispatcher.InvokeAsync(() => FindWord_Result_WordViewTextBox.Clear());
+            try
+            {
+                await UpdateWordTable();
+                await FindWord_Result_WordViewTextBox.Dispatcher.InvokeAsync(() =>
+                    FindWord_Result_WordViewTextBox.Clear());
+            }
+            catch (Exception exception)
+            {
+                UnExpectedError(exception);
+                
+            }
         }
 
         private void WordsDataGrid_Selected(object sender, RoutedEventArgs e)
@@ -231,57 +278,67 @@ namespace SongsAnalyzer
 
             try
             {
-                stanzaOffset = string.IsNullOrEmpty(QuerySong_WordByStanza_WordViewTextBox.Text)
-                    ? null
-                    : int.Parse(QuerySong_WordByStanza_WordViewTextBox.Text);
-                lineOffset = string.IsNullOrEmpty(QuerySong_WordByLine_WordViewTextBox.Text)
-                    ? null
-                    : int.Parse(QuerySong_WordByLine_WordViewTextBox.Text);
-                wordOffset = string.IsNullOrEmpty(QuerySong_ByWord_WordViewTextBox.Text)
-                    ? null
-                    : int.Parse(QuerySong_ByWord_WordViewTextBox.Text);
+                try
+                {
+                    stanzaOffset = string.IsNullOrEmpty(QuerySong_WordByStanza_WordViewTextBox.Text)
+                        ? null
+                        : int.Parse(QuerySong_WordByStanza_WordViewTextBox.Text);
+                    lineOffset = string.IsNullOrEmpty(QuerySong_WordByLine_WordViewTextBox.Text)
+                        ? null
+                        : int.Parse(QuerySong_WordByLine_WordViewTextBox.Text);
+                    wordOffset = string.IsNullOrEmpty(QuerySong_ByWord_WordViewTextBox.Text)
+                        ? null
+                        : int.Parse(QuerySong_ByWord_WordViewTextBox.Text);
 
-                if (stanzaOffset is < 0)
-                    throw new FormatException();
-                if (lineOffset is < 0)
-                    throw new FormatException();
-                if (wordOffset is < 0)
-                    throw new FormatException();
+                    if (stanzaOffset is < 0)
+                        throw new FormatException();
+                    if (lineOffset is < 0)
+                        throw new FormatException();
+                    if (wordOffset is < 0)
+                        throw new FormatException();
+                }
+                catch (OverflowException exception)
+                {
+                    MessageBox.Show("Please enter a positive integer within 32 bit number range", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                catch (FormatException exception)
+                {
+                    MessageBox.Show("Please enter a positive integer", "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
+                if (stanzaOffset is null)
+                {
+                    MessageBox.Show("Please enter a stanza offset", "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
+                if (lineOffset is null)
+                {
+                    MessageBox.Show("Please enter a line offset", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (wordOffset is null)
+                {
+                    MessageBox.Show("Please enter a word offset", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var words = await _songAnalyzer.FindWords(stanzaOffset.Value, lineOffset.Value, wordOffset.Value);
+
+                await FindWord_Result_WordViewTextBox.Dispatcher.InvokeAsync(() =>
+                    FindWord_Result_WordViewTextBox.Text = words);
+            }
+            catch (Exception exception)
+            {
+                UnExpectedError(exception);
                 
             }
-            catch (OverflowException exception)
-            {
-                MessageBox.Show("Please enter a positive integer within 32 bit number range", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            catch (FormatException exception)
-            {
-                MessageBox.Show("Please enter a positive integer", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            if (stanzaOffset is null)
-            {
-                MessageBox.Show("Please enter a stanza offset", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            if (lineOffset is null)
-            {
-                MessageBox.Show("Please enter a line offset", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            if (wordOffset is null)
-            {
-                MessageBox.Show("Please enter a word offset", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            var words = await _songAnalyzer.FindWords(stanzaOffset.Value, lineOffset.Value, wordOffset.Value);
-
-            await FindWord_Result_WordViewTextBox.Dispatcher.InvokeAsync(() =>
-                FindWord_Result_WordViewTextBox.Text = words);
         }
 
         #endregion
@@ -293,7 +350,6 @@ namespace SongsAnalyzer
         private async void AddWriterButton_Click(object sender, RoutedEventArgs e)
         {
             await AddComposerButtonToListBox("song writer", WritersListBox);
-
         }
 
         private async void AddPerformerButton_Click(object sender, RoutedEventArgs e)
@@ -314,17 +370,25 @@ namespace SongsAnalyzer
                 return;
             }
 
-            var composer = Interaction.InputBox($"Enter {composerType} name:", $"Add {composerType}");
-            
-            if (!string.IsNullOrEmpty(composer) && composer.Split(SPACE, StringSplitOptions.RemoveEmptyEntries).Length > 1)
+            try
             {
-                composer = composer.ToLower().Trim();
-                
-                if(!listBox.Items.Contains(composer))
-                    await listBox.Items.Dispatcher.InvokeAsync(() =>listBox.Items.Add(composer));
+                var composer = Interaction.InputBox($"Enter {composerType} name:", $"Add {composerType}");
+
+                if (!string.IsNullOrEmpty(composer) &&
+                    composer.Split(SPACE, StringSplitOptions.RemoveEmptyEntries).Length > 1)
+                {
+                    composer = composer.ToLower().Trim();
+
+                    if (!listBox.Items.Contains(composer))
+                        await listBox.Items.Dispatcher.InvokeAsync(() => listBox.Items.Add(composer));
+                }
+                else
+                    FullNameError();
             }
-            else
-                FullNameError();
+            catch (Exception exception)
+            {
+                UnExpectedError(exception);
+            }
         }
 
         private async void AddSongButton_Click(object sender, RoutedEventArgs e)
@@ -338,13 +402,13 @@ namespace SongsAnalyzer
             var composers = new HashSet<Name>();
             var writers = new HashSet<Name>();
             var performers = new HashSet<Name>();
-
-            PopulateSet(composers, ComposersListBox.Items);
-            PopulateSet(writers, WritersListBox.Items);
-            PopulateSet(performers, PerformersListBox.Items);
             
             try
             {
+                PopulateSet(composers, ComposersListBox.Items);
+                PopulateSet(writers, WritersListBox.Items);
+                PopulateSet(performers, PerformersListBox.Items);
+                
                 await _songAnalyzer.AddSong(composers, performers, writers);
                 await ComposersListBox.Dispatcher.InvokeAsync(() => ComposersListBox.Items.Clear());
                 await WritersListBox.Dispatcher.InvokeAsync(() => WritersListBox.Items.Clear());
@@ -389,13 +453,13 @@ namespace SongsAnalyzer
             var composers = await _songAnalyzer.GetComposers();
 
             _composersView.Clear();
-            
+
             foreach (var composer in composers)
             {
                 _composersView.Add(composer);
             }
         }
-        
+
         #endregion
 
         #region Messages
@@ -411,28 +475,35 @@ namespace SongsAnalyzer
 
         private async void AddGroup_Click(object sender, RoutedEventArgs e)
         {
-            var groupValue = Interaction.InputBox("Enter A Group Value:", "Add Group", "");
-
-
-            if (string.IsNullOrEmpty(groupValue))
+            try
             {
-                StringEmptyError("Group Value");
-                return;
+                var groupValue = Interaction.InputBox("Enter A Group Value:", "Add Group", "");
+
+
+                if (string.IsNullOrEmpty(groupValue))
+                {
+                    StringEmptyError("Group Value");
+                    return;
+                }
+
+                groupValue = groupValue.ToLower().Trim().TrimToMaxLength(45);
+
+                if (_songAnalyzer.GetTokenCount(groupValue) > 1)
+                {
+                    OneWordError("Group");
+                    return;
+                }
+
+                await GroupValuesListBox.Dispatcher.InvokeAsync(() =>
+                {
+                    if (!GroupValuesListBox.Items.Contains(groupValue))
+                        GroupValuesListBox.Items.Add(groupValue);
+                });
             }
-
-            groupValue = groupValue.ToLower().Trim().TrimToMaxLength(45);
-            
-            if (_songAnalyzer.GetTokenCount(groupValue) > 1)
+            catch (Exception exception)
             {
-                OneWordError("Group");
-                return;
+                UnExpectedError(exception);
             }
-            
-            await GroupValuesListBox.Dispatcher.InvokeAsync(() =>
-            {
-                if (!GroupValuesListBox.Items.Contains(groupValue))
-                    GroupValuesListBox.Items.Add(groupValue);
-            });
         }
 
         private void OneWordError(string to)
@@ -442,26 +513,34 @@ namespace SongsAnalyzer
 
         private async void SaveGroup_Click(object sender, RoutedEventArgs e)
         {
-            var groupName = GroupNameTextBox.Text;
-
-            if (string.IsNullOrEmpty(groupName))
+            try
             {
-                StringEmptyError("Group Name");
-                return;
+                var groupName = GroupNameTextBox.Text;
+
+                if (string.IsNullOrEmpty(groupName))
+                {
+                    StringEmptyError("Group Name");
+                    return;
+                }
+
+                var values = GroupValuesListBox.Items.Cast<string>().Select(x => x.ToLower()).ToArray();
+
+                var added = await _songAnalyzer.AddGroup(groupName, values);
+
+                if (added)
+                {
+                    await GetGroups();
+                    await GroupValuesListBox.Dispatcher.InvokeAsync(() => GroupValuesListBox.Items.Clear());
+                    await GroupNameTextBox.Dispatcher.InvokeAsync(() => GroupNameTextBox.Clear());
+                }
+                else
+                    MessageBox.Show("Group Must Be Unique", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
             }
-
-            var values = GroupValuesListBox.Items.Cast<string>().Select(x => x.ToLower()).ToArray();
-
-            var added = await _songAnalyzer.AddGroup(groupName, values);
-
-            if (added)
+            catch (Exception exception)
             {
-                await GetGroups();
-                await GroupValuesListBox.Dispatcher.InvokeAsync(() => GroupValuesListBox.Items.Clear());
-                await GroupNameTextBox.Dispatcher.InvokeAsync(() => GroupNameTextBox.Clear());
+                UnExpectedError(exception);
             }
-            else
-                MessageBox.Show("Group Must Be Unique", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private async Task GetGroups()
@@ -476,32 +555,48 @@ namespace SongsAnalyzer
 
         private async void FilterCurrentGroupButton_WordIndexView_Click(object sender, RoutedEventArgs e)
         {
-            if (GroupsDataGrid.SelectedItem is null)
+            try
             {
-                MessageBox.Show("No Group Is Selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+                if (GroupsDataGrid.SelectedItem is null)
+                {
+                    MessageBox.Show("No Group Is Selected", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
-            if (GroupsDataGrid.SelectedItem is not GroupResult selectedItem)
+                if (GroupsDataGrid.SelectedItem is not GroupResult selectedItem)
+                {
+                    MessageBox.Show("Selected Group Is Not Valid", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var groupName = selectedItem.Name;
+
+                if (string.IsNullOrEmpty(groupName))
+                {
+                    MessageBox.Show("Selected Group Is Not Valid", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                await UpdateWordIndex(groupName);
+
+            }
+            catch (Exception exception)
             {
-                MessageBox.Show("Selected Group Is Not Valid", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                
             }
-
-            var groupName = selectedItem.Name;
-
-            if (string.IsNullOrEmpty(groupName))
-            {
-                MessageBox.Show("Selected Group Is Not Valid", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            await UpdateWordIndex(groupName);
         }
 
         private async void ClearFilterButton_WordIndexView_Click(object sender, RoutedEventArgs e)
         {
-            await UpdateWordIndex();
+            try
+            {
+                await UpdateWordIndex();
+            }
+            catch (Exception exception)
+            {
+                UnExpectedError(exception);
+                
+            }
         }
 
         #endregion
@@ -510,22 +605,31 @@ namespace SongsAnalyzer
 
         private async void SavePhraseButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(PhraseTextBox.Text))
+            try
             {
-                StringEmptyError("Phrase");
-                return;
+                if (string.IsNullOrEmpty(PhraseTextBox.Text))
+                {
+                    StringEmptyError("Phrase");
+                    return;
+                }
+
+                var (phrase, added) =
+                    await _songAnalyzer.AddPhrase(PhraseTextBox.Text.ToLower().Trim().TrimToMaxLength(250));
+
+                if (added)
+                {
+                    _pharses.Add(phrase);
+                    await PhraseTextBox.Dispatcher.InvokeAsync(() => PhraseTextBox.Clear());
+                }
+                else
+                    MessageBox.Show("Phrase already exists or invalid", "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
             }
-
-            var (phrase, added) = await _songAnalyzer.AddPhrase(PhraseTextBox.Text.ToLower().Trim().TrimToMaxLength(250));
-
-            if (added)
+            catch (Exception exception)
             {
-                _pharses.Add(phrase);
-                await PhraseTextBox.Dispatcher.InvokeAsync(() => PhraseTextBox.Clear());
+                UnExpectedError(exception);
+                
             }
-            else
-                MessageBox.Show("Phrase already exists or invalid", "Error", MessageBoxButton.OK,
-                    MessageBoxImage.Error);
         }
 
         private async Task GetPhrases()
@@ -556,19 +660,31 @@ namespace SongsAnalyzer
 
         #endregion
 
+        public void UnExpectedError(Exception exception)
+        {
+            MessageBox.Show($"Unexpected Error Caught: {exception}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        
         private async void QuerySongNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            TextBox? textBox = sender as TextBox;
-            string? textContent = textBox?.Text;
-
-            _potentialHits.Clear();
-            
-            var result = await _songAnalyzer.SearchSongs(textContent ?? string.Empty);
-            
-            foreach (var songName in result)
+            try
             {
-                if(!string.IsNullOrEmpty(songName.Name))
-                    _potentialHits.Add(songName.Name);
+                TextBox? textBox = sender as TextBox;
+                string? textContent = textBox?.Text;
+
+                _potentialHits.Clear();
+
+                var result = await _songAnalyzer.SearchSongs(textContent ?? string.Empty);
+
+                foreach (var songName in result)
+                {
+                    if (!string.IsNullOrEmpty(songName.Name))
+                        _potentialHits.Add(songName.Name);
+                }
+            }
+            catch (Exception exception)
+            {
+                UnExpectedError(exception);
             }
         }
     }
