@@ -1,5 +1,4 @@
-﻿using System.Net.Security;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 using Group = Model.Entities.Group;
 
@@ -8,18 +7,18 @@ namespace Model;
 public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 {
     private readonly Regex _wordsRegex = new(@"\b\w+\b", RegexOptions.Compiled);
-    private readonly SemaphoreSlim _searchSync = new SemaphoreSlim(1, 1);
+    private readonly SemaphoreSlim _searchSync = new(1, 1);
 
     private readonly string[] _stanzaSplit = [$"{Environment.NewLine}{Environment.NewLine}"];
     private readonly string[] _lineSplit = [$"{Environment.NewLine}"];
+    
+    private Song? _song;
+    
     public string? Path { get; set; }
     public string? SongName => System.IO.Path.GetFileNameWithoutExtension(Path)?.ToLower();
-    public string SongContent { get; set; }
-
-
-    public Song? Song { get; set; }
+    public required string SongContent { get; set; }
     public bool Processed { get; set; }
-
+    
     #region Load
 
     public async Task<string> LoadSong(string path)
@@ -46,7 +45,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
             if (song is not null)
             {
-                Song = song;
+                _song = song;
                 Processed = true;
                 return ProcessingResult.AlreadyExists;
             }
@@ -62,7 +61,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
             await tran.CommitAsync();
 
-            Song = song;
+            _song = song;
             Processed = true;
 
             return ProcessingResult.Succeeded;
@@ -80,16 +79,23 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     public async Task AddSong(HashSet<Name> composers, HashSet<Name> performers, HashSet<Name> writers)
     {
-        await InsertContributorsIfMissing(composers, ContributorType.MusicComposer, Song);
-        await InsertContributorsIfMissing(writers, ContributorType.Writer, Song);
-        await InsertContributorsIfMissing(performers, ContributorType.Performer, Song);
+        ArgumentNullException.ThrowIfNull(composers);
+        ArgumentNullException.ThrowIfNull(writers);
+        ArgumentNullException.ThrowIfNull(performers);
+        ArgumentNullException.ThrowIfNull(_song);
+        
+        await InsertContributorsIfMissing(composers, ContributorType.MusicComposer, _song);
+        await InsertContributorsIfMissing(writers, ContributorType.Writer, _song);
+        await InsertContributorsIfMissing(performers, ContributorType.Performer, _song);
     }
 
+    // TODO check index
     public async Task<ComposerView[]> GetComposers()
     {
         await using var ctx = ctxFactory();
 
         var composers = await ctx.Contributors
+            .TagWithCallSite()
             .Include(x => x.ContributorContributorTypes)
             .ThenInclude(x => x.ContributorType)
             .ToListAsync();
@@ -138,7 +144,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         var query = ctx.WordView.AsQueryable();
 
         if (filterCurrentSong)
-            query = query.Where(x => x.SongId == Song.Id);
+            query = query.Where(x => x.SongId == _song.Id);
 
         if (!string.IsNullOrEmpty(songName))
             query = query.Where(x => x.Song_Name.StartsWith(songName));
@@ -172,7 +178,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         var stanza = await ctx.SongStanzas
             .Include(x => x.SongLines)
             .Where(x => x.Offset == stanzaOffset)
-            .Where(x => x.SongId == Song.Id)
+            .Where(x => x.SongId == _song.Id)
             .FirstOrDefaultAsync();
 
         if (stanza is null)
@@ -184,7 +190,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             return "Location Does Not Exist In This Song";
 
         var query = ctx.WordIndexView.AsQueryable()
-            .Where(x => x.SongId == Song.Id)
+            .Where(x => x.SongId == _song.Id)
             .Where(x => x.SongStanzaOffset == stanzaOffset)
             .Where(x => x.SongLineOffset == line.Offset);
 
@@ -206,13 +212,13 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         await using var ctx = ctxFactory();
 
-        if (Song is null)
+        if (_song is null)
             return Enumerable.Empty<WordIndexView>().ToList();
 
         if (!string.IsNullOrEmpty(groupName))
         {
             var groupWordDetails = await ctx.GroupWordIndexView
-                .Where(x => x.SongId == Song.Id)
+                .Where(x => x.SongId == _song.Id)
                 .Where(x => x.GroupName == groupName)
                 .ToListAsync();
 
@@ -223,7 +229,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
 
         wordIndex = await ctx.WordIndexView
-            .Where(x => x.SongId == Song.Id)
+            .Where(x => x.SongId == _song.Id)
             .ToListAsync();
 
         return wordIndex;
