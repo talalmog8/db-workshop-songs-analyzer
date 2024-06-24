@@ -76,7 +76,7 @@
                         </StackPanel>
                         <StackPanel Margin="20,0,20,0">
                             <Label>Current Composers:</Label>
-                            <DataGrid AutoGenerateColumns="False" IsReadOnly="True" FontSize="14" Margin="5" Height="680"
+                            <DataGrid AutoGenerateColumns="False" IsReadOnly="False" FontSize="14" Margin="5" Height="680"
                                   Width="500" HorizontalAlignment="Stretch" x:Name="ComposersDataGrid">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="30" />
@@ -172,7 +172,7 @@
                         <StackPanel Margin="5,5,15,5" Orientation="Vertical">
                             <TextBlock FontWeight="DemiBold" Margin="0,5,0,5" HorizontalAlignment="Left">Words:</TextBlock>
                             <Border Margin="0,0,0,0" BorderBrush="Black" BorderThickness="1">
-                                <DataGrid AutoGenerateColumns="False" IsReadOnly="True" FontSize="14" SelectionChanged="WordsDataGrid_Selected"
+                                <DataGrid AutoGenerateColumns="False" IsReadOnly="False" FontSize="14" SelectionChanged="WordsDataGrid_Selected"
                                       SelectionUnit="FullRow" Height="550" x:Name="WordsDataGrid"
                                       Margin="0">
                                     <DataGrid.Columns>
@@ -216,7 +216,7 @@
                             <TextBlock FontWeight="DemiBold" HorizontalAlignment="Left">Words Occurrences: (Load Song To Start)</TextBlock>
                             <Border Margin="0,5,0,5" BorderBrush="Black" BorderThickness="1">
                                 <DataGrid Height="550" Width="390" FontSize="14" x:Name="WordReferencesDataGrid"
-                                      AutoGenerateColumns="False" Margin="0" IsReadOnly="True">
+                                      AutoGenerateColumns="False" Margin="0" IsReadOnly="False">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Word" Binding="{Binding Word}" Width="Auto" />
                                         <DataGridTextColumn Header="Text" Binding="{Binding Text}" Width="Auto" />
@@ -275,7 +275,7 @@ AutoGenerateColumns="False" Margin="0">
                                 <StackPanel Orientation="Horizontal">
                                     <StackPanel Margin="0,0,15,10">
                                         <TextBlock HorizontalAlignment="Left">Groups:</TextBlock>
-                                        <DataGrid SelectionUnit="FullRow" IsReadOnly="True" AutoGenerateColumns="True"
+                                        <DataGrid SelectionUnit="FullRow" IsReadOnly="False" AutoGenerateColumns="True"
                                               Name="GroupsDataGrid" SelectionMode="Single" Height="200" MinWidth="340"
                                               HorizontalAlignment="Left" />
                                         <Button Click="FilterCurrentGroupButton_WordIndexView_Click" Padding="30,5,30,5"
@@ -334,7 +334,7 @@ AutoGenerateColumns="False" Margin="0">
                             <StackPanel Margin="10,5,10,5">
                                 <TextBlock HorizontalAlignment="Left">Phrases Occurrences: (Load Song To Start)</TextBlock>
                                 <Border Margin="0,5,15,5" BorderBrush="Black" BorderThickness="1">
-                                    <DataGrid IsReadOnly="True" Height="500" HorizontalAlignment="Stretch" FontSize="14" x:Name="PhrasesReferencesDataGrid"
+                                    <DataGrid IsReadOnly="False" Height="500" HorizontalAlignment="Stretch" FontSize="14" x:Name="PhrasesReferencesDataGrid"
                       AutoGenerateColumns="False" Margin="0" >
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Word" Binding="{Binding Word}" Width="Auto" />
