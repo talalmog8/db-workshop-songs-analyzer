@@ -88,8 +88,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         await InsertContributorsIfMissing(writers, ContributorType.Writer, _song);
         await InsertContributorsIfMissing(performers, ContributorType.Performer, _song);
     }
-
-    // TODO check index
+    
     public async Task<ComposerView[]> GetComposers()
     {
         await using var ctx = ctxFactory();
