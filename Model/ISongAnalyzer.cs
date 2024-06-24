@@ -1,7 +1,4 @@
-﻿using Model.Contract;
-using Model.Entities;
-
-namespace Model;
+﻿namespace Model;
 
 public interface ISongAnalyzer
 {

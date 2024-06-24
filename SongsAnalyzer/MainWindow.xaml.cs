@@ -35,7 +35,7 @@ namespace SongsAnalyzer
 
         #region Load Song Tab 1
 
-        private async void BrowseSong_Click_Inner(object sender, RoutedEventArgs e)
+        private async void BrowseSong_Click(object sender, RoutedEventArgs e)
         {
             try
             {

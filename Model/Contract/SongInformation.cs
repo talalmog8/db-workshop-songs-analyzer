@@ -1,6 +1,4 @@
-﻿using Model.Entities;
-
-namespace Model.Contract;
+﻿namespace Model.Contract;
 
 public class SongInformation
 {

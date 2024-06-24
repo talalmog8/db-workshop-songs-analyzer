@@ -1,9 +1,6 @@
 ﻿using System.Net.Security;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore;
-using Model.Contract;
-using Model.Entities;
 using Group = Model.Entities.Group;
 
 namespace Model;
@@ -12,12 +9,6 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 {
     private readonly Regex _wordsRegex = new(@"\b\w+\b", RegexOptions.Compiled);
     private readonly SemaphoreSlim _searchSync = new SemaphoreSlim(1, 1);
-    
-    private readonly string[] _wordSplit =
-    [
-        " ", "\t", "\u00A0", ".", ",", "!", "?", ":", ";", "-", "–", "—", "/", "\\", "\"", "'", "(", ")", "[", "]", "{",
-        "}", "<", ">", "_", "@", "&", "*", "+", "=", "|", "~", "`", Environment.NewLine
-    ];
 
     private readonly string[] _stanzaSplit = [$"{Environment.NewLine}{Environment.NewLine}"];
     private readonly string[] _lineSplit = [$"{Environment.NewLine}"];
@@ -434,7 +425,8 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         var offset = 0;
 
-        var phraseWords = phrase.Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries)
+        var phraseWords = _wordsRegex.Matches(phrase)
+            .Select(x => x.Value)
             .Select(word => new PhraseWord
             {
                 PhraseId = phraseToInsert.Id,
@@ -494,9 +486,9 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     private async Task<(Dictionary<string, int> wordIndex, Word[])> InsertWordsIfMissing(SongsContext ctx, string text)
     {
-        var words = text
-            .Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => x.ToLower())
+        var words = _wordsRegex
+            .Matches(text)
+            .Select(x => x.Value.ToLower())
             .ToArray();
 
         return await InsertWordsIfMissing(ctx, words);
@@ -669,7 +661,8 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         var offset = 0;
 
         var wordLocations = songLines
-            .SelectMany(songLine => songLine.SongLineText.Split(_wordSplit, StringSplitOptions.RemoveEmptyEntries)
+            .SelectMany(songLine => _wordsRegex.Matches(songLine.SongLineText)
+                .Select(x=> x.Value)
                 .Select(word => new
                 {
                     Word = word.ToLower(),

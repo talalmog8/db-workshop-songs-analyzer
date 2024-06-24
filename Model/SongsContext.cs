@@ -1,16 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Model.Contract;
-using Model.Entities;
-using Npgsql;
-
-namespace Model;
+﻿namespace Model;
 
 public class SongsContext : DbContext
 {
     private readonly ILoggerFactory _loggerFactory;
     private readonly IConfiguration _configuration;
+
+    #region Tables
 
     public DbSet<Contributor> Contributors { get; set; }
     public DbSet<ContributorContributorType> ContributorContributorTypes { get; set; }
@@ -21,19 +16,29 @@ public class SongsContext : DbContext
     public DbSet<Word> Words { get; set; }
     public DbSet<SongWord> SongWords { get; set; }
     public DbSet<WordLocation> WordLocations { get; set; }
-
     public DbSet<Phrase> Phrases { get; set; }
-
     public DbSet<PhraseWord> PhraseWords { get; set; }
-
     public DbSet<Group> Group { get; set; }
     public DbSet<WordGroup> WordGroup { get; set; }
+
+    #endregion
+
+    #region Views
+
     public DbSet<GroupsView> GroupsView { get; set; }
     public DbSet<WordIndexView> WordIndexView { get; set; }
     public DbSet<GroupWordIndexView> GroupWordIndexView { get; set; }
     public DbSet<WordView> WordView { get; set; }
     public DbSet<SongView> SongView { get; set; }
-    public DbSet<SongName> SongsSearch { get; set; } 
+    
+    #endregion
+
+    #region Function Repsonse
+
+    public DbSet<SongName> SongsSearch { get; set; }
+
+    #endregion
+     
     
     public SongsContext(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
@@ -100,7 +105,8 @@ public class SongsContext : DbContext
             x.Offset
         }).IsUnique();
 
-        // One-to-Many Relationships
+        //  Relationships
+        
         modelBuilder.Entity<SongLine>()
             .HasOne(sl => sl.Song)
             .WithMany(s => s.SongLines)
@@ -126,7 +132,6 @@ public class SongsContext : DbContext
             .WithMany()
             .HasForeignKey(sc => sc.ContributorId);
 
-        // Many-to-Many Relationships
         modelBuilder.Entity<ContributorContributorType>()
             .HasKey(cct => new { cct.ContributorId, cct.ContributorTypeId });
 
@@ -139,11 +144,8 @@ public class SongsContext : DbContext
             .HasOne(cct => cct.ContributorType)
             .WithMany()
             .HasForeignKey(cct => cct.ContributorTypeId);
-
-        // Additional relationships
-
+        
         modelBuilder.Entity<WordGroup>().HasKey(wg => new { wg.GroupId, wg.WordId });
-
 
         modelBuilder.Entity<WordGroup>()
             .HasOne(wg => wg.Group)
@@ -175,6 +177,8 @@ public class SongsContext : DbContext
             .WithMany(sw => sw.WordLocations)
             .HasForeignKey(wl => wl.SongWordId);
 
+        // Views 
+        
         modelBuilder.Entity<WordIndexView>().ToView("word_index_view");
         modelBuilder.Entity<GroupWordIndexView>().ToView("group_word_index_view");
         modelBuilder.Entity<WordView>().ToView("words_view");
@@ -183,6 +187,8 @@ public class SongsContext : DbContext
         {
             view.SongName, view.FirstName, view.LastName, view.ContributionType, view.SongComposerId
         });
+        
+        // Functions
         
         modelBuilder.Entity<SongName>().HasNoKey();
     }

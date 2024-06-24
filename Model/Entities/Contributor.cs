@@ -1,6 +1,4 @@
-﻿using Model.Contract;
-
-namespace Model.Entities;
+﻿namespace Model.Entities;
 
 [Table("contributor")]
 public class Contributor
