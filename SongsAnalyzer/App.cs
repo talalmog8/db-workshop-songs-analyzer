@@ -35,6 +35,7 @@ public partial class App : Application
         services.AddSingleton(configuration);
         services.AddSingleton<Func<SongsContext>>(_ => () => new SongsContext(loggerFactory, configuration));
         services.AddSingleton<ISongAnalyzer, SongAnalyzer>();
+        services.AddSingleton<IDatasetLoader, DatasetLoader>();
 
         Provider = services.BuildServiceProvider();
     }

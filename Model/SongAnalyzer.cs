@@ -11,22 +11,31 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     private readonly string[] _stanzaSplit = [$"{Environment.NewLine}{Environment.NewLine}"];
     private readonly string[] _lineSplit = [$"{Environment.NewLine}"];
-    
-    private Song? _song;
-    
+
+    public Song? Song { get; private set; }
+
     public string? Path { get; set; }
+    public DateTime CreateDate { get; set; }
     public string? SongName => System.IO.Path.GetFileNameWithoutExtension(Path)?.ToLower();
     public required string SongContent { get; set; }
     public bool Processed { get; set; }
     
     #region Load
 
+    public void LoadSong(string path, string songContent)
+    {
+        Path = path;
+        SongContent = songContent.ToLower();
+        CreateDate = DateTime.Now;
+    }  
+    
     public async Task<string> LoadSong(string path)
     {
         Path = path;
         SongContent = await File.ReadAllTextAsync(Path);
         SongContent = SongContent.ToLower();
-
+        CreateDate = File.GetCreationTime(Path);
+        
         return SongContent;
     }
 
@@ -35,7 +44,6 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         try
         {
             var text = SongContent;
-            var createDate = File.GetCreationTime(Path);
 
             await using var ctx = ctxFactory();
 
@@ -45,14 +53,14 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
             if (song is not null)
             {
-                _song = song;
+                Song = song;
                 Processed = true;
                 return ProcessingResult.AlreadyExists;
             }
 
             await using var tran = await ctx.Database.BeginTransactionAsync();
 
-            song = await InsertSong(Path, createDate, text, ctx);
+            song = await InsertSong(Path, CreateDate, text, ctx);
             var songStanzas = await InsertSongStanzas(text, song, ctx);
             var songLines = await InsertSongLines(songStanzas, text, song, ctx);
             var (wordIndex, words) = await InsertWordsIfMissing(ctx, text);
@@ -61,7 +69,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
             await tran.CommitAsync();
 
-            _song = song;
+            Song = song;
             Processed = true;
 
             return ProcessingResult.Succeeded;
@@ -82,11 +90,11 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         ArgumentNullException.ThrowIfNull(composers);
         ArgumentNullException.ThrowIfNull(writers);
         ArgumentNullException.ThrowIfNull(performers);
-        ArgumentNullException.ThrowIfNull(_song);
+        ArgumentNullException.ThrowIfNull(Song);
         
-        await InsertContributorsIfMissing(composers, ContributorType.MusicComposer, _song);
-        await InsertContributorsIfMissing(writers, ContributorType.Writer, _song);
-        await InsertContributorsIfMissing(performers, ContributorType.Performer, _song);
+        await InsertContributorsIfMissing(composers, ContributorType.MusicComposer, Song);
+        await InsertContributorsIfMissing(writers, ContributorType.Writer, Song);
+        await InsertContributorsIfMissing(performers, ContributorType.Performer, Song);
     }
     
     public async Task<ComposerView[]> GetComposers()
@@ -142,8 +150,8 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         var query = ctx.WordView.AsQueryable();
 
-        if (filterCurrentSong)
-            query = query.Where(x => x.SongId == _song.Id);
+        if (filterCurrentSong && Song is not null)
+            query = query.Where(x => x.SongId == Song.Id);
 
         if (!string.IsNullOrEmpty(songName))
             query = query.Where(x => x.Song_Name.StartsWith(songName));
@@ -177,7 +185,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
         var stanza = await ctx.SongStanzas
             .Include(x => x.SongLines)
             .Where(x => x.Offset == stanzaOffset)
-            .Where(x => x.SongId == _song.Id)
+            .Where(x => x.SongId == Song.Id)
             .FirstOrDefaultAsync();
 
         if (stanza is null)
@@ -189,7 +197,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
             return "Location Does Not Exist In This Song";
 
         var query = ctx.WordIndexView.AsQueryable()
-            .Where(x => x.SongId == _song.Id)
+            .Where(x => x.SongId == Song.Id)
             .Where(x => x.SongStanzaOffset == stanzaOffset)
             .Where(x => x.SongLineOffset == line.Offset);
 
@@ -211,13 +219,13 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
         await using var ctx = ctxFactory();
 
-        if (_song is null)
+        if (Song is null)
             return Enumerable.Empty<WordIndexView>().ToList();
 
         if (!string.IsNullOrEmpty(groupName))
         {
             var groupWordDetails = await ctx.GroupWordIndexView
-                .Where(x => x.SongId == _song.Id)
+                .Where(x => x.SongId == Song.Id)
                 .Where(x => x.GroupName == groupName)
                 .ToListAsync();
 
@@ -228,7 +236,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
 
         wordIndex = await ctx.WordIndexView
-            .Where(x => x.SongId == _song.Id)
+            .Where(x => x.SongId == Song.Id)
             .ToListAsync();
 
         return wordIndex;
@@ -458,7 +466,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
 
     #region Song Processor Inserts
 
-    private async Task InsertContributorsIfMissing(HashSet<Name> composers, ContributorType contributorType, Song song)
+    public async Task InsertContributorsIfMissing(HashSet<Name> composers, ContributorType contributorType, Song? song)
     {
         foreach (var composer in composers)
         {
@@ -544,7 +552,7 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     }
 
     private async Task InsertContributorIfMissing(Contributor contributor, SongsContext ctx,
-        ContributorType contributorTypeId, Song song)
+        ContributorType contributorTypeId, Song? song)
     {
         var existingContributor = await ctx.Contributors.AsQueryable()
             .AsNoTracking()

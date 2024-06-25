@@ -5,10 +5,8 @@
     <StackPanel Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
         <StackPanel Orientation="Horizontal" Margin="5">
-            <!-- Song Name -->
             <TextBlock MinWidth="100" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Left">Song Name:</TextBlock>
-            <TextBlock MinWidth="250" MinHeight="20" Margin="05" VerticalAlignment="Top" HorizontalAlignment="Left"
-                       Name="SongNameTextBox" />
+            <TextBlock MinWidth="250" MinHeight="20" Margin="5" VerticalAlignment="Top" HorizontalAlignment="Left" Name="SongNameTextBox" />
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <TabControl Margin="5">
@@ -403,6 +401,11 @@ AutoGenerateColumns="False" Margin="0">
                                    HorizontalAlignment="Left">
                             </TextBlock>
                         </StackPanel>
+                        <StackPanel Margin="10,50,10,10">
+                            <Label Margin="5" FontWeight="SemiBold">Data Set Loader></Label>
+                            <Button Margin="5" Click="LoadSongDataSet" Name="LoadSongDataSetBtn">Load Song DataSet</Button>
+                            <Button Margin="5" Click="RefreshBtnClick" Name="RefreshBtn">Refresh</Button>
+                        </StackPanel>                      
                     </StackPanel>
                 </TabItem>
             </TabControl>

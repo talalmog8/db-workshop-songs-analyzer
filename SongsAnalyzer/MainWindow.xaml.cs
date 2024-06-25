@@ -8,6 +8,7 @@ namespace SongsAnalyzer
     public partial class WindowHandlers : Window
     {
         private readonly ISongAnalyzer _songAnalyzer;
+        private readonly IDatasetLoader _datasetLoader;
         private readonly ObservableCollection<WordTable> _words = [];
         private readonly ObservableCollection<SongQueryResult> _songComposers = [];
         private readonly ObservableCollection<WordIndexView> _wordDetailsViews = [];
@@ -22,6 +23,7 @@ namespace SongsAnalyzer
         {
             InitializeComponent();
             _songAnalyzer = App.Provider.GetRequiredService<ISongAnalyzer>();
+            _datasetLoader = App.Provider.GetRequiredService<IDatasetLoader>();
             WordsDataGrid.ItemsSource = _words;
             QuerySongResultsDataGrid.ItemsSource = _songComposers;
             WordsIndexDataGrid.ItemsSource = _wordDetailsViews;
@@ -75,6 +77,7 @@ namespace SongsAnalyzer
 
         #endregion
 
+        
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             try
@@ -95,10 +98,12 @@ namespace SongsAnalyzer
         {
             try
             {
+                await LoadComposers();
                 await UpdateWordTable(filterCurrentSong: filterCurrentSong);
                 await UpdateStats();
                 await UpdateSongsResultsTable();
                 await UpdateWordIndex();
+                
             }
             catch (Exception exception)
             {
@@ -415,6 +420,7 @@ namespace SongsAnalyzer
                 await WritersListBox.Dispatcher.InvokeAsync(() => WritersListBox.Items.Clear());
                 await PerformersListBox.Dispatcher.InvokeAsync(() => PerformersListBox.Items.Clear());
                 await LoadComposers();
+                await UpdateSongsResultsTable();
             }
             catch (Exception exception)
             {
@@ -682,6 +688,26 @@ namespace SongsAnalyzer
                     if (!string.IsNullOrEmpty(songName.Name))
                         _potentialHits.Add(songName.Name);
                 }
+            }
+            catch (Exception exception)
+            {
+                UnExpectedError(exception);
+            }
+        }
+
+        private async void RefreshBtnClick(object sender, RoutedEventArgs e)
+        {
+            await RefreshUI(true);
+        }
+        
+        private async void LoadSongDataSet(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await LoadSongDataSetBtn.Dispatcher.InvokeAsync(() => LoadSongDataSetBtn.IsEnabled = false);
+                await _datasetLoader.LoadAllDataset("songs.json");
+                await LoadSongDataSetBtn.Dispatcher.InvokeAsync(() => LoadSongDataSetBtn.IsEnabled = true);
+                await SongNameTextBox.Dispatcher.InvokeAsync(() => { SongNameTextBox.Text = _songAnalyzer.SongName ?? ""; });
             }
             catch (Exception exception)
             {

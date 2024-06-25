@@ -2,6 +2,7 @@
 
 public interface ISongAnalyzer
 {
+    Song? Song { get; }
     string? Path {
         get;
         set;
@@ -25,4 +26,6 @@ public interface ISongAnalyzer
     int GetTokenCount(string text);
     Task<List<SongName>> SearchSongs(string searchTerm);
     Task SetUpDatabase();
+    void LoadSong(string path, string songContent);
+    Task InsertContributorsIfMissing(HashSet<Name> composers, ContributorType contributorType, Song? song);
 }
