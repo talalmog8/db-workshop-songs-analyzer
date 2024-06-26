@@ -621,7 +621,7 @@ namespace SongsAnalyzer
                 }
 
                 var (phrase, added) =
-                    await _songAnalyzer.AddPhrase(PhraseTextBox.Text.ToLower().Trim().TrimToMaxLength(250));
+                    await _songAnalyzer.AddPhrase(PhraseTextBox.Text.ToLower().Trim().TrimToMaxLength(1000));
 
                 if (added)
                 {

@@ -140,10 +140,10 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_word_group_group_word ON word_group (group
 CREATE TABLE IF NOT EXISTS phrase
 (
     id     BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    phrase VARCHAR(250)
+    phrase_hash VARCHAR(250)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_phrase_phrase ON phrase (phrase);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_phrase_phrase ON phrase (phrase_hash);
 
 
 CREATE TABLE IF NOT EXISTS phrase_word
@@ -163,6 +163,15 @@ VALUES (1, 'writer'),
        (2, 'music composer'),
        (3, 'performer')
 ON CONFLICT DO NOTHING;
+
+CREATE OR REPLACE VIEW phrase_view AS
+SELECT p.id                     as phrase_id,
+       STRING_AGG(pw.word, ', ') AS phrase_values
+FROM phrase p
+         JOIN phrase_word pw ON pw.phrase_id = p.id
+group by p.id
+order by p.id
+;
 
 CREATE OR REPLACE VIEW groups_view AS
 SELECT g.id                     as group_id,

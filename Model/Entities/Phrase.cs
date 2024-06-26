@@ -8,10 +8,10 @@ public class Phrase
     [Column("id")]
     public long Id { get; set; }
 
-    [Column("phrase")]
+    [Column("phrase_hash")]
     [MaxLength(250)]
     
-    public string PhraseText { get; set; }
+    public string PhraseHash      { get; set; }
     
     public virtual ICollection<PhraseWord> PhraseWords { get; set; }
     

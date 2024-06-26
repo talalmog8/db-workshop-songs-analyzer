@@ -30,6 +30,7 @@ public class SongsContext : DbContext
     public DbSet<GroupWordIndexView> GroupWordIndexView { get; set; }
     public DbSet<WordView> WordView { get; set; }
     public DbSet<SongView> SongView { get; set; }
+    public DbSet<PhraseView> PhraseView { get; set; }
 
     #endregion
 
@@ -58,7 +59,7 @@ public class SongsContext : DbContext
     {
         // Configure unique indexes
         modelBuilder.Entity<Group>().HasIndex(g => g.Name).IsUnique();
-        modelBuilder.Entity<Phrase>().HasIndex(p => p.PhraseText).IsUnique();
+        modelBuilder.Entity<Phrase>().HasIndex(p => p.PhraseHash).IsUnique();
         modelBuilder.Entity<Word>().HasIndex(w => w.WordText).IsUnique();
         modelBuilder.Entity<Contributor>().HasIndex(w => w.FullName).IsUnique();
         modelBuilder.Entity<Song>().HasIndex(w => w.Name).IsUnique();
@@ -182,6 +183,7 @@ public class SongsContext : DbContext
         modelBuilder.Entity<WordIndexView>().ToView("word_index_view");
         modelBuilder.Entity<GroupWordIndexView>().ToView("group_word_index_view");
         modelBuilder.Entity<WordView>().ToView("words_view");
+        modelBuilder.Entity<PhraseView>().ToView("phrase_view");
         modelBuilder.Entity<GroupsView>().ToView("groups_view").HasKey(view => new { view.GroupId, view.GroupName });
         modelBuilder.Entity<SongView>().ToView("songs_view").HasKey(view => new
         {

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using Group = Model.Entities.Group;
 
@@ -418,7 +419,9 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     public async Task<List<string>> GetPhrases()
     {
         await using var ctx = ctxFactory();
-        var phrases = await ctx.Phrases.Select(x => x.PhraseText).ToListAsync();
+        var phrases = await ctx.PhraseView
+            .Select(x=> x.PhraseValues)
+            .ToListAsync();
 
         return phrases;
     }
@@ -427,18 +430,21 @@ public class SongAnalyzer(Func<SongsContext> ctxFactory) : ISongAnalyzer
     {
         await using var ctx = ctxFactory();
 
-        bool phraseExists = await ctx.Phrases.Where(x => x.PhraseText == phrase).AnyAsync();
+        using SHA256 sha256Hash = SHA256.Create();
+        var bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(phrase));
+        
+        var phraseToInsert = new Phrase
+        {
+            PhraseHash = Convert.ToBase64String(bytes)
+        };
+        
+        bool phraseExists = await ctx.Phrases.Where(x => x.PhraseHash == phraseToInsert.PhraseHash).AnyAsync();
 
         if (phraseExists)
             return (phrase, false);
 
         await using var tran = await ctx.Database.BeginTransactionAsync();
-
-        var phraseToInsert = new Phrase
-        {
-            PhraseText = phrase
-        };
-
+        
         ctx.Phrases.Add(phraseToInsert);
         await ctx.SaveChangesAsync();
 
